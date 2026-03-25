@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - AppPessoal{% endblock %}
+
+{% block content %}
+<div class="mb-10">
+    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+        <i class="ph ph-squares-four text-primary-600"></i> Dashboard
+    </h1>
+    <p class="text-slate-500 mt-2 font-medium">Bem-vindo de volta! Aqui está um resumo da sua produtividade.</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+    <!-- Tasks Summary Card -->
+    <div class="group bg-surface rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-primary-600/5 hover:-translate-y-1 transition-standard flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+            <div>
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Pendentes</span>
+                <h2 class="mt-2 text-5xl font-black text-slate-900 leading-none">{{ tarefas_pendentes }}</h2>
+                <p class="mt-2 text-sm text-slate-500 font-medium tracking-wide">Tarefas que precisam de atenção</p>
+            </div>
+            <div class="p-4 bg-primary-50 text-primary-600 rounded-2xl group-hover:bg-primary-600 group-hover:text-white transition-standard">
+                <i class="ph ph-list-dashes text-3xl"></i>
+            </div>
+        </div>
+        <div class="mt-8 pt-6 border-t border-slate-100">
+            <a href="{{ url_for('tasks.index') }}" class="inline-flex items-center gap-2 text-sm font-bold text-primary-600 hover:text-primary-700 transition-standard group/link">
+                Ir para Tarefas 
+                <i class="ph-bold ph-arrow-right group-hover/link:translate-x-1 transition-standard"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Lists Summary Card -->
+    <div class="group bg-surface rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-primary-600/5 hover:-translate-y-1 transition-standard flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+            <div>
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Ativas</span>
+                <h2 class="mt-2 text-5xl font-black text-slate-900 leading-none">{{ listas_ativas }}</h2>
+                <p class="mt-2 text-sm text-slate-500 font-medium tracking-wide">Listas de compras e desejos</p>
+            </div>
+            <div class="p-4 bg-primary-50 text-primary-600 rounded-2xl group-hover:bg-primary-600 group-hover:text-white transition-standard">
+                <i class="ph ph-shopping-bag text-3xl"></i>
+            </div>
+        </div>
+        <div class="mt-8 pt-6 border-t border-slate-100">
+            <a href="{{ url_for('lists.index') }}" class="inline-flex items-center gap-2 text-sm font-bold text-primary-600 hover:text-primary-700 transition-standard group/link">
+                Gerenciar Listas
+                <i class="ph-bold ph-arrow-right group-hover/link:translate-x-1 transition-standard"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Section (Mockup for future enhancement) -->
+<div class="mt-12">
+    <h3 class="text-lg font-bold text-slate-800 mb-6">Ações Rápidas</h3>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <button class="bg-surface p-4 rounded-xl border border-slate-200 hover:border-primary-600 hover:bg-primary-50 transition-standard flex flex-col items-center gap-2 group">
+            <i class="ph ph-plus-circle text-2xl text-slate-400 group-hover:text-primary-600"></i>
+            <span class="text-xs font-bold text-slate-600">Nova Tarefa</span>
+        </button>
+        <button class="bg-surface p-4 rounded-xl border border-slate-200 hover:border-primary-600 hover:bg-primary-50 transition-standard flex flex-col items-center gap-2 group">
+            <i class="ph ph-tag text-2xl text-slate-400 group-hover:text-primary-600"></i>
+            <span class="text-xs font-bold text-slate-600">Nova Lista</span>
+        </button>
+        <button class="bg-surface p-4 rounded-xl border border-slate-200 hover:border-primary-600 hover:bg-primary-50 transition-standard flex flex-col items-center gap-2 group">
+            <i class="ph ph-export text-2xl text-slate-400 group-hover:text-primary-600"></i>
+            <span class="text-xs font-bold text-slate-600">Exportar PDF</span>
+        </button>
+        <button class="bg-surface p-4 rounded-xl border border-slate-200 hover:border-primary-600 hover:bg-primary-50 transition-standard flex flex-col items-center gap-2 group">
+            <i class="ph ph-gear text-2xl text-slate-400 group-hover:text-primary-600"></i>
+            <span class="text-xs font-bold text-slate-600">Configurações</span>
+        </button>
+    </div>
+</div>
+{% endblock %}

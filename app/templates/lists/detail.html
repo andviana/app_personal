@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ lista.denominacao }} - AppPessoal{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div class="flex flex-col gap-2">
+        <a href="{{ url_for('lists.index') }}" class="inline-flex items-center gap-2 text-sm font-bold text-primary-600 hover:text-primary-700 transition-standard group">
+            <i class="ph-bold ph-arrow-left group-hover:-translate-x-1 transition-standard"></i> 
+            VOLTAR PARA LISTAS
+        </a>
+        <div class="flex flex-wrap items-center gap-4 mt-2">
+            <h1 class="text-4xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                <i class="ph-fill ph-notebook text-primary-600"></i> {{ lista.denominacao }}
+            </h1>
+            <span class="bg-primary-50 text-primary-600 text-[10px] px-3 py-1 rounded-full font-black tracking-widest uppercase border border-primary-100 shadow-sm">
+                {{ lista.tipo.denominacao if lista.tipo else 'Genérica' }}
+            </span>
+        </div>
+    </div>
+    
+    <div class="flex gap-2 w-full md:w-auto">
+        <button onclick="document.getElementById('modalNovoGrupoItem').classList.remove('hidden')" class="flex-1 md:flex-none h-11 px-5 bg-surface text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-standard flex items-center justify-center gap-2 border border-slate-200 shadow-sm">
+            <i class="ph-bold ph-folder-plus text-primary-600"></i> CATEGORIA
+        </button>
+        <a href="{{ url_for('lists.export_pdf', id=lista.id) }}" class="flex-1 md:flex-none h-11 px-5 bg-success text-white font-bold rounded-xl hover:opacity-90 transition-standard flex items-center justify-center gap-2 shadow-lg shadow-success/20">
+            <i class="ph-bold ph-file-pdf text-xl"></i> PDF
+        </a>
+    </div>
+</div>
+
+<div class="bg-surface p-6 border border-slate-200 rounded-3xl mb-10 shadow-sm">
+    <form action="{{ url_for('lists.add_item', id=lista.id) }}" method="POST" class="flex flex-col lg:flex-row gap-4 items-center">
+        <div class="relative flex-grow w-full">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                <i class="ph ph-plus-circle text-xl"></i>
+            </div>
+            <input type="text" name="item" placeholder="O que adicionar à lista?" class="block w-full h-12 pl-12 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-base font-medium transition-standard" required autofocus>
+        </div>
+        
+        <div class="flex gap-3 w-full lg:w-auto">
+            <select name="grupo_id" class="h-12 flex-grow lg:w-48 px-4 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold text-slate-600 transition-standard" required>
+                <option value="" disabled selected>📂 Categoria</option>
+                {% for g in grupos %}
+                <option value="{{ g.id }}">{{ g.denominacao }}</option>
+                {% endfor %}
+            </select>
+
+            <div class="relative w-28">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <span class="text-xs font-bold leading-none">R$</span>
+                </div>
+                <input type="number" step="0.01" name="valor" placeholder="0,00" class="block w-full h-12 pl-8 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold">
+            </div>
+            
+            <button type="submit" class="h-12 px-8 bg-primary-600 text-white font-black rounded-xl hover:bg-primary-700 transition-standard shadow-lg shadow-primary-600/20 active:scale-95 flex items-center gap-2 whitespace-nowrap">
+                <span>ADD</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="bg-surface border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-100">
+            <thead class="bg-slate-50/50">
+                <tr>
+                    <th class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Item</th>
+                    <th class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] hidden sm:table-cell">Categoria</th>
+                    <th class="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Valor Est.</th>
+                    <th class="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for it in lista.itens %}
+                <tr class="group hover:bg-slate-50 transition-standard {% if it.status %}bg-success/5{% endif %}">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center gap-4">
+                            <form action="{{ url_for('lists.toggle_item', item_id=it.id) }}" method="POST">
+                                <button type="submit" class="flex-shrink-0 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-standard
+                                    {% if it.status %}bg-success border-success text-white shadow-lg shadow-success/20
+                                    {% else %}border-slate-300 hover:border-primary-600 text-transparent hover:text-primary-600{% endif %}">
+                                    <i class="ph-bold ph-check"></i>
+                                </button>
+                            </form>
+                            <span class="text-sm font-bold {{ 'text-slate-300 line-through' if it.status else 'text-slate-800' }}">
+                                {{ it.item }}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+                        <span class="text-[10px] font-black tracking-widest uppercase py-0.5 px-2 bg-slate-100 text-slate-400 rounded-md">
+                            {{ it.grupo.denominacao if it.grupo else '-' }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-black {% if it.status %}text-slate-300{% else %}text-slate-900{% endif %}">
+                        {% if it.valor %}
+                            R$ {{ "%.2f"|format(it.valor) }}
+                        {% else %}
+                            <span class="text-slate-200">--</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                        <div class="flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100 transition-standard">
+                            <form action="{{ url_for('lists.delete_item', item_id=it.id) }}" method="POST" onsubmit="return confirm('Remover item?');">
+                                <button type="submit" class="p-2 text-slate-300 hover:text-danger hover:bg-danger/5 rounded-lg transition-standard">
+                                    <i class="ph-bold ph-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="px-6 py-20 text-center">
+                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-200">
+                            <i class="ph ph-shopping-cart text-3xl"></i>
+                        </div>
+                        <p class="text-slate-500 font-medium">Sua lista está vazia. Comece a adicionar itens!</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Summary Row -->
+    {% set total = namespace(valor=0) %}
+    {% set total_comprado = namespace(valor=0) %}
+    {% for it in lista.itens %}
+        {% if it.valor %}
+            {% set total.valor = total.valor + it.valor %}
+            {% if it.status %}
+                {% set total_comprado.valor = total_comprado.valor + it.valor %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    
+    {% if total.valor > 0 %}
+    <div class="bg-slate-50/80 p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-6">
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Comprado</p>
+                <p class="text-lg font-black text-success">R$ {{ "%.2f"|format(total_comprado.valor) }}</p>
+            </div>
+            <div class="w-px h-8 bg-slate-200"></div>
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Restante</p>
+                <p class="text-lg font-black text-primary-600">R$ {{ "%.2f"|format(total.valor - total_comprado.valor) }}</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Estimado</p>
+            <p class="text-3xl font-black text-slate-900 leading-none">R$ {{ "%.2f"|format(total.valor) }}</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal Novo Categoria Item -->
+<div id="modalNovoGrupoItem" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
+    <div class="bg-surface rounded-3xl shadow-2xl w-full max-w-sm border border-slate-200 animate-in zoom-in-95">
+        <div class="p-8">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
+                    <i class="ph-bold ph-folder-plus text-primary-600"></i> Categoria
+                </h2>
+                <button onclick="document.getElementById('modalNovoGrupoItem').classList.add('hidden')" class="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-standard"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <form action="{{ url_for('lists.add_grupo_item', id=lista.id) }}" method="POST" class="space-y-6">
+                <div>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Denominação</label>
+                    <input type="text" name="denominacao" placeholder="Ex: Higiene, Laticínios..." class="block w-full h-12 px-4 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold" required autofocus>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="document.getElementById('modalNovoGrupoItem').classList.add('hidden')" class="flex-1 h-12 text-slate-500 font-bold rounded-xl hover:bg-slate-100 transition-standard">CANCELAR</button>
+                    <button type="submit" class="flex-[2] h-12 bg-primary-600 text-white font-black rounded-xl shadow-lg shadow-primary-600/20 active:scale-95 transition-standard">ADICIONAR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

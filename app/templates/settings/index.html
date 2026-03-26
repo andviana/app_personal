@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}Gerenciamento - AppPessoal{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+        <i class="ph ph-gear-six text-primary-600"></i> Gerenciamento
+    </h1>
+    <p class="text-slate-500 mt-1 font-medium italic">"A organização é a chave para a produtividade."</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <!-- Sidebar Tabs -->
+    <div class="lg:col-span-1 space-y-2">
+        <button onclick="switchTab('grupos_tarefas')" id="tab-btn-grupos_tarefas" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard bg-primary-50 text-primary-600 border border-primary-100">
+            <i class="ph ph-folder-open text-xl"></i> Grupos de Tarefas
+        </button>
+        <button onclick="switchTab('tipos_listas')" id="tab-btn-tipos_listas" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard text-slate-600 hover:bg-slate-50">
+            <i class="ph ph-tag text-xl"></i> Categorias de Listas
+        </button>
+        <button onclick="switchTab('grupos_itens')" id="tab-btn-grupos_itens" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard text-slate-600 hover:bg-slate-50">
+            <i class="ph ph-package text-xl"></i> Grupos de Itens (Listas)
+        </button>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="lg:col-span-3">
+        <!-- Grupos de Tarefas -->
+        <div id="tab-grupos_tarefas" class="tab-content border border-slate-200 bg-surface rounded-3xl overflow-hidden shadow-sm">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h2 class="font-black text-slate-800 uppercase tracking-widest text-sm">Grupos de Tarefas</h2>
+                <button onclick="openAddModal('grupo_tarefa')" class="h-9 px-4 bg-primary-600 text-white text-xs font-black rounded-lg hover:bg-primary-700 transition-standard flex items-center gap-2">
+                    <i class="ph-bold ph-plus"></i> NOVO GRUPO
+                </button>
+            </div>
+            <div class="divide-y divide-slate-100">
+                {% for g in grupos_tarefas %}
+                <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition-standard group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-primary-50 text-primary-600 rounded-xl flex items-center justify-center font-black">
+                            {{ g.denominacao[0] }}
+                        </div>
+                        <span class="font-bold text-slate-700 uppercase">{{ g.denominacao }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick='openEditModal("grupo_tarefa", "{{ g.id }}", "{{ g.denominacao }}")' class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-standard">
+                            <i class="ph-bold ph-pencil-simple"></i>
+                        </button>
+                        <form action="{{ url_for('settings.delete_grupo_tarefa', id=g.id) }}" method="POST" onsubmit="return confirm('Excluir este grupo? (Só será excluído se não houver tarefas vinculadas)');">
+                            <button type="submit" class="p-2 text-slate-300 hover:text-danger hover:bg-danger/5 rounded-lg transition-standard">
+                                <i class="ph-bold ph-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Categorias de Listas -->
+        <div id="tab-tipos_listas" class="tab-content hidden border border-slate-200 bg-surface rounded-3xl overflow-hidden shadow-sm">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h2 class="font-black text-slate-800 uppercase tracking-widest text-sm">Categorias de Listas</h2>
+                <button onclick="openAddModal('tipo_lista')" class="h-9 px-4 bg-primary-600 text-white text-xs font-black rounded-lg hover:bg-primary-700 transition-standard flex items-center gap-2">
+                    <i class="ph-bold ph-plus"></i> NOVA CATEGORIA
+                </button>
+            </div>
+            <div class="divide-y divide-slate-100">
+                {% for t in tipos_listas %}
+                <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition-standard group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-success/10 text-success rounded-xl flex items-center justify-center font-black">
+                            {{ t.denominacao[0] }}
+                        </div>
+                        <span class="font-bold text-slate-700 uppercase">{{ t.denominacao }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick='openEditModal("tipo_lista", "{{ t.id }}", "{{ t.denominacao }}")' class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-standard">
+                            <i class="ph-bold ph-pencil-simple"></i>
+                        </button>
+                        <form action="{{ url_for('settings.delete_tipo_lista', id=t.id) }}" method="POST" onsubmit="return confirm('Excluir esta categoria?');">
+                            <button type="submit" class="p-2 text-slate-300 hover:text-danger hover:bg-danger/5 rounded-lg transition-standard">
+                                <i class="ph-bold ph-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Grupos de Itens -->
+        <div id="tab-grupos_itens" class="tab-content hidden border border-slate-200 bg-surface rounded-3xl overflow-hidden shadow-sm">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h2 class="font-black text-slate-800 uppercase tracking-widest text-sm">Grupos de Itens</h2>
+                <button onclick="openAddModal('grupo_item')" class="h-9 px-4 bg-primary-600 text-white text-xs font-black rounded-lg hover:bg-primary-700 transition-standard flex items-center gap-2">
+                    <i class="ph-bold ph-plus"></i> NOVO GRUPO
+                </button>
+            </div>
+            <div class="divide-y divide-slate-100">
+                {% for g in grupos_itens %}
+                <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition-standard group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center font-black">
+                            {{ g.denominacao[0] }}
+                        </div>
+                        <span class="font-bold text-slate-700 uppercase">{{ g.denominacao }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick='openEditModal("grupo_item", "{{ g.id }}", "{{ g.denominacao }}")' class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-standard">
+                            <i class="ph-bold ph-pencil-simple"></i>
+                        </button>
+                        <form action="{{ url_for('settings.delete_grupo_item', id=g.id) }}" method="POST" onsubmit="return confirm('Excluir este grupo?');">
+                            <button type="submit" class="p-2 text-slate-300 hover:text-danger hover:bg-danger/5 rounded-lg transition-standard">
+                                <i class="ph-bold ph-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Genérico para Adicionar/Editar -->
+<div id="modalCrud" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
+    <div class="bg-surface rounded-3xl shadow-2xl w-full max-w-sm border border-slate-200 animate-in zoom-in-95">
+        <div class="p-8">
+            <div class="flex items-center justify-between mb-8">
+                <h2 id="modalTitle" class="text-2xl font-black text-slate-900 flex items-center gap-3">
+                    <i class="ph-bold ph-folder-plus text-primary-600"></i> <span id="modalActionTitle">Novo</span>
+                </h2>
+                <button onclick="closeModal()" class="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-standard"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <form id="modalForm" method="POST" class="space-y-6">
+                <div>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Denominação</label>
+                    <input type="text" name="denominacao" id="inputDenominacao" placeholder="Ex: TRABALHO, CASA..." class="block w-full h-12 px-4 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold" required autofocus>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeModal()" class="flex-1 h-12 text-slate-500 font-bold rounded-xl hover:bg-slate-100 transition-standard">CANCELAR</button>
+                    <button type="submit" id="submitBtn" class="flex-[2] h-12 bg-primary-600 text-white font-black rounded-xl shadow-lg shadow-primary-600/20 active:scale-95 transition-standard">SALVAR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function switchTab(tabId) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+    // Show selected tab
+    document.getElementById('tab-' + tabId).classList.remove('hidden');
+    
+    // Update button styles
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-primary-50', 'text-primary-600', 'border', 'border-primary-100');
+        btn.classList.add('text-slate-600', 'hover:bg-slate-50');
+    });
+    
+    const activeBtn = document.getElementById('tab-btn-' + tabId);
+    activeBtn.classList.add('bg-primary-50', 'text-primary-600', 'border', 'border-primary-100');
+    activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-50');
+}
+
+function openAddModal(entity) {
+    const form = document.getElementById('modalForm');
+    const title = document.getElementById('modalActionTitle');
+    const input = document.getElementById('inputDenominacao');
+    
+    input.value = '';
+    title.innerText = 'Novo ' + getEntityName(entity);
+    form.action = '/settings/' + entity + '/add';
+    
+    document.getElementById('modalCrud').classList.remove('hidden');
+    input.focus();
+}
+
+function openEditModal(entity, id, denominacao) {
+    const form = document.getElementById('modalForm');
+    const title = document.getElementById('modalActionTitle');
+    const input = document.getElementById('inputDenominacao');
+    
+    input.value = denominacao;
+    title.innerText = 'Editar ' + getEntityName(entity);
+    form.action = '/settings/' + entity + '/edit/' + id;
+    
+    document.getElementById('modalCrud').classList.remove('hidden');
+    input.focus();
+}
+
+function closeModal() {
+    document.getElementById('modalCrud').classList.add('hidden');
+}
+
+function getEntityName(entity) {
+    switch(entity) {
+        case 'grupo_tarefa': return 'Grupo';
+        case 'tipo_lista': return 'Categoria';
+        case 'grupo_item': return 'Grupo de Item';
+        default: return '';
+    }
+}
+</script>
+{% endblock %}

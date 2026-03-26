@@ -22,4 +22,7 @@ def create_app(config_class=Config):
     from app.lists import bp as lists_bp
     app.register_blueprint(lists_bp, url_prefix='/lists')
 
+    from app.settings import bp as settings_bp
+    app.register_blueprint(settings_bp, url_prefix='/settings')
+
     return app

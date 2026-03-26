@@ -61,6 +61,34 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+
+        /* Loading Overlay Styles */
+        #loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        #loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
     
     {% block head_extra %}{% endblock %}
@@ -86,6 +114,9 @@
                     </a>
                     <a href="{{ url_for('lists.index') }}" class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-standard {{ 'bg-primary-50 text-primary-600' if 'lists' in request.endpoint else 'text-slate-600 hover:bg-slate-50' }}">
                         <i class="ph ph-shopping-bag"></i> Listas
+                    </a>
+                    <a href="{{ url_for('settings.index') }}" class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-standard {{ 'bg-primary-50 text-primary-600' if 'settings' in request.endpoint else 'text-slate-600 hover:bg-slate-50' }}">
+                        <i class="ph ph-gear-six"></i> Gerenciar
                     </a>
                 </nav>
             </div>
@@ -125,10 +156,10 @@
             <i class="ph-fill ph-shopping-bag text-2xl"></i>
             <span class="text-[10px] font-bold uppercase tracking-wider">Listas</span>
         </a>
-        <button class="flex flex-col items-center gap-1 text-slate-400">
-            <i class="ph-fill ph-user-circle text-2xl"></i>
-            <span class="text-[10px] font-bold uppercase tracking-wider">Perfil</span>
-        </button>
+        <a href="{{ url_for('settings.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-primary-600' if 'settings' in request.endpoint else 'text-slate-400' }}">
+            <i class="ph-fill ph-gear-six text-2xl"></i>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Gerenciar</span>
+        </a>
     </nav>
 
     <!-- Desktop Footer (Optional, hidden on mobile to give space) -->
@@ -142,6 +173,68 @@
             </div>
         </div>
     </footer>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="flex flex-col items-center gap-4 bg-slate-900/40 p-10 rounded-3xl backdrop-blur-md border border-white/10 shadow-2xl">
+            <div class="p-4 bg-primary-600 rounded-2xl shadow-lg shadow-primary-600/50">
+                <i class="ph-bold ph-circle-notch text-4xl text-white spinner"></i>
+            </div>
+            <div class="text-center">
+                <p class="text-lg font-black tracking-tight uppercase">Processando...</p>
+                <p class="text-xs text-slate-300 font-medium opacity-80 mt-1 uppercase tracking-widest">Aguarde um momento</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('loading-overlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-overlay').classList.remove('active');
+        }
+
+        // Global Form Interceptor for Save Prevention & Loading
+        document.addEventListener('submit', function(e) {
+            const form = e.target;
+            
+            // Allow confirmation dialogs to finish first (like task delete)
+            // If the user cancels, the submit event is canceled, and we don't show loading.
+            if (e.defaultPrevented) return;
+
+            // Show loading overlay
+            showLoading();
+
+            // Disable all submit buttons in the form to prevent double-click
+            // Using setTimeout to ensure the form submission starts before disabling buttons
+            setTimeout(() => {
+                const submits = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+                submits.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                });
+            }, 0);
+        });
+
+        // Show loading on page unload (for "consultas"/navigation)
+        // Note: This can sometimes be triggered on simple link clicks or downloads
+        window.addEventListener('beforeunload', function(e) {
+            // We only show it if it wasn't already triggered by a form submit
+            // and if it's not a download link (though detecting downloads is hard)
+            // Using a small delay to avoid flicker on fast links
+            setTimeout(() => {
+                showLoading();
+            }, 50);
+        });
+
+        // Special handling for mobile back button / cache navigation
+        window.addEventListener('pageshow', function(event) {
+            // Hide loading if user came back from history (e.g., clicking browser back button)
+            hideLoading();
+        });
+    </script>
 
     {% block scripts_extra %}{% endblock %}
 </body>

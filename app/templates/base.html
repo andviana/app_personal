@@ -218,20 +218,13 @@
             }, 0);
         });
 
-        // Show loading on page unload (for "consultas"/navigation)
-        // Note: This can sometimes be triggered on simple link clicks or downloads
-        window.addEventListener('beforeunload', function(e) {
-            // We only show it if it wasn't already triggered by a form submit
-            // and if it's not a download link (though detecting downloads is hard)
-            // Using a small delay to avoid flicker on fast links
-            setTimeout(() => {
-                showLoading();
-            }, 50);
+        // Hide loading on pageshow (back button, cache navigation)
+        window.addEventListener('pageshow', function(event) {
+            hideLoading();
         });
 
-        // Special handling for mobile back button / cache navigation
-        window.addEventListener('pageshow', function(event) {
-            // Hide loading if user came back from history (e.g., clicking browser back button)
+        // Ensure loading is hidden on load
+        window.addEventListener('load', function() {
             hideLoading();
         });
     </script>

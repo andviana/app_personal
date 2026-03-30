@@ -102,6 +102,9 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-center">
                         <div class="flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100 transition-standard">
+                            <button type="button" onclick="openEditItemModal(this)" data-id="{{ it.id }}" data-nome="{{ it.item }}" data-grupo="{{ it.grupo_id or '' }}" data-valor="{{ it.valor or '' }}" class="p-2 text-slate-300 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-standard">
+                                <i class="ph-bold ph-pencil-simple"></i>
+                            </button>
                             <form action="{{ url_for('lists.delete_item', item_id=it.id) }}" method="POST" onsubmit="return confirm('Remover item?');">
                                 <button type="submit" class="p-2 text-slate-300 hover:text-danger hover:bg-danger/5 rounded-lg transition-standard">
                                     <i class="ph-bold ph-trash"></i>
@@ -180,4 +183,61 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Editar Item -->
+<div id="modalEditarItem" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
+    <div class="bg-surface rounded-3xl shadow-2xl w-full max-w-sm border border-slate-200 animate-in zoom-in-95">
+        <div class="p-8">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
+                    <i class="ph-bold ph-pencil-simple text-primary-600"></i> Editar Item
+                </h2>
+                <button type="button" onclick="document.getElementById('modalEditarItem').classList.add('hidden')" class="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-standard"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <form id="formEditarItem" action="" method="POST" class="space-y-6">
+                <div>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Item</label>
+                    <input type="text" id="edit_item_nome" name="item" class="block w-full h-12 px-4 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Categoria</label>
+                    <select id="edit_item_grupo" name="grupo_id" class="block w-full h-12 px-4 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold text-slate-600" required>
+                        <option value="" disabled>📂 Categoria</option>
+                        {% for g in grupos %}
+                        <option value="{{ g.id }}">{{ g.denominacao }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Valor Estimado</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <span class="text-xs font-bold leading-none">R$</span>
+                        </div>
+                        <input type="number" step="0.01" id="edit_item_valor" name="valor" class="block w-full h-12 pl-8 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold">
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="document.getElementById('modalEditarItem').classList.add('hidden')" class="flex-1 h-12 text-slate-500 font-bold rounded-xl hover:bg-slate-100 transition-standard">CANCELAR</button>
+                    <button type="submit" class="flex-[2] h-12 bg-primary-600 text-white font-black rounded-xl shadow-lg shadow-primary-600/20 active:scale-95 transition-standard">SALVAR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openEditItemModal(btn) {
+    const id = btn.getAttribute('data-id');
+    const nome = btn.getAttribute('data-nome');
+    const grupoId = btn.getAttribute('data-grupo');
+    const valor = btn.getAttribute('data-valor');
+    
+    document.getElementById('edit_item_nome').value = nome;
+    document.getElementById('edit_item_grupo').value = grupoId;
+    document.getElementById('edit_item_valor').value = (valor && valor !== 'None') ? valor : '';
+    document.getElementById('formEditarItem').action = '/lists/item/' + id + '/edit';
+    document.getElementById('modalEditarItem').classList.remove('hidden');
+}
+</script>
 {% endblock %}

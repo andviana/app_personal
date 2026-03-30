@@ -70,6 +70,28 @@ def delete_item(item_id):
     db.session.commit()
     return redirect(url_for('lists.detail', id=lista_id))
 
+@bp.route('/item/<int:item_id>/edit', methods=['POST'])
+def edit_item(item_id):
+    item = ItemLista.query.get_or_404(item_id)
+    
+    descricao = request.form.get('item')
+    grupo_id = request.form.get('grupo_id')
+    valor = request.form.get('valor')
+    
+    if descricao:
+        item.item = descricao
+    if grupo_id:
+        item.grupo_id = grupo_id
+    
+    try:
+        v_float = float(valor) if valor else None
+        item.valor = v_float
+    except ValueError:
+        item.valor = None
+
+    db.session.commit()
+    return redirect(url_for('lists.detail', id=item.lista_id))
+
 @bp.route('/add_tipo', methods=['POST'])
 def add_tipo():
     denominacao = request.form.get('denominacao')

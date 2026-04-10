@@ -25,4 +25,7 @@ def create_app(config_class=Config):
     from app.settings import bp as settings_bp
     app.register_blueprint(settings_bp, url_prefix='/settings')
 
+    from app.snippets import bp as snippets_bp
+    app.register_blueprint(snippets_bp, url_prefix='/snippets')
+
     return app

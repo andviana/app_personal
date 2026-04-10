@@ -45,3 +45,13 @@ class ItemLista(db.Model):
     link = db.mapped_column(db.String(500), nullable=True)
     valor = db.mapped_column(db.Float, nullable=True)
     status = db.mapped_column(db.Boolean, default=False) # True = comprado
+
+class Snippet(db.Model):
+    id = db.mapped_column(db.Integer, primary_key=True)
+    titulo = db.mapped_column(db.String(100), nullable=False)
+    descricao = db.mapped_column(db.String(200), nullable=True)
+    conteudo = db.mapped_column(db.Text, nullable=False)
+    data_criacao = db.mapped_column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    def __repr__(self):
+        return f'<Snippet {self.titulo}>'

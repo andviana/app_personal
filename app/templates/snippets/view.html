@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ snippet.titulo }} - Snippet - AppPessoal{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/snippets.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto flex flex-col gap-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="flex items-center gap-4">
+            <a href="{{ url_for('snippets.index') }}" class="p-3 bg-white border border-slate-200 text-slate-400 hover:text-primary-600 rounded-2xl transition-standard shadow-sm" title="Voltar para a lista">
+                <i class="ph ph-arrow-left text-xl"></i>
+            </a>
+            <div>
+                <h1 class="text-3xl font-black tracking-tight text-slate-900 uppercase">{{ snippet.titulo }}</h1>
+                {% if snippet.descricao %}
+                <p class="text-slate-500 font-medium">{{ snippet.descricao }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+             <button onclick="copySnippetLink()" class="p-3 bg-white border border-slate-200 text-slate-400 hover:text-primary-600 rounded-2xl transition-standard shadow-sm" title="Copiar Link">
+                <i class="ph ph-share-network text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="bg-surface border border-slate-200 rounded-[2.5rem] p-8 md:p-12 shadow-sm min-h-[500px]">
+        <div class="markdown-body">
+            {{ snippet_html | safe }}
+        </div>
+    </div>
+
+    <div class="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest px-6 pb-12">
+        <span>Criado em: {{ snippet.data_criacao.strftime('%d/%m/%Y às %H:%M') if snippet.data_criacao else 'Recém criado' }}</span>
+        <a href="{{ url_for('snippets.index') }}" class="text-primary-600 hover:underline">Ver todos os snippets</a>
+    </div>
+</div>
+
+<!-- Simple Toast Replacement -->
+<div id="copy-toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-3 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest rounded-full shadow-2xl transition-all opacity-0 translate-y-4 pointer-events-none z-[100]">
+    Link copiado com sucesso!
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    function copySnippetLink() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            const toast = document.getElementById('copy-toast');
+            toast.classList.remove('opacity-0', 'translate-y-4');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 3000);
+        });
+    }
+</script>
+{% endblock %}

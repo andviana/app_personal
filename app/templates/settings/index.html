@@ -4,11 +4,62 @@
 
 {% block content %}
 <div class="mb-8">
-    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-        <i class="ph ph-gear-six text-primary-600"></i> Gerenciamento
-    </h1>
-    <p class="text-slate-500 mt-1 font-medium italic">"A organização é a chave para a produtividade."</p>
+    <div>
+        <h1 class="text-3xl font-black tracking-tight text-slate-900 uppercase">Gerenciar</h1>
+        <p class="text-slate-500 font-medium">Configure as opções do seu aplicativo.</p>
+    </div>
 </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div class="bg-surface border border-slate-200 rounded-[2.5rem] p-8 shadow-sm">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="p-3 bg-primary-100 text-primary-600 rounded-2xl">
+                    <i class="ph-bold ph-user-circle text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-black text-slate-900 uppercase">Minha Conta</h2>
+                    <p class="text-xs text-slate-400 font-bold tracking-widest uppercase">Segurança e Acesso</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100 group hover:border-primary-600 transition-standard">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-primary-600 shadow-sm transition-standard">
+                        <i class="ph ph-lock-key text-2xl"></i>
+                    </div>
+                    <div>
+                        <span class="block text-sm font-black text-slate-900 uppercase tracking-tight">Sua Senha</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('settings.alterar_senha') }}" class="px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary-600 hover:text-white hover:border-transparent transition-standard shadow-sm">
+                    Alterar
+                </a>
+            </div>
+        </div>
+
+        <!-- Backup & Restore -->
+        <div class="bg-surface border border-slate-200 rounded-[2.5rem] p-8 shadow-sm">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="p-3 bg-primary-100 text-primary-600 rounded-2xl">
+                    <i class="ph-bold ph-database text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-black text-slate-900 uppercase">Dados</h2>
+                    <p class="text-xs text-slate-400 font-bold tracking-widest uppercase">Backup & Restauração</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <a href="{{ url_for('settings.backup_export') }}" download class="flex flex-col items-center gap-3 p-6 bg-slate-50 rounded-3xl border border-slate-100 hover:border-primary-600 group transition-standard">
+                    <i class="ph ph-download-simple text-2xl text-slate-400 group-hover:text-primary-600 transition-standard"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-600 group-hover:text-slate-900">Backup</span>
+                </a>
+                <button onclick="handleRestore()" class="flex flex-col items-center gap-3 p-6 bg-slate-50 rounded-3xl border border-slate-100 hover:border-danger group transition-standard">
+                    <i class="ph ph-upload-simple text-2xl text-slate-400 group-hover:text-danger transition-standard"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-600 group-hover:text-slate-900">Restore</span>
+                </button>
+                <input type="file" id="backup_file" class="hidden" accept=".json" onchange="processRestore(this)">
+            </div>
+        </div>
+    </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
     <!-- Sidebar Tabs -->
@@ -204,5 +255,77 @@ function getEntityName(entity) {
         default: return '';
     }
 }
+</script>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    function handleRestore() {
+        Swal.fire({
+            title: 'Atenção!',
+            text: "A restauração irá APAGAR todos os dados atuais do aplicativo. Tem certeza que deseja continuar?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: 'var(--danger)',
+            cancelButtonColor: 'var(--primary)',
+            confirmButtonText: 'Sim, Restaurar!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('backup_file').click();
+            }
+        });
+    }
+
+    async function processRestore(input) {
+        if (!input.files || input.files.length === 0) return;
+        
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append('backup_file', file);
+
+        input.value = '';
+
+        Swal.fire({
+            title: 'Restaurando...',
+            text: 'Por favor, aguarde enquanto processamos os dados.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        try {
+            const response = await fetch("{{ url_for('settings.backup_import') }}", {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: result.message,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: result.message,
+                    icon: 'error'
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                title: 'Erro!',
+                text: 'Ocorreu um erro inesperado durante a restauração.',
+                icon: 'error'
+            });
+        }
+    }
 </script>
 {% endblock %}

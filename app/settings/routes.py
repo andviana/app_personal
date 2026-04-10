@@ -1,7 +1,68 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, send_file, jsonify, make_response
+from flask_login import current_user
 from app.settings import bp
 from app.models import GrupoTarefas, TipoLista, GrupoItem, Tarefa, Lista, ItemLista
 from app import db
+from app.services.backup_service import export_data, import_data
+import json
+from datetime import datetime
+from io import BytesIO
+
+@bp.route('/backup/export', methods=['GET'])
+def backup_export():
+    try:
+        data = export_data()
+        json_str = json.dumps(data, indent=4)
+        
+        filename = f"backup_app_personal_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        
+        response = make_response(json_str)
+        response.headers['Content-Type'] = 'application/json'
+        # Adiciona aspas ao redor do nome do arquivo para evitar problemas com espaços ou caracteres especiais (mesmo que não haja agora)
+        response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+        
+        return response
+    except Exception as e:
+        flash(f'Erro ao gerar backup: {str(e)}', 'danger')
+        return redirect(url_for('settings.index'))
+
+@bp.route('/backup/import', methods=['POST'])
+def backup_import():
+    if 'backup_file' not in request.files:
+        return jsonify({'success': False, 'message': 'Nenhum arquivo enviado.'}), 400
+        
+    file = request.files['backup_file']
+    if file.filename == '':
+        return jsonify({'success': False, 'message': 'Nenhum arquivo selecionado.'}), 400
+        
+    try:
+        json_data = json.load(file)
+        success, message = import_data(json_data)
+        return jsonify({'success': success, 'message': message})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Erro ao ler arquivo: {str(e)}'})
+
+@bp.route('/alterar_senha', methods=['GET', 'POST'])
+def alterar_senha():
+    if request.method == 'POST':
+        senha_atual = request.form.get('senha_atual')
+        nova_senha = request.form.get('nova_senha')
+        confirmar_senha = request.form.get('confirmar_senha')
+        
+        if not current_user.check_password(senha_atual):
+            flash('Senha atual incorreta.', 'danger')
+            return redirect(url_for('settings.alterar_senha'))
+        
+        if nova_senha != confirmar_senha:
+            flash('As novas senhas não coincidem.', 'danger')
+            return redirect(url_for('settings.alterar_senha'))
+            
+        current_user.set_password(nova_senha)
+        db.session.commit()
+        flash('Senha alterada com sucesso!', 'success')
+        return redirect(url_for('settings.index'))
+        
+    return render_template('settings/change_password.html')
 
 @bp.route('/')
 def index():

@@ -56,7 +56,34 @@ def view(id):
             'id': snippet.id,
             'titulo': snippet.titulo,
             'descricao': snippet.descricao,
+            'conteudo': snippet.conteudo, # Markdown original para cópia
             'html': snippet_html
         })
     
     return render_template('snippets/view.html', snippet=snippet, snippet_html=snippet_html)
+
+@bp.route('/<int:id>/editar', methods=['GET', 'POST'])
+def editar(id):
+    snippet = Snippet.query.get_or_404(id)
+    if request.method == 'POST':
+        snippet.titulo = request.form.get('titulo')
+        snippet.descricao = request.form.get('descricao')
+        snippet.conteudo = request.form.get('conteudo')
+        
+        if not snippet.titulo or not snippet.conteudo:
+            flash('Título e conteúdo são obrigatórios.', 'danger')
+            return redirect(url_for('snippets.editar', id=id))
+        
+        db.session.commit()
+        flash('Snippet atualizado com sucesso!', 'success')
+        return redirect(url_for('snippets.index'))
+    
+    return render_template('snippets/edit.html', snippet=snippet)
+
+@bp.route('/<int:id>/deletar', methods=['POST'])
+def deletar(id):
+    snippet = Snippet.query.get_or_404(id)
+    db.session.delete(snippet)
+    db.session.commit()
+    flash('Snippet removido com sucesso!', 'success')
+    return redirect(url_for('snippets.index'))

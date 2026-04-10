@@ -21,6 +21,9 @@
             </div>
         </div>
         <div class="flex items-center gap-3">
+             <button onclick="copyRawContent(`{{ snippet.conteudo | replace('`', '\\`') }}`)" class="p-3 bg-white border border-slate-200 text-slate-400 hover:text-primary-600 rounded-2xl transition-standard shadow-sm" title="Copiar Conteúdo (Markdown)">
+                <i class="ph ph-copy text-xl"></i>
+            </button>
              <button onclick="copySnippetLink()" class="p-3 bg-white border border-slate-200 text-slate-400 hover:text-primary-600 rounded-2xl transition-standard shadow-sm" title="Copiar Link">
                 <i class="ph ph-share-network text-xl"></i>
             </button>
@@ -47,17 +50,30 @@
 
 {% block scripts_extra %}
 <script>
+    function copyRawContent(content) {
+        // Handle backtick escaping
+        const raw = content.replace(/\\`/g, '`');
+        navigator.clipboard.writeText(raw).then(() => {
+            showToast('Markdown copiado com sucesso!');
+        });
+    }
+
     function copySnippetLink() {
         navigator.clipboard.writeText(window.location.href).then(() => {
-            const toast = document.getElementById('copy-toast');
-            toast.classList.remove('opacity-0', 'translate-y-4');
-            toast.classList.add('opacity-100', 'translate-y-0');
-            
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-4');
-                toast.classList.remove('opacity-100', 'translate-y-0');
-            }, 3000);
+            showToast('Link copiado com sucesso!');
         });
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('copy-toast');
+        toast.textContent = message;
+        toast.classList.remove('opacity-0', 'translate-y-4');
+        toast.classList.add('opacity-100', 'translate-y-0');
+        
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-4');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+        }, 3000);
     }
 </script>
 {% endblock %}

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>{% block title %}AppPessoal{% endblock %}</title>
-    
+    <title>{% block title %}DayLog{% endblock %}</title>
+
     <!-- Tailwind CSS (Play CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -34,10 +35,13 @@
 
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
+
         :root {
             --primary: #4f46e5;
             --success: #10b981;
@@ -46,23 +50,32 @@
             --background: #f9fafb;
         }
 
-        body { 
+        body {
             -webkit-tap-highlight-color: transparent;
             font-feature-settings: "cv02", "cv03", "cv04", "cv11";
         }
 
-        /* Smooth transitions for interactive elements */
         .transition-standard {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Custom scrollbar for a cleaner look */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
 
-        /* Loading Overlay Styles */
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1;
+        }
+
         #loading-overlay {
             display: none;
             position: fixed;
@@ -86,110 +99,132 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
-    
+
     {% block head_extra %}{% endblock %}
 </head>
+
 <body class="bg-background text-slate-900 min-h-screen flex flex-col antialiased">
-    <!-- Desktop Header / Sidebar Hook -->
+    <!-- Desktop Header -->
     <header class="hidden md:block bg-surface border-b border-slate-200 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
             <div class="flex items-center gap-8">
-                <a href="{{ url_for('main.index') }}" class="text-xl font-bold text-primary-600 flex items-center gap-2 group">
-                    <div class="p-2 bg-primary-100 rounded-lg group-hover:bg-primary-600 group-hover:text-white transition-standard">
+                <a href="{{ url_for('main.index') }}"
+                    class="text-xl font-bold text-primary-600 flex items-center gap-2 group">
+                    <div
+                        class="p-2 bg-primary-100 rounded-lg group-hover:bg-primary-600 group-hover:text-white transition-standard">
                         <i class="ph-fill ph-check-square-offset"></i>
                     </div>
-                    <span>AppPessoal</span>
+                    <span>DayLog</span>
                 </a>
-                
-                <nav class="flex gap-1">
-                    <a href="{{ url_for('main.index') }}" class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-standard {{ 'bg-primary-50 text-primary-600' if request.endpoint == 'main.index' else 'text-slate-600 hover:bg-slate-50' }}">
-                        <i class="ph ph-squares-four"></i> Dashboard
-                    </a>
-                    <a href="{{ url_for('tasks.index') }}" class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-standard {{ 'bg-primary-50 text-primary-600' if 'tasks' in request.endpoint else 'text-slate-600 hover:bg-slate-50' }}">
-                        <i class="ph ph-list-checks"></i> Tarefas
-                    </a>
-                    <a href="{{ url_for('lists.index') }}" class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-standard {{ 'bg-primary-50 text-primary-600' if 'lists' in request.endpoint else 'text-slate-600 hover:bg-slate-50' }}">
-                        <i class="ph ph-shopping-bag"></i> Listas
-                    </a>
-                    <a href="{{ url_for('snippets.index') }}" class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-standard {{ 'bg-primary-50 text-primary-600' if 'snippets' in request.endpoint else 'text-slate-600 hover:bg-slate-50' }}">
-                        <i class="ph ph-code"></i> Snippets
-                    </a>
-                    <a href="{{ url_for('settings.index') }}" class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-standard {{ 'bg-primary-50 text-primary-600' if 'settings' in request.endpoint else 'text-slate-600 hover:bg-slate-50' }}">
-                        <i class="ph ph-gear-six"></i> Gerenciar
-                    </a>
+
+                {% if current_user.is_authenticated %}
+                <nav class="flex items-center gap-2">
+                    <a href="{{ url_for('main.index') }}"
+                        class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-standard {% if request.endpoint == 'main.index' %}bg-primary-50 text-primary-600{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-900{% endif %}">Dashboard</a>
+                    <a href="{{ url_for('tasks.index') }}"
+                        class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-standard {% if 'tasks' in request.endpoint %}bg-primary-50 text-primary-600{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-900{% endif %}">Tarefas</a>
+                    <a href="{{ url_for('lists.index') }}"
+                        class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-standard {% if 'lists' in request.endpoint %}bg-primary-50 text-primary-600{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-900{% endif %}">Listas</a>
+                    <a href="{{ url_for('snippets.index') }}"
+                        class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-standard {% if 'snippets' in request.endpoint %}bg-primary-50 text-primary-600{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-900{% endif %}">Snippets</a>
+                    <a href="{{ url_for('settings.index') }}"
+                        class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-standard {% if 'settings' in request.endpoint %}bg-primary-50 text-primary-600{% else %}text-slate-500 hover:bg-slate-50 hover:text-slate-900{% endif %}">Gerenciar</a>
                 </nav>
+                {% endif %}
             </div>
-            
-            <div class="flex items-center gap-4">
-                <button class="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-standard">
-                    <i class="ph ph-bell text-xl"></i>
-                </button>
-                <div class="h-8 w-8 bg-primary-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                    UA
+
+            {% if current_user.is_authenticated %}
+            <div class="flex items-center gap-6">
+                <div class="h-10 w-px bg-slate-200"></div>
+
+                <div class="flex items-center gap-4">
+                    <div class="flex flex-col items-end">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Logado como</span>
+                        <span class="text-xs font-black text-slate-900">{{ current_user.username }}</span>
+                    </div>
+                    <a href="{{ url_for('auth.logout') }}"
+                        class="w-12 h-12 flex items-center justify-center bg-slate-100 text-slate-600 rounded-2xl hover:bg-danger hover:text-white transition-standard shadow-sm"
+                        title="Sair">
+                        <i class="ph-bold ph-sign-out text-xl"></i>
+                    </a>
                 </div>
             </div>
+            {% endif %}
         </div>
     </header>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-24 md:pb-10">
         {% block content %}{% endblock %}
     </main>
 
     <!-- Mobile Bottom Navigation -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface/80 backdrop-blur-md border-t border-slate-200 px-6 py-3 flex justify-between items-center z-50">
-        <a href="{{ url_for('main.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-primary-600' if request.endpoint == 'main.index' else 'text-slate-400' }}">
+    {% if current_user.is_authenticated %}
+    <nav
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-surface/80 backdrop-blur-md border-t border-slate-200 px-6 py-3 flex justify-between items-center z-50">
+        <a href="{{ url_for('main.index') }}"
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-primary-600' if request.endpoint == 'main.index' else 'text-slate-400' }}">
             <i class="ph-fill ph-squares-four text-2xl"></i>
             <span class="text-[10px] font-bold uppercase tracking-wider">Início</span>
         </a>
-        <a href="{{ url_for('tasks.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-primary-600' if 'tasks' in request.endpoint else 'text-slate-400' }}">
+        <a href="{{ url_for('tasks.index') }}"
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-primary-600' if 'tasks' in request.endpoint else 'text-slate-400' }}">
             <i class="ph-fill ph-list-checks text-2xl"></i>
             <span class="text-[10px] font-bold uppercase tracking-wider">Tarefas</span>
         </a>
         <div class="relative -top-6">
-            <button onclick="document.dispatchEvent(new CustomEvent('open-quick-add'))" class="bg-primary-600 text-white p-4 rounded-2xl shadow-lg shadow-primary-600/30 active:scale-95 transition-standard">
+            <button onclick="document.dispatchEvent(new CustomEvent('open-quick-add'))"
+                class="bg-primary-600 text-white p-4 rounded-2xl shadow-lg shadow-primary-600/30 active:scale-95 transition-standard">
                 <i class="ph-bold ph-plus text-2xl"></i>
             </button>
         </div>
-        <a href="{{ url_for('lists.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-primary-600' if 'lists' in request.endpoint else 'text-slate-400' }}">
+        <a href="{{ url_for('lists.index') }}"
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-primary-600' if 'lists' in request.endpoint else 'text-slate-400' }}">
             <i class="ph-fill ph-shopping-bag text-2xl"></i>
             <span class="text-[10px] font-bold uppercase tracking-wider">Listas</span>
         </a>
-        <a href="{{ url_for('snippets.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-primary-600' if 'snippets' in request.endpoint else 'text-slate-400' }}">
-            <i class="ph-fill ph-code text-2xl"></i>
-            <span class="text-[10px] font-bold uppercase tracking-wider">Codes</span>
-        </a>
-        <a href="{{ url_for('settings.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-primary-600' if 'settings' in request.endpoint else 'text-slate-400' }}">
+        <a href="{{ url_for('settings.index') }}"
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-primary-600' if 'settings' in request.endpoint else 'text-slate-400' }}">
             <i class="ph-fill ph-gear-six text-2xl"></i>
             <span class="text-[10px] font-bold uppercase tracking-wider">Config</span>
         </a>
     </nav>
+    {% endif %}
 
-    <!-- Desktop Footer (Optional, hidden on mobile to give space) -->
+    <!-- Footer -->
     <footer class="hidden md:block bg-surface border-t border-slate-200 mt-auto">
-        <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center text-sm text-slate-400">
-            <p>AppPessoal &copy; 2026 • Design by Antigravity</p>
+        <div
+            class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center text-sm text-slate-400">
+            <p>DayLog &copy; 2026 • Design with ❤️ by <a href="https://github.com/andviana"
+                    class="hover:text-primary-600 transition-standard">Anderson Viana</a></p>
+            {% if current_user.is_authenticated %}
             <div class="flex gap-6 mt-4 md:mt-0">
-                <a href="#" class="hover:text-primary-600 transition-standard">Privacidade</a>
-                <a href="#" class="hover:text-primary-600 transition-standard">Termos</a>
-                <a href="#" class="hover:text-primary-600 transition-standard">Suporte</a>
+                <a href="{{ url_for('auth.logout') }}" class="hover:text-danger transition-standard">Sair</a>
             </div>
+            {% endif %}
         </div>
     </footer>
 
     <!-- Loading Overlay -->
     <div id="loading-overlay">
-        <div class="flex flex-col items-center gap-4 bg-slate-900/40 p-10 rounded-3xl backdrop-blur-md border border-white/10 shadow-2xl">
+        <div
+            class="flex flex-col items-center gap-4 bg-slate-900/40 p-10 rounded-3xl backdrop-blur-md border border-white/10 shadow-2xl">
             <div class="p-4 bg-primary-600 rounded-2xl shadow-lg shadow-primary-600/50">
                 <i class="ph-bold ph-circle-notch text-4xl text-white spinner"></i>
             </div>
             <div class="text-center">
                 <p class="text-lg font-black tracking-tight uppercase">Processando...</p>
-                <p class="text-xs text-slate-300 font-medium opacity-80 mt-1 uppercase tracking-widest">Aguarde um momento</p>
+                <p class="text-xs text-slate-300 font-medium opacity-80 mt-1 uppercase tracking-widest">Aguarde um
+                    momento</p>
             </div>
         </div>
     </div>
@@ -203,21 +238,11 @@
             document.getElementById('loading-overlay').classList.remove('active');
         }
 
-        // Global Form Interceptor for Save Prevention & Loading
-        document.addEventListener('submit', function(e) {
-            const form = e.target;
-            
-            // Allow confirmation dialogs to finish first (like task delete)
-            // If the user cancels, the submit event is canceled, and we don't show loading.
+        document.addEventListener('submit', function (e) {
             if (e.defaultPrevented) return;
-
-            // Show loading overlay
             showLoading();
-
-            // Disable all submit buttons in the form to prevent double-click
-            // Using setTimeout to ensure the form submission starts before disabling buttons
             setTimeout(() => {
-                const submits = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+                const submits = e.target.querySelectorAll('button[type="submit"], input[type="submit"]');
                 submits.forEach(btn => {
                     btn.disabled = true;
                     btn.classList.add('opacity-50', 'cursor-not-allowed');
@@ -225,17 +250,11 @@
             }, 0);
         });
 
-        // Hide loading on pageshow (back button, cache navigation)
-        window.addEventListener('pageshow', function(event) {
-            hideLoading();
-        });
-
-        // Ensure loading is hidden on load
-        window.addEventListener('load', function() {
-            hideLoading();
-        });
+        window.addEventListener('pageshow', function (event) { hideLoading(); });
+        window.addEventListener('load', function () { hideLoading(); });
     </script>
 
     {% block scripts_extra %}{% endblock %}
 </body>
+
 </html>

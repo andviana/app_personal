@@ -1,0 +1,712 @@
+{
+    "user": [
+        {
+            "id": 1,
+            "username": "anderson",
+            "password_hash": "scrypt:32768:8:1$hvRdFXRE15Oybk2C$d260becb47a78717e25626f7400a3dbf248431cfdb840de4aea9c2808fe8e7893a3f1d75b1820b3c310dd3a54e44582d87f5502788ccd1c38a52e88bfcdc1f6a"
+        },
+        {
+            "id": 2,
+            "username": "laiana",
+            "password_hash": "scrypt:32768:8:1$b4C9Qaoq1IpJ627E$e95896bc3ccba78e980489276121f9089ff4c665acaf179b67dbfa1919eb42842f89b01d625b15859e308b8ac061e543bb3c6642339798a587150b49a2ba1adc"
+        },
+        {
+            "id": 3,
+            "username": "admin",
+            "password_hash": "scrypt:32768:8:1$Zu4Pi1p952D9Cwyv$d3f1dc9feed81e6c5f3f7684c969711308588c28b07533f75960880a78ee749ad7ec4a106b8c87c630bb30ca236cc0a2a7b33a4a1a1339142939a0697aa0de53"
+        }
+    ],
+    "grupo_tarefas": [
+        {
+            "id": 1,
+            "denominacao": "CARRO"
+        },
+        {
+            "id": 2,
+            "denominacao": "MOTO"
+        },
+        {
+            "id": 3,
+            "denominacao": "MUSICA"
+        },
+        {
+            "id": 4,
+            "denominacao": "TECNOLOGIA"
+        },
+        {
+            "id": 5,
+            "denominacao": "CASA"
+        },
+        {
+            "id": 6,
+            "denominacao": "COMUM"
+        },
+        {
+            "id": 7,
+            "denominacao": "FESTA"
+        },
+        {
+            "id": 8,
+            "denominacao": "TESTE BACKUP"
+        },
+        {
+            "id": 9,
+            "denominacao": "VERIFICACAO_BACKUP"
+        },
+        {
+            "id": 10,
+            "denominacao": "TESTE_FINAL"
+        },
+        {
+            "id": 11,
+            "denominacao": "TESTE_FINAL"
+        }
+    ],
+    "status_tarefas": [
+        {
+            "id": 1,
+            "denominacao": "PENDENTE"
+        },
+        {
+            "id": 2,
+            "denominacao": "INICIADO"
+        },
+        {
+            "id": 3,
+            "denominacao": "FINALIZADO"
+        }
+    ],
+    "tipo_lista": [
+        {
+            "id": 1,
+            "denominacao": "COMPRA EM LOTE"
+        },
+        {
+            "id": 2,
+            "denominacao": "MUSICA"
+        },
+        {
+            "id": 3,
+            "denominacao": "INTERNET"
+        },
+        {
+            "id": 4,
+            "denominacao": "SONHOS"
+        },
+        {
+            "id": 5,
+            "denominacao": "CASA"
+        },
+        {
+            "id": 6,
+            "denominacao": "MERCADO"
+        },
+        {
+            "id": 7,
+            "denominacao": "VIAGEM"
+        }
+    ],
+    "grupo_item": [
+        {
+            "id": 1,
+            "denominacao": "ELETRONICOS"
+        },
+        {
+            "id": 2,
+            "denominacao": "BRINQUEDOS"
+        },
+        {
+            "id": 3,
+            "denominacao": "CASA"
+        },
+        {
+            "id": 4,
+            "denominacao": "ESCRITORIO"
+        },
+        {
+            "id": 5,
+            "denominacao": "TECNOLOGIA"
+        },
+        {
+            "id": 6,
+            "denominacao": "VEICULAR"
+        },
+        {
+            "id": 7,
+            "denominacao": "MUSICA"
+        },
+        {
+            "id": 8,
+            "denominacao": "FESTA"
+        }
+    ],
+    "snippet": [
+        {
+            "id": 1,
+            "titulo": "testes",
+            "descricao": "teste",
+            "conteudo": "## teste\r\n> teste\r\n```bash\r\nteste\r\n```",
+            "data_criacao": "2026-04-10T12:55:40.479646"
+        }
+    ],
+    "tarefa": [
+        {
+            "id": 1,
+            "descricao": "FAZER CAIXA AMPLIFICADA",
+            "data_cadastro": "2026-03-23T18:13:51.147278",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 3
+        },
+        {
+            "id": 2,
+            "descricao": "COLOCAR SUPORTE DE CELULAR NA MOTO",
+            "data_cadastro": "2026-03-23T18:14:21.169970",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 2
+        },
+        {
+            "id": 3,
+            "descricao": "REVITALIZADOR PLASTICO MOTO",
+            "data_cadastro": "2026-03-23T18:14:41.698305",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 2
+        },
+        {
+            "id": 4,
+            "descricao": "PINTURA QUADROS DC",
+            "data_cadastro": "2026-03-23T18:15:19.981476",
+            "data_executado": null,
+            "status_id": 2,
+            "grupo_id": 5
+        },
+        {
+            "id": 5,
+            "descricao": "INSTALAR PLACA DE VIDEO",
+            "data_cadastro": "2026-03-23T18:17:22.092008",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 4
+        },
+        {
+            "id": 6,
+            "descricao": "COLOCAR R\u00c9GUA NO PAINEL DO QUARTO",
+            "data_cadastro": "2026-03-23T18:17:44.035280",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 7,
+            "descricao": "LAVAR BANHEIRO",
+            "data_cadastro": "2026-03-23T18:18:14.605367",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 8,
+            "descricao": "LAVAR MOTO COM REMOVEDOR DE SUJEIRAS",
+            "data_cadastro": "2026-03-23T18:18:27.823405",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 2
+        },
+        {
+            "id": 9,
+            "descricao": "TROCAR A LAMPADA DA SALA",
+            "data_cadastro": "2026-03-23T18:18:44.990673",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 10,
+            "descricao": "PINTURA DAS PAREDES DA CASA",
+            "data_cadastro": "2026-03-23T18:19:02.895355",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 11,
+            "descricao": "LUBRIFICAR PORTAS",
+            "data_cadastro": "2026-03-23T18:19:20.371537",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 12,
+            "descricao": "CONSERTAR DOBRADICAS DOS ARMARIOS DA COZINHA",
+            "data_cadastro": "2026-03-23T18:19:41.522946",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 13,
+            "descricao": "COLOCAR DOBRADI\u00c7A NO BOX DE MADEIRA",
+            "data_cadastro": "2026-03-23T18:20:17.851865",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 14,
+            "descricao": "ENVELOPAR BOX",
+            "data_cadastro": "2026-03-23T18:23:01.844338",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 15,
+            "descricao": "INSTALAR PELICULAS",
+            "data_cadastro": "2026-03-23T18:23:23.344377",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 16,
+            "descricao": "PEDIR PRA IA PINTAR E DECORAR A CASA / QUARTO",
+            "data_cadastro": "2026-03-23T18:24:13.142748",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 17,
+            "descricao": "PINTAR CASA LAIANA",
+            "data_cadastro": "2026-03-23T18:24:41.143011",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 18,
+            "descricao": "ENVELOPAR ESCRIVANINHA",
+            "data_cadastro": "2026-03-23T18:25:13.564617",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 19,
+            "descricao": "ENVELOPAR PAINEL",
+            "data_cadastro": "2026-03-23T18:25:22.758030",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 5
+        },
+        {
+            "id": 20,
+            "descricao": "IMPRIMIR ADESIVOS ANIVERSARIO",
+            "data_cadastro": "2026-03-23T18:25:50.743644",
+            "data_executado": null,
+            "status_id": 1,
+            "grupo_id": 7
+        }
+    ],
+    "lista": [
+        {
+            "id": 1,
+            "denominacao": "COMERCIO - CHINES",
+            "tipo_id": 1
+        },
+        {
+            "id": 2,
+            "denominacao": "LISTA DE DESEJOS",
+            "tipo_id": 4
+        },
+        {
+            "id": 3,
+            "denominacao": "COMERCIO",
+            "tipo_id": 5
+        },
+        {
+            "id": 4,
+            "denominacao": "SUPERMERCADO",
+            "tipo_id": 6
+        },
+        {
+            "id": 5,
+            "denominacao": "ANIVERSARIO DO LEO",
+            "tipo_id": 3
+        }
+    ],
+    "item_lista": [
+        {
+            "id": 1,
+            "lista_id": 1,
+            "item": "CAIXA DE SOM PEQUENA (RODA)",
+            "grupo_id": 1,
+            "link": null,
+            "valor": 45.0,
+            "status": false
+        },
+        {
+            "id": 2,
+            "lista_id": 1,
+            "item": "FONE DE OUVIDO PARA CAPACETE",
+            "grupo_id": 6,
+            "link": null,
+            "valor": 102.71,
+            "status": false
+        },
+        {
+            "id": 3,
+            "lista_id": 1,
+            "item": "ADAPTADOR P2 - USB-TYPE3",
+            "grupo_id": 5,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 4,
+            "lista_id": 1,
+            "item": "CONTROLE PS3 BLUETOOTH",
+            "grupo_id": 1,
+            "link": null,
+            "valor": 110.2,
+            "status": false
+        },
+        {
+            "id": 5,
+            "lista_id": 1,
+            "item": "CONTROLE PS4 BLUETOOTH",
+            "grupo_id": 1,
+            "link": null,
+            "valor": 57.88,
+            "status": false
+        },
+        {
+            "id": 6,
+            "lista_id": 1,
+            "item": "ADAPTADOR CONTROLE PS2 - USB",
+            "grupo_id": 1,
+            "link": null,
+            "valor": 19.0,
+            "status": false
+        },
+        {
+            "id": 7,
+            "lista_id": 1,
+            "item": "CABO LIGHTNING - TYPE C",
+            "grupo_id": 1,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 8,
+            "lista_id": 1,
+            "item": "CABO TYPE-C - TYPE-C",
+            "grupo_id": 1,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 9,
+            "lista_id": 1,
+            "item": "CANETA PARA TABLET E CELULAR",
+            "grupo_id": 1,
+            "link": null,
+            "valor": 22.53,
+            "status": false
+        },
+        {
+            "id": 10,
+            "lista_id": 1,
+            "item": "SMART TAG",
+            "grupo_id": 1,
+            "link": null,
+            "valor": 18.42,
+            "status": false
+        },
+        {
+            "id": 11,
+            "lista_id": 1,
+            "item": "BATERIA CR 2025",
+            "grupo_id": 1,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 12,
+            "lista_id": 1,
+            "item": "MALETA DE CANETAS ESFEROGRAFICAS",
+            "grupo_id": 4,
+            "link": null,
+            "valor": 30.8,
+            "status": false
+        },
+        {
+            "id": 13,
+            "lista_id": 1,
+            "item": "OXIMETRO",
+            "grupo_id": 1,
+            "link": null,
+            "valor": 20.9,
+            "status": false
+        },
+        {
+            "id": 14,
+            "lista_id": 1,
+            "item": "REGUA COM USB",
+            "grupo_id": 1,
+            "link": null,
+            "valor": 40.96,
+            "status": false
+        },
+        {
+            "id": 16,
+            "lista_id": 2,
+            "item": "PEDALEIRA ZOOM G1X FOUR",
+            "grupo_id": 1,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 17,
+            "lista_id": 2,
+            "item": "MOUSE KENSINGTON",
+            "grupo_id": 1,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 18,
+            "lista_id": 2,
+            "item": "UKULELE",
+            "grupo_id": 7,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 19,
+            "lista_id": 2,
+            "item": "BATERIA INFANTIL",
+            "grupo_id": 7,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 20,
+            "lista_id": 2,
+            "item": "PEDESTAL MICROFONE",
+            "grupo_id": 7,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 21,
+            "lista_id": 2,
+            "item": "SCALETA",
+            "grupo_id": 7,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 23,
+            "lista_id": 3,
+            "item": "ESPREMEDOR DE LIMAO",
+            "grupo_id": 3,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 24,
+            "lista_id": 3,
+            "item": "CAIXA PARA REMEDIOS",
+            "grupo_id": 3,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 25,
+            "lista_id": 3,
+            "item": "ENFEITE PARA VASO DE PLANTA DE CH\u00c3O",
+            "grupo_id": 3,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 26,
+            "lista_id": 2,
+            "item": "CASE GUITARRA",
+            "grupo_id": 7,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 27,
+            "lista_id": 2,
+            "item": "CASE VIOL\u00c3O",
+            "grupo_id": 7,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 28,
+            "lista_id": 2,
+            "item": "VIOL\u00c3O NOVO",
+            "grupo_id": 7,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 29,
+            "lista_id": 2,
+            "item": "MONITOR 29\"",
+            "grupo_id": 1,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 30,
+            "lista_id": 2,
+            "item": "MESA EM L DELTA",
+            "grupo_id": 3,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 31,
+            "lista_id": 2,
+            "item": "CADEIRA ERGONOMICA",
+            "grupo_id": 3,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 32,
+            "lista_id": 3,
+            "item": "COMPRAR DOBRADI\u00c7A DO BOX",
+            "grupo_id": 3,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 33,
+            "lista_id": 3,
+            "item": "COMPRAR DOBRADI\u00c7A DO ARMARIO DA COZINHA",
+            "grupo_id": 3,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 34,
+            "lista_id": 3,
+            "item": "LAMPADA 3000K PARA SALA",
+            "grupo_id": 3,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 35,
+            "lista_id": 3,
+            "item": "SUPORTE SIMPLES DE FERRO (JURUNENSE)",
+            "grupo_id": 3,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 36,
+            "lista_id": 3,
+            "item": "PAFLON LED",
+            "grupo_id": 3,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 37,
+            "lista_id": 3,
+            "item": "ADESIVO ENVELOPAR BOX",
+            "grupo_id": 3,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 38,
+            "lista_id": 5,
+            "item": "PAPEL FOTOGRAFICO ADESIVO",
+            "grupo_id": 4,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 39,
+            "lista_id": 5,
+            "item": "PAINEL DECORATIVO",
+            "grupo_id": 8,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 40,
+            "lista_id": 1,
+            "item": "ADAPTADOR TYPE-C HDMI",
+            "grupo_id": 1,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 41,
+            "lista_id": 1,
+            "item": "FONE DE OUVIDO - CASTANHAL",
+            "grupo_id": 1,
+            "link": null,
+            "valor": 79.98,
+            "status": false
+        },
+        {
+            "id": 42,
+            "lista_id": 1,
+            "item": "FONTE E CABO PARA PORTA STIC",
+            "grupo_id": 1,
+            "link": null,
+            "valor": null,
+            "status": false
+        },
+        {
+            "id": 44,
+            "lista_id": 1,
+            "item": "RAQUETE MATA MOSQUITO",
+            "grupo_id": 1,
+            "link": null,
+            "valor": 25.5,
+            "status": false
+        }
+    ]
+}

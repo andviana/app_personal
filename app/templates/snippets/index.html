@@ -77,10 +77,26 @@
                         <div class="markdown-body py-6">
                             {{ s.html | safe }}
                         </div>
-                        <div class="mt-4 pt-4 border-t border-slate-50 flex justify-end">
-                            <a href="{{ url_for('snippets.view', id=s.id) }}" class="text-[10px] font-black text-primary-600 uppercase tracking-widest flex items-center gap-1.5 p-2 bg-primary-50 rounded-lg">
-                                <i class="ph ph-share-network"></i> Abrir em nova aba
-                            </a>
+                        <div class="mt-4 pt-4 border-t border-slate-50 flex flex-wrap gap-2 justify-between items-center">
+                            <div class="flex gap-2">
+                                <a href="{{ url_for('snippets.editar', id=s.id) }}" class="p-3 bg-slate-50 text-slate-400 hover:text-primary-600 rounded-xl transition-standard" title="Editar">
+                                    <i class="ph-bold ph-pencil-simple text-lg"></i>
+                                </a>
+                                <button onclick="confirmDelete({{ s.id }}, '{{ s.titulo }}')" class="p-3 bg-slate-50 text-slate-400 hover:text-danger rounded-xl transition-standard" title="Remover">
+                                    <i class="ph-bold ph-trash text-lg"></i>
+                                </button>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="copyRawContent('{{ s.id }}', `{{ s.conteudo | replace('`', '\\`') }}`)" class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5 p-2 bg-slate-100 rounded-lg whitespace-nowrap">
+                                    <i class="ph ph-copy"></i> Copiar Código
+                                </button>
+                                <button onclick="copySnippetUrl('{{ url_for('snippets.view', id=s.id, _external=True) }}')" class="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5 p-2 bg-slate-100 rounded-lg whitespace-nowrap">
+                                    <i class="ph ph-link"></i> Copiar Link
+                                </button>
+                                <a href="{{ url_for('snippets.view', id=s.id) }}" class="text-[10px] font-black text-primary-600 uppercase tracking-widest flex items-center gap-1.5 p-2 bg-primary-50 rounded-lg whitespace-nowrap">
+                                    <i class="ph ph-arrow-square-out"></i> Abrir
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -109,21 +125,96 @@
                         <h2 id="detail-title" class="text-3xl font-black text-slate-900 tracking-tight uppercase"></h2>
                         <p id="detail-desc" class="text-base text-slate-500 font-medium mt-2"></p>
                     </div>
-                    <a id="detail-link" href="#" target="_blank" class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-primary-600 hover:text-white rounded-2xl transition-standard shadow-sm" title="Abrir em nova aba">
-                        <i class="ph ph-arrow-square-out text-2xl"></i>
-                    </a>
+                    <div class="flex gap-2">
+                        <a id="detail-edit" href="#" class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-primary-600 hover:text-white rounded-2xl transition-standard shadow-sm" title="Editar">
+                            <i class="ph ph-pencil-simple text-2xl"></i>
+                        </a>
+                        <button id="detail-delete" onclick="confirmDelete(this.getAttribute('data-id'), this.getAttribute('data-titulo'))" class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-danger hover:text-white rounded-2xl transition-standard shadow-sm" title="Remover">
+                            <i class="ph ph-trash text-2xl"></i>
+                        </button>
+                        <a id="detail-link" href="#" target="_blank" class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-primary-600 hover:text-white rounded-2xl transition-standard shadow-sm" title="Abrir em nova aba">
+                            <i class="ph ph-arrow-square-out text-2xl"></i>
+                        </a>
+                    </div>
                 </div>
+
                 <div id="detail-body" class="markdown-body">
                     <!-- Markdown content goes here -->
+                </div>
+
+                <div class="mt-12 pt-8 border-t border-slate-100 flex gap-4">
+                    <button id="copy-content-btn" onclick="copyRawContent(this.getAttribute('data-id'), this.getAttribute('data-raw'))" class="px-6 py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 hover:bg-slate-800 transition-standard shadow-lg shadow-slate-900/10">
+                        <i class="ph ph-copy"></i> Copiar Conteúdo Original
+                    </button>
+                    <button onclick="copySnippetUrl(window.location.host + document.getElementById('detail-link').getAttribute('href'))" class="px-6 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 hover:bg-slate-200 transition-standard">
+                        <i class="ph ph-link"></i> Copiar Link
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Forms for hidden actions -->
+<form id="delete-form" method="POST" style="display: none;"></form>
 {% endblock %}
 
 {% block scripts_extra %}
 <script>
+    // Global Toast Notification
+    const showToast = (message) => {
+        Swal.fire({
+            text: message,
+            icon: 'success',
+            toast: true,
+            position: 'top-right',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+    }
+
+    function confirmDelete(id, titulo) {
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: `Deseja realmente remover o snippet "${titulo}"? Esta ação não pode ser desfeita.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#94a3b8',
+            confirmButtonText: 'Sim, remover!',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true,
+            customClass: {
+                popup: 'rounded-[2rem]',
+                confirmButton: 'rounded-xl px-6 py-3 font-bold',
+                cancelButton: 'rounded-xl px-6 py-3 font-bold'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('delete-form');
+                form.action = `/snippets/${id}/deletar`;
+                form.submit();
+            }
+        });
+    }
+
+    function copyRawContent(id, content) {
+        // Handle backtick escaping from template
+        const raw = content.replace(/\\`/g, '`');
+        navigator.clipboard.writeText(raw).then(() => {
+            showToast('Markdown copiado para a área de transferência!');
+        });
+    }
+
+    function copySnippetUrl(url) {
+        // Ensure absolute URL
+        const finalUrl = url.includes('http') ? url : window.location.origin + url;
+        navigator.clipboard.writeText(finalUrl).then(() => {
+            showToast('Link copiado com sucesso!');
+        });
+    }
+
     function toggleAccordion(id) {
         const content = document.getElementById('content-' + id);
         const icon = document.getElementById('icon-' + id);
@@ -141,11 +232,9 @@
     }
 
     function loadSnippet(id, element) {
-        // Highlight active item
         document.querySelectorAll('.snippet-list-item').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
 
-        // Show loading state by blurring or overlay
         const bodyContent = document.getElementById('detail-body');
         bodyContent.style.opacity = '0.5';
 
@@ -163,9 +252,17 @@
             document.getElementById('detail-desc').textContent = data.descricao || '';
             document.getElementById('detail-body').innerHTML = data.html;
             document.getElementById('detail-body').style.opacity = '1';
-            document.getElementById('detail-link').href = `/snippets/${data.id}`;
             
-            // Scroll to top of panel
+            // Update action buttons and data
+            document.getElementById('detail-edit').href = `/snippets/${data.id}/editar`;
+            document.getElementById('detail-link').href = `/snippets/${data.id}`;
+            document.getElementById('detail-delete').setAttribute('data-id', data.id);
+            document.getElementById('detail-delete').setAttribute('data-titulo', data.titulo);
+            
+            // Set raw content for copy button
+            document.getElementById('copy-content-btn').setAttribute('data-id', data.id);
+            document.getElementById('copy-content-btn').setAttribute('data-raw', data.conteudo);
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }

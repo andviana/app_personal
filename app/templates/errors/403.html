@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}403 - Acesso Negado{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+    <div class="relative mb-8">
+        <div class="w-32 h-32 bg-danger/10 border-4 border-danger rounded-full flex items-center justify-center z-10">
+            <i class="ph-bold ph-lock-key text-6xl text-danger"></i>
+        </div>
+        <div class="absolute -top-2 -right-2 w-12 h-12 bg-discord-100 rounded-full flex items-center justify-center z-20 shadow-lg border-2 border-discord-400">
+            <i class="ph-bold ph-hand-stop text-2xl text-danger"></i>
+        </div>
+    </div>
+
+    <h1 class="text-6xl font-black text-text-heading mb-4 tracking-tighter">403</h1>
+    <h2 class="text-2xl font-bold text-text-heading mb-6">Acesso Negado</h2>
+    
+    <p class="max-w-md text-text-muted text-lg mb-10 leading-relaxed">
+        Você não tem as permissões necessárias para acessar este recurso. Por favor, entre em contato com o administrador se achar que isso é um erro.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4">
+        <a href="{{ url_for('main.index') }}" class="px-8 py-4 bg-primary-DEFAULT text-white font-bold rounded-xl hover:bg-primary-hover active:scale-95 transition-standard flex items-center gap-2">
+            <i class="ph-bold ph-house"></i> Ir para o Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

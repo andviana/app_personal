@@ -3,6 +3,8 @@ from app.snippets import bp
 from app.models import Snippet
 from app import db
 from app.services.markdown_renderer import render_markdown
+from app.services.log_service import LogService
+from flask_login import current_user
 
 @bp.route('/')
 def index():
@@ -41,6 +43,7 @@ def novo():
         snippet = Snippet(titulo=titulo, descricao=descricao, conteudo=conteudo)
         db.session.add(snippet)
         db.session.commit()
+        LogService.log_action(current_user, 'SNIPPET_CREATED', f'ID: {snippet.id} | TITLE: {titulo}')
         flash('Snippet cadastrado com sucesso!', 'success')
         return redirect(url_for('snippets.index'))
     
@@ -75,6 +78,7 @@ def editar(id):
             return redirect(url_for('snippets.editar', id=id))
         
         db.session.commit()
+        LogService.log_action(current_user, 'SNIPPET_EDITED', f'ID: {id} | NEW_TITLE: {snippet.titulo}')
         flash('Snippet atualizado com sucesso!', 'success')
         return redirect(url_for('snippets.index'))
     
@@ -85,5 +89,6 @@ def deletar(id):
     snippet = Snippet.query.get_or_404(id)
     db.session.delete(snippet)
     db.session.commit()
+    LogService.log_action(current_user, 'SNIPPET_DELETED', f'ID: {id} | TITLE: {snippet.titulo}')
     flash('Snippet removido com sucesso!', 'success')
     return redirect(url_for('snippets.index'))

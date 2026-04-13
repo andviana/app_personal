@@ -4,6 +4,8 @@ from app.models import Tarefa, GrupoTarefas, StatusTarefas
 from app import db
 from datetime import datetime, timezone
 from app.services.pdf_service import build_tasks_pdf
+from app.services.log_service import LogService
+from flask_login import current_user
 
 def init_defaults():
     # Ensure default Statuses and Group exist
@@ -60,6 +62,7 @@ def add():
         )
         db.session.add(nova_tarefa)
         db.session.commit()
+        LogService.log_action(current_user, 'TASK_CREATED', f'ID: {nova_tarefa.id} | DESCRIPTION: {descricao}')
     return redirect(url_for('tasks.index'))
 
 @bp.route('/edit/<int:id>', methods=['POST'])
@@ -72,6 +75,7 @@ def edit(id):
     if grupo_id:
         tarefa.grupo_id = grupo_id
     db.session.commit()
+    LogService.log_action(current_user, 'TASK_EDITED', f'ID: {id} | NEW_DESCRIPTION: {descricao}')
     return redirect(url_for('tasks.index'))
 
 @bp.route('/iniciar/<int:id>', methods=['POST'])
@@ -80,6 +84,7 @@ def iniciar(id):
     _, status_iniciado, _, _ = init_defaults()
     tarefa.status_id = status_iniciado.id
     db.session.commit()
+    LogService.log_action(current_user, 'TASK_STARTED', f'ID: {id}')
     return redirect(url_for('tasks.index'))
 
 @bp.route('/concluir/<int:id>', methods=['POST'])
@@ -89,6 +94,7 @@ def concluir(id):
     tarefa.status_id = status_finalizado.id
     tarefa.data_executado = datetime.now(timezone.utc)
     db.session.commit()
+    LogService.log_action(current_user, 'TASK_COMPLETED', f'ID: {id}')
     return redirect(url_for('tasks.index'))
 
 @bp.route('/delete/<int:id>', methods=['POST'])
@@ -96,14 +102,17 @@ def delete(id):
     tarefa = Tarefa.query.get_or_404(id)
     db.session.delete(tarefa)
     db.session.commit()
+    LogService.log_action(current_user, 'TASK_DELETED', f'ID: {id} | DESCRIPTION: {tarefa.descricao}')
     return redirect(url_for('tasks.index'))
 
 @bp.route('/add_grupo', methods=['POST'])
 def add_grupo():
     denominacao = request.form.get('denominacao')
     if denominacao:
-        db.session.add(GrupoTarefas(denominacao=denominacao.upper())) # keep uniform
+        novo_grupo = GrupoTarefas(denominacao=denominacao.upper())
+        db.session.add(novo_grupo) 
         db.session.commit()
+        LogService.log_action(current_user, 'TASK_GROUP_CREATED', f'NAME: {denominacao.upper()}')
     return redirect(url_for('tasks.index'))
 
 @bp.route('/export_pdf')

@@ -4,6 +4,7 @@ from urllib.parse import urlsplit
 from app import db
 from app.auth import bp
 from app.models import User
+from app.services.log_service import LogService
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -18,10 +19,12 @@ def login():
         user = User.query.filter_by(username=username).first()
         
         if user is None or not user.check_password(password):
-            flash('Usuário ou senha inválidos.', 'danger')
+            LogService.log_action(username, 'LOGIN_FAILED', f'Attempt from IP: {request.remote_addr}')
+            flash('Credenciais inválidas.', 'danger')
             return redirect(url_for('auth.login'))
         
         login_user(user, remember=remember)
+        LogService.log_action(user, 'LOGIN_SUCCESS')
         next_page = request.args.get('next')
         if not next_page or urlsplit(next_page).netloc != '':
             next_page = url_for('main.index')
@@ -31,5 +34,7 @@ def login():
 
 @bp.route('/logout')
 def logout():
+    if current_user.is_authenticated:
+        LogService.log_action(current_user, 'LOGOUT')
     logout_user()
     return redirect(url_for('auth.login'))

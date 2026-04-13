@@ -14,6 +14,17 @@
         </div>
 
         <form class="mt-8 space-y-6" action="{{ url_for('auth.login', next=request.args.get('next')) }}" method="POST">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="px-4 py-3 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm font-semibold flex items-center gap-3 animate-pulse">
+                            <i class="ph-bold ph-warning-circle text-lg"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
             <div class="rounded-2xl space-y-4">
                 <div class="flex flex-col gap-2">
                     <label for="username"

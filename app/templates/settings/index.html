@@ -59,6 +59,33 @@
                 <input type="file" id="backup_file" class="hidden" accept=".json" onchange="processRestore(this)">
             </div>
         </div>
+
+        <!-- Sistema (Logs) -->
+        <div class="bg-discord-200 border border-discord-400 rounded-[24px] p-8 shadow-sm col-span-1 md:col-span-2">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="p-3 bg-discord-300 text-primary-DEFAULT rounded-2xl">
+                    <i class="ph-bold ph-terminal-window text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-black text-text-heading uppercase">Sistema</h2>
+                    <p class="text-xs text-text-muted font-bold tracking-widest uppercase">Monitoramento e Auditoria</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-between p-6 bg-discord-300 rounded-3xl border border-discord-400 group hover:border-primary-DEFAULT transition-standard">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-discord-200 rounded-2xl flex items-center justify-center text-text-muted group-hover:text-primary-DEFAULT shadow-sm transition-standard">
+                        <i class="ph-bold ph-file-text text-2xl"></i>
+                    </div>
+                    <div>
+                        <span class="block text-sm font-black text-text-heading uppercase tracking-tight">Logs do Sistema</span>
+                        <span class="text-[10px] text-text-muted font-bold uppercase tracking-widest">Atividades registradas</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('settings.download_logs') }}" class="px-6 py-3 bg-discord-200 border border-discord-400 text-text-normal rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary-DEFAULT hover:text-white hover:border-transparent transition-standard shadow-sm flex items-center gap-2">
+                    <i class="ph-bold ph-download"></i> Baixar .log
+                </a>
+            </div>
+        </div>
     </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">

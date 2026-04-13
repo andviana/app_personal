@@ -130,11 +130,9 @@
                     <i class="ph-bold ph-pencil-simple"></i>
                 </button>
                 
-                <form action="{{ url_for('tasks.delete', id=t.id) }}" method="POST" class="inline" onsubmit="return confirm('Excluir permanentemente?');">
-                    <button type="submit" class="p-2 text-text-muted hover:text-danger hover:bg-[#313338] rounded-md transition-standard" data-tooltip="Excluir" data-tooltip-pos="top">
-                        <i class="ph-bold ph-trash"></i>
-                    </button>
-                </form>
+                <button data-id="{{ t.id }}" data-desc="{{ t.descricao }}" onclick="confirmDeleteTask(this.dataset.id, this.dataset.desc)" class="p-2 text-text-muted hover:text-danger hover:bg-[#313338] rounded-md transition-standard" data-tooltip="Excluir" data-tooltip-pos="top">
+                    <i class="ph-bold ph-trash"></i>
+                </button>
             </div>
         </div>
         {% endfor %}
@@ -216,6 +214,9 @@
     </div>
 </div>
 
+<!-- Formulário Oculto para Deletar -->
+<form id="delete-task-form" method="POST" style="display: none;"></form>
+
 <script>
 function togglePanel() {
     const filterBar = document.getElementById('filterBar');
@@ -242,6 +243,31 @@ function openEditModal(id, descricao, grupo_id) {
     document.getElementById('editGrupoId').value = grupo_id;
     document.getElementById('formEditTarefa').action = "/tasks/edit/" + id;
     document.getElementById('modalEditTarefa').classList.remove('hidden');
+}
+
+function confirmDeleteTask(id, descricao) {
+    Swal.fire({
+        title: 'Excluir Tarefa?',
+        text: `Deseja realmente remover a tarefa "${descricao}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#da373c',
+        cancelButtonColor: '#4e5058',
+        confirmButtonText: 'Sim, excluir!',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        customClass: {
+            popup: 'discord-theme',
+            confirmButton: 'rounded-xl px-6 py-3 font-bold',
+            cancelButton: 'rounded-xl px-6 py-3 font-bold'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.getElementById('delete-task-form');
+            form.action = "/tasks/delete/" + id;
+            form.submit();
+        }
+    });
 }
 
 function filterTasks() {

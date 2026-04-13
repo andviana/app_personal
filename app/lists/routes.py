@@ -3,6 +3,8 @@ from app.lists import bp
 from app.models import Lista, TipoLista, GrupoItem, ItemLista
 from app import db
 from app.services.pdf_service import build_lists_pdf
+from app.services.log_service import LogService
+from flask_login import current_user
 
 @bp.route('/')
 def index():
@@ -18,6 +20,7 @@ def add():
         nova_lista = Lista(denominacao=denominacao, tipo_id=tipo_id)
         db.session.add(nova_lista)
         db.session.commit()
+        LogService.log_action(current_user, 'LIST_CREATED', f'ID: {nova_lista.id} | NAME: {denominacao}')
     return redirect(url_for('lists.index'))
 
 @bp.route('/delete/<int:id>', methods=['POST'])
@@ -25,6 +28,7 @@ def delete(id):
     lista = Lista.query.get_or_404(id)
     db.session.delete(lista)
     db.session.commit()
+    LogService.log_action(current_user, 'LIST_DELETED', f'ID: {id} | NAME: {lista.denominacao}')
     return redirect(url_for('lists.index'))
 
 @bp.route('/<int:id>')
@@ -53,6 +57,7 @@ def add_item(id):
         )
         db.session.add(novo_item)
         db.session.commit()
+        LogService.log_action(current_user, 'LIST_ITEM_ADDED', f'LIST_ID: {id} | ITEM: {item}')
     return redirect(url_for('lists.detail', id=id))
 
 @bp.route('/item/<int:item_id>/toggle', methods=['POST'])
@@ -60,6 +65,7 @@ def toggle_item(item_id):
     item = ItemLista.query.get_or_404(item_id)
     item.status = not item.status
     db.session.commit()
+    LogService.log_action(current_user, 'LIST_ITEM_TOGGLED', f'ITEM_ID: {item_id} | STATUS: {item.status}')
     return redirect(url_for('lists.detail', id=item.lista_id))
 
 @bp.route('/item/<int:item_id>/delete', methods=['POST'])
@@ -68,6 +74,7 @@ def delete_item(item_id):
     lista_id = item.lista_id
     db.session.delete(item)
     db.session.commit()
+    LogService.log_action(current_user, 'LIST_ITEM_DELETED', f'ITEM_ID: {item_id} | ITEM: {item.item}')
     return redirect(url_for('lists.detail', id=lista_id))
 
 @bp.route('/item/<int:item_id>/edit', methods=['POST'])
@@ -98,6 +105,7 @@ def add_tipo():
     if denominacao:
         db.session.add(TipoLista(denominacao=denominacao))
         db.session.commit()
+        LogService.log_action(current_user, 'LIST_TYPE_CREATED', f'NAME: {denominacao}')
     return redirect(url_for('lists.index'))
 
 @bp.route('/<int:id>/add_grupo_item', methods=['POST'])
@@ -106,6 +114,7 @@ def add_grupo_item(id):
     if denominacao:
         db.session.add(GrupoItem(denominacao=denominacao))
         db.session.commit()
+        LogService.log_action(current_user, 'LIST_ITEM_GROUP_CREATED', f'NAME: {denominacao}')
     return redirect(url_for('lists.detail', id=id))
 
 @bp.route('/<int:id>/export_pdf')

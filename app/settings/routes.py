@@ -4,9 +4,11 @@ from app.settings import bp
 from app.models import GrupoTarefas, TipoLista, GrupoItem, Tarefa, Lista, ItemLista
 from app import db
 from app.services.backup_service import export_data, import_data
+from app.services.log_service import LogService
 import json
 from datetime import datetime
 from io import BytesIO
+import os
 
 @bp.route('/backup/export', methods=['GET'])
 def backup_export():
@@ -21,8 +23,10 @@ def backup_export():
         # Adiciona aspas ao redor do nome do arquivo para evitar problemas com espaços ou caracteres especiais (mesmo que não haja agora)
         response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
         
+        LogService.log_action(current_user, 'BACKUP_EXPORTED', f'Filename: {filename}')
         return response
     except Exception as e:
+        LogService.log_action(current_user, 'BACKUP_EXPORT_FAILED', str(e))
         flash(f'Erro ao gerar backup: {str(e)}', 'danger')
         return redirect(url_for('settings.index'))
 
@@ -38,8 +42,13 @@ def backup_import():
     try:
         json_data = json.load(file)
         success, message = import_data(json_data)
+        if success:
+            LogService.log_action(current_user, 'BACKUP_IMPORTED', f'File: {file.filename}')
+        else:
+            LogService.log_action(current_user, 'BACKUP_IMPORT_FAILED', message)
         return jsonify({'success': success, 'message': message})
     except Exception as e:
+        LogService.log_action(current_user, 'BACKUP_IMPORT_ERROR', str(e))
         return jsonify({'success': False, 'message': f'Erro ao ler arquivo: {str(e)}'})
 
 @bp.route('/alterar_senha', methods=['GET', 'POST'])
@@ -59,6 +68,7 @@ def alterar_senha():
             
         current_user.set_password(nova_senha)
         db.session.commit()
+        LogService.log_action(current_user, 'PASSWORD_CHANGED')
         flash('Senha alterada com sucesso!', 'success')
         return redirect(url_for('settings.index'))
         
@@ -159,3 +169,17 @@ def delete_grupo_item(id):
         db.session.delete(grupo)
         db.session.commit()
     return redirect(url_for('settings.index'))
+
+@bp.route('/download_logs')
+def download_logs():
+    try:
+        path = LogService.get_log_path()
+        if not os.path.exists(path):
+            # Create a dummy log if it doesn't exist
+            LogService.log_action('System', 'LOG_FILE_INITIALIZED')
+        
+        LogService.log_action(current_user, 'LOG_DOWNLOADED')
+        return send_file(path, as_attachment=True, download_name='daylog_system.log')
+    except Exception as e:
+        flash(f'Erro ao baixar logs: {str(e)}', 'danger')
+        return redirect(url_for('settings.index'))

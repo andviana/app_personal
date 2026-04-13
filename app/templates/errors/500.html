@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}500 - Erro no Servidor{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+    <div class="relative mb-8">
+        <div class="w-32 h-32 bg-discord-200 border-4 border-discord-400 rounded-2xl flex items-center justify-center z-10 animate-pulse">
+            <i class="ph-bold ph-sketch-logo text-6xl text-text-muted"></i>
+        </div>
+        <div class="absolute -bottom-4 -left-4 p-3 bg-discord-100 rounded-xl border border-discord-400 shadow-xl z-20">
+            <i class="ph-bold ph-wrench text-3xl text-primary-DEFAULT"></i>
+        </div>
+    </div>
+
+    <h1 class="text-6xl font-black text-text-heading mb-4 tracking-tighter">500</h1>
+    <h2 class="text-2xl font-bold text-text-heading mb-6">Algo deu muito errado...</h2>
+    
+    <p class="max-w-md text-text-muted text-lg mb-10 leading-relaxed">
+        Ocorreu um erro interno no servidor. Nossos droids já foram notificados e estão trabalhando para consertar isso.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4">
+        <button onclick="window.location.reload()" class="px-8 py-4 bg-primary-DEFAULT text-white font-bold rounded-xl hover:bg-primary-hover active:scale-95 transition-standard flex items-center gap-2">
+            <i class="ph-bold ph-arrows-clockwise"></i> Tentar Novamente
+        </button>
+        <a href="{{ url_for('main.index') }}" class="px-8 py-4 bg-discord-400 text-text-normal font-bold rounded-xl hover:bg-discord-100 transition-standard flex items-center gap-2">
+            <i class="ph-bold ph-house"></i> Voltar ao Início
+        </a>
+    </div>
+</div>
+{% endblock %}

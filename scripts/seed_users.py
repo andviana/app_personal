@@ -14,8 +14,6 @@ def seed():
         db.create_all()
         
         users_to_create = [
-            {'username': 'anderson', 'password': 'Lohana.09'},
-            {'username': 'laiana', 'password': 'Lohana.09'},
             {'username': 'admin', 'password': 'admin'}
         ]
         

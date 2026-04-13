@@ -28,6 +28,11 @@
             data-tooltip="Nova Categoria" data-tooltip-pos="top">
             <i class="ph-bold ph-folder-plus text-primary-DEFAULT text-xl"></i>
         </button>
+        <button onclick="openScrapeModal()"
+            class="flex-1 md:flex-none h-11 px-5 bg-discord-200 text-text-normal font-bold rounded-xl hover:bg-discord-400 transition-standard flex items-center justify-center gap-2 border border-discord-400 shadow-sm"
+            data-tooltip="Importar via Link" data-tooltip-pos="top">
+            <i class="ph-bold ph-link text-primary-DEFAULT text-xl"></i>
+        </button>
         <a href="{{ url_for('lists.export_pdf', id=lista.id) }}"
             class="flex-1 md:flex-none h-11 px-5 bg-success text-white font-bold rounded-xl hover:bg-[#23a559]/80 transition-standard flex items-center justify-center gap-2 shadow-sm"
             data-tooltip="Exportar PDF" data-tooltip-pos="top">
@@ -319,6 +324,66 @@
     </div>
 </div>
 
+<!-- MODAL IMPORTAR VIA URL -->
+<div id="modalImportarURL" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[120] hidden flex items-center justify-center p-4">
+    <div class="bg-discord-300 w-full max-w-lg rounded-3xl shadow-2xl border border-discord-400 overflow-hidden transform transition-all duration-300 scale-95 opacity-0 modal-content">
+        <div class="p-8">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-primary-DEFAULT/10 rounded-2xl flex items-center justify-center">
+                        <i class="ph-bold ph-planet text-2xl text-primary-DEFAULT"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-text-heading tracking-tight uppercase">Importar via Link</h3>
+                        <p class="text-sm text-text-muted">Extraia dados automaticamente</p>
+                    </div>
+                </div>
+                <button onclick="closeScrapeModal()" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-discord-400 transition-standard text-text-muted">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+
+            <div class="mb-6 bg-discord-400 p-4 rounded-2xl border border-discord-400">
+                <div class="flex items-start gap-3">
+                    <i class="ph-fill ph-info text-primary-DEFAULT mt-0.5"></i>
+                    <p class="text-[13px] text-text-normal leading-relaxed">
+                        Sites suportados: <span class="text-primary-DEFAULT font-bold">Amazon, Shopee, Mercado Livre, AliExpress, Shein, Privalia e Zattini.</span>
+                    </p>
+                </div>
+            </div>
+
+            <form id="formScrape" action="{{ url_for('lists.scrape_add', list_id=lista.id) }}" method="POST">
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">URL DO PRODUTO</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
+                                <i class="ph-bold ph-link text-xl"></i>
+                            </div>
+                            <input type="url" name="url" id="urlInputScrape" required placeholder="https://..."
+                                class="block w-full h-14 pl-12 border-none rounded-2xl bg-[#1e1f22] text-text-heading focus:ring-2 focus:ring-primary-DEFAULT text-sm font-medium placeholder:text-text-muted transition-standard">
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" id="btnScrapeSubmit"
+                            class="w-full h-14 bg-primary-DEFAULT text-white font-black rounded-2xl hover:bg-primary-hover transition-standard shadow-lg shadow-primary-DEFAULT/20 flex items-center justify-center gap-3 group uppercase tracking-widest">
+                            <span id="txtScrapeBtn">IMPORTAR AGORA</span>
+                            <div id="loaderScrape" class="hidden">
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            <i class="ph-bold ph-arrow-right text-xl group-hover:translate-x-1 transition-standard" id="iconScrapeBtn"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Ver Item -->
 <div id="modalVerItem" class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[110] p-4 transition-standard">
     <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
@@ -377,29 +442,75 @@
         document.getElementById('modalEditarItem').classList.remove('hidden');
     }
 
+    function openScrapeModal() {
+        const modal = document.getElementById('modalImportarURL');
+        const content = modal.querySelector('.modal-content');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+        document.getElementById('urlInputScrape').focus();
+    }
+
+    function closeScrapeModal() {
+        const modal = document.getElementById('modalImportarURL');
+        const content = modal.querySelector('.modal-content');
+        content.classList.add('scale-95', 'opacity-0');
+        content.classList.remove('scale-100', 'opacity-100');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    document.getElementById('formScrape').addEventListener('submit', function(e) {
+        const btn = document.getElementById('btnScrapeSubmit');
+        const txt = document.getElementById('txtScrapeBtn');
+        const loader = document.getElementById('loaderScrape');
+        const icon = document.getElementById('iconScrapeBtn');
+        
+        btn.disabled = true;
+        btn.classList.add('opacity-80', 'cursor-not-allowed');
+        txt.innerText = 'EXTRAINDO DADOS...';
+        loader.classList.remove('hidden');
+        icon.classList.add('hidden');
+    });
+
     function openViewItemModal(btn) {
-        const nome = btn.getAttribute('data-nome');
-        const grupo = btn.getAttribute('data-grupo');
+        const modal = document.getElementById('modalVerItem');
+        const content = modal.querySelector('.bg-discord-200'); // Consistent selector
+        
+        const nome = btn.getAttribute('data-nome').toUpperCase();
+        const grupo = btn.getAttribute('data-grupo').toUpperCase();
         const valor = btn.getAttribute('data-valor');
         const link = btn.getAttribute('data-link');
 
         document.getElementById('view_item_nome').innerText = nome;
         document.getElementById('view_item_grupo').innerText = grupo;
-        document.getElementById('view_item_valor').innerText = valor ? 'R$ ' + parseFloat(valor).toFixed(2) : '--';
+        
+        if (valor) {
+            document.getElementById('view_item_valor').innerText = parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        } else {
+            document.getElementById('view_item_valor').innerText = '--';
+        }
         
         const linkContainer = document.getElementById('view_item_link_container');
         const linkElem = document.getElementById('view_item_link');
         const linkText = document.getElementById('view_item_link_text');
         
         if (link && link !== '' && link !== 'None') {
+            linkContainer.classList.remove('hidden');
             linkElem.href = link;
             linkText.innerText = link;
-            linkContainer.classList.remove('hidden');
         } else {
             linkContainer.classList.add('hidden');
         }
-        
-        document.getElementById('modalVerItem').classList.remove('hidden');
+
+        modal.classList.remove('hidden');
+        // Animation reset
+        content.classList.remove('animate-in', 'zoom-in-95');
+        void content.offsetWidth; // trigger reflow
+        content.classList.add('animate-in', 'zoom-in-95');
     }
 </script>
 {% endblock %}

@@ -1,9 +1,10 @@
-from flask import render_template, request, redirect, url_for, Response
+from flask import render_template, request, redirect, url_for, Response, flash
 from app.lists import bp
 from app.models import Lista, TipoLista, GrupoItem, ItemLista
 from app import db
 from app.services.pdf_service import build_lists_pdf
 from app.services.log_service import LogService
+from app.services.scraper_service import ScraperService
 from flask_login import current_user
 
 @bp.route('/')
@@ -145,3 +146,47 @@ def export_pdf(id):
     lista = Lista.query.get_or_404(id)
     pdf_bytes = build_lists_pdf(lista)
     return Response(pdf_bytes, mimetype='application/pdf', headers={'Content-Disposition': f'attachment;filename=lista_{id}.pdf'})
+@bp.route('/<int:list_id>/scrape_add', methods=['POST'])
+def scrape_add(list_id):
+    url = request.form.get('url')
+    if not url:
+        return redirect(url_for('lists.detail', id=list_id))
+    
+    # Executar Scraping
+    scraped_data = ScraperService.scrape_url(url)
+    
+    if scraped_data['success']:
+        # Garantir Categoria/Grupo "OUTROS"
+        grupo_outros = GrupoItem.query.filter_by(denominacao='OUTROS').first()
+        if not grupo_outros:
+            grupo_outros = GrupoItem(denominacao='OUTROS')
+            db.session.add(grupo_outros)
+            db.session.commit()
+            
+        # Criar Item
+        item_nome = scraped_data['item']
+        item_valor = scraped_data['valor']
+        
+        novo_item = ItemLista(
+            lista_id=list_id,
+            item=item_nome,
+            valor=item_valor,
+            grupo_id=grupo_outros.id,
+            link=url
+        )
+        db.session.add(novo_item)
+        db.session.commit()
+        
+        LogService.log_action(current_user, 'ITEM_SCRAPED', f'LIST: {list_id} | ITEM: {item_nome} | VALOR: {item_valor}')
+        
+        # Feedback Sucesso
+        if scraped_data.get('is_restricted'):
+            flash(f"O SITE '{url.split('/')[2]}' EXIGE LOGIN. IMPORTAMOS O NOME '{item_nome}' VIA LINK, MAS O PREÇO DEVE SER EDITADO MANUALMENTE.", "info")
+        else:
+            valor_str = f"R$ {item_valor:.2f}" if item_valor else "PREÇO NÃO IDENTIFICADO"
+            flash(f"ITEM '{item_nome}' ({valor_str}) IMPORTADO COM SUCESSO!", "success")
+    else:
+        # Feedback Erro
+        flash("NÃO FOI POSSÍVEL EXTRAIR DADOS DESTE LINK. TENTE CADASTRAR MANUALMENTE.", "danger")
+        
+    return redirect(url_for('lists.detail', id=list_id))

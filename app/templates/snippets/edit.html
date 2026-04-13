@@ -5,55 +5,55 @@
 {% block content %}
 <div class="max-w-4xl mx-auto flex flex-col gap-8">
     <div class="flex items-center gap-4">
-        <a href="{{ url_for('snippets.index') }}" class="p-3 bg-white border border-slate-200 text-slate-400 hover:text-primary-600 rounded-2xl transition-standard shadow-sm">
-            <i class="ph ph-arrow-left text-xl"></i>
+        <a href="{{ url_for('snippets.index') }}" class="w-11 h-11 flex items-center justify-center bg-[#313338] text-text-muted hover:text-text-normal rounded-xl transition-standard shadow-sm border border-discord-400">
+            <i class="ph-bold ph-arrow-left text-xl"></i>
         </a>
         <div>
-            <h1 class="text-3xl font-black tracking-tight text-slate-900 uppercase">Editar Snippet</h1>
-            <p class="text-slate-500 font-medium">Atualize as informações do seu snippet.</p>
+            <h1 class="text-3xl font-extrabold tracking-tight text-text-heading">Editar Snippet</h1>
+            <p class="text-text-muted font-medium">Atualize as informações do seu snippet.</p>
         </div>
     </div>
 
-    <form action="{{ url_for('snippets.editar', id=snippet.id) }}" method="POST" class="bg-surface border border-slate-200 rounded-[2.5rem] p-8 md:p-12 shadow-sm flex flex-col gap-8">
+    <form action="{{ url_for('snippets.editar', id=snippet.id) }}" method="POST" class="bg-discord-200 border border-discord-400 rounded-3xl p-8 md:p-10 shadow-sm flex flex-col gap-6">
         <!-- Título -->
         <div class="flex flex-col gap-2">
-            <label for="titulo" class="text-xs font-black uppercase tracking-widest text-slate-400">Título do Snippet <span class="text-danger">*</span></label>
+            <label for="titulo" class="text-xs font-bold uppercase tracking-widest text-text-muted">Título do Snippet <span class="text-danger">*</span></label>
             <input type="text" id="titulo" name="titulo" required value="{{ snippet.titulo }}"
-                   class="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-600 focus:border-transparent outline-none transition-standard font-bold text-lg"
+                   class="w-full px-4 h-12 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-primary-DEFAULT text-text-normal font-semibold placeholder:text-text-muted transition-standard"
                    placeholder="Ex: Conexão com Banco em Python">
         </div>
 
         <!-- Descrição -->
         <div class="flex flex-col gap-2">
-            <label for="descricao" class="text-xs font-black uppercase tracking-widest text-slate-400">Descrição (Opcional)</label>
+            <label for="descricao" class="text-xs font-bold uppercase tracking-widest text-text-muted">Descrição (Opcional)</label>
             <input type="text" id="descricao" name="descricao" value="{{ snippet.descricao or '' }}"
-                   class="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-600 focus:border-transparent outline-none transition-standard font-medium"
+                   class="w-full px-4 h-12 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-primary-DEFAULT text-text-normal font-semibold placeholder:text-text-muted transition-standard"
                    placeholder="Breve resumo sobre o que este snippet faz">
         </div>
 
         <!-- Conteúdo Markdown -->
         <div class="flex flex-col gap-2">
             <div class="flex justify-between items-center mb-1">
-                <label for="conteudo" class="text-xs font-black uppercase tracking-widest text-slate-400">Conteúdo Markdown <span class="text-danger">*</span></label>
+                <label for="conteudo" class="text-xs font-bold uppercase tracking-widest text-text-muted">Conteúdo Markdown <span class="text-danger">*</span></label>
                 <div class="flex gap-4">
-                    <span class="text-[10px] font-bold text-primary-600 uppercase tracking-widest flex items-center gap-1">
-                        <i class="ph ph-info"></i> Use ```linguagem para código
+                    <span class="text-[10px] font-bold text-primary-DEFAULT uppercase tracking-widest flex items-center gap-1">
+                        <i class="ph-bold ph-info"></i> Use ```linguagem para código
                     </span>
                 </div>
             </div>
             <textarea id="conteudo" name="conteudo" required rows="12"
-                      class="w-full px-6 py-6 bg-slate-50 border border-slate-200 rounded-3xl focus:ring-2 focus:ring-primary-600 focus:border-transparent outline-none transition-standard font-mono text-sm leading-relaxed"
+                      class="w-full p-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-primary-DEFAULT text-text-normal font-mono text-sm leading-relaxed placeholder:text-text-muted transition-standard"
                       placeholder="# Exemplo\n\n```python\nprint('Olá Mundo')\n```">{{ snippet.conteudo }}</textarea>
         </div>
 
         <!-- Actions -->
-        <div class="flex flex-col md:flex-row gap-4 pt-4">
-            <button type="submit" class="flex-grow py-5 bg-primary-600 text-white rounded-2xl font-bold uppercase tracking-widest hover:bg-primary-700 active:scale-95 transition-standard shadow-lg shadow-primary-600/30 flex items-center justify-center gap-2">
-                <i class="ph-bold ph-check"></i> Salvar Alterações
-            </button>
-            <a href="{{ url_for('snippets.index') }}" class="py-5 px-10 bg-slate-100 text-slate-600 rounded-2xl font-bold uppercase tracking-widest hover:bg-slate-200 transition-standard text-center">
+        <div class="flex flex-col md:flex-row gap-3 pt-4">
+            <a href="{{ url_for('snippets.index') }}" class="h-12 flex-1 md:flex-none md:w-40 flex items-center justify-center text-text-normal hover:bg-[#313338] rounded-xl transition-standard font-bold text-sm bg-transparent">
                 Cancelar
             </a>
+            <button type="submit" class="h-12 flex-1 bg-primary-DEFAULT text-white rounded-xl font-bold tracking-wide text-sm hover:bg-primary-hover active:scale-95 transition-standard flex items-center justify-center gap-2">
+                <i class="ph-bold ph-check"></i> Salvar Alterações
+            </button>
         </div>
     </form>
 </div>

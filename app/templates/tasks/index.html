@@ -5,41 +5,41 @@
 {% block content %}
 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
     <div>
-        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-            <i class="ph ph-list-checks text-primary-600"></i> Tarefas
+        <h1 class="text-3xl font-extrabold text-text-heading tracking-tight flex items-center gap-3">
+            <i class="ph-bold ph-list-checks text-primary-DEFAULT"></i> Tarefas
         </h1>
-        <p class="text-slate-500 mt-1 font-medium italic">"A disciplina é a alma de um exército."</p>
+        <p class="text-text-muted mt-1 font-medium italic">"A disciplina é a alma de um exército."</p>
     </div>
     
     <div class="flex flex-wrap gap-2 w-full md:w-auto">
-        <button id="toggleModeBtn" onclick="togglePanel()" class="flex-1 md:flex-none h-11 px-5 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-standard flex items-center justify-center gap-2 border border-slate-200">
-            <i class="ph ph-magnifying-glass"></i> <span class="hidden sm:inline">Pesquisar / Filtrar</span>
+        <button id="toggleModeBtn" onclick="togglePanel()" class="w-11 md:w-auto h-11 md:px-5 bg-discord-100 text-text-normal font-bold rounded-xl hover:bg-discord-400 transition-standard flex items-center justify-center gap-2 shadow-sm" data-tooltip="Pesquisar/Filtrar" data-tooltip-pos="top">
+            <i class="ph-bold ph-magnifying-glass text-lg"></i> <span class="hidden md:inline">Pesquisar</span>
         </button>
-        <button onclick="document.getElementById('modalNovoGrupo').classList.remove('hidden')" class="flex-1 md:flex-none h-11 px-5 bg-surface text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-standard flex items-center justify-center gap-2 border border-slate-200 shadow-sm">
-            <i class="ph ph-folder-plus text-lg text-primary-600"></i> <span class="hidden sm:inline">Novo Grupo</span>
+        <button onclick="document.getElementById('modalNovoGrupo').classList.remove('hidden')" class="w-11 md:w-auto h-11 md:px-5 bg-discord-200 text-text-normal font-bold rounded-xl hover:bg-discord-400 transition-standard flex items-center justify-center gap-2 border border-discord-400 shadow-sm" data-tooltip="Novo Grupo" data-tooltip-pos="top">
+            <i class="ph-bold ph-folder-plus text-lg text-primary-DEFAULT"></i> <span class="hidden md:inline">Novo Grupo</span>
         </button>
-        <a href="{{ url_for('tasks.export_pdf') }}" class="h-11 w-11 md:w-auto md:px-5 bg-success text-white font-bold rounded-xl hover:opacity-90 transition-standard flex items-center justify-center gap-2 shadow-lg shadow-success/20">
-            <i class="ph ph-file-pdf text-xl"></i> <span class="hidden md:inline">PDF</span>
+        <a href="{{ url_for('tasks.export_pdf') }}" class="w-11 md:w-auto h-11 md:px-5 bg-success text-white font-bold rounded-xl hover:bg-[#23a559]/80 transition-standard flex items-center justify-center gap-2 shadow-sm" data-tooltip="Exportar PDF" data-tooltip-pos="top">
+            <i class="ph-bold ph-file-pdf text-lg"></i> <span class="hidden md:inline">PDF</span>
         </a>
     </div>
 </div>
 
 <!-- Barra de Filtros (Escondida por Padrão) -->
-<div id="filterBar" class="hidden bg-surface p-4 border border-slate-200 rounded-2xl mb-8 flex-col md:flex-row gap-3 transition-standard animate-in fade-in slide-in-from-top-2">
+<div id="filterBar" class="hidden bg-discord-200 p-4 border border-discord-400 rounded-[16px] mb-8 flex-col md:flex-row gap-3 transition-standard animate-in fade-in slide-in-from-top-2">
     <div class="relative flex-grow">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-            <i class="ph ph-magnifying-glass text-lg"></i>
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
+            <i class="ph-bold ph-magnifying-glass text-lg"></i>
         </div>
-        <input type="text" id="filterDesc" placeholder="O que você está procurando?..." class="block w-full h-11 pl-11 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-medium transition-standard" onkeyup="filterTasks()">
+        <input type="text" id="filterDesc" placeholder="O que você está procurando?..." class="block w-full h-11 pl-11 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-medium transition-standard" onkeyup="filterTasks()">
     </div>
     <div class="grid grid-cols-2 gap-3 md:flex md:gap-3">
-        <select id="filterGrupo" class="h-11 px-4 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold text-slate-600 transition-standard" onchange="filterTasks()">
+        <select id="filterGrupo" class="h-11 px-4 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold transition-standard" onchange="filterTasks()">
             <option value="">📁 Todos Grupos</option>
             {% for g in grupos %}
             <option value="{{ g.denominacao }}">{{ g.denominacao }}</option>
             {% endfor %}
         </select>
-        <select id="filterStatus" class="h-11 px-4 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold text-slate-600 transition-standard" onchange="filterTasks()">
+        <select id="filterStatus" class="h-11 px-4 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold transition-standard" onchange="filterTasks()">
             <option value="">⚙️ Status</option>
             <option value="PENDENTE">Pendente</option>
             <option value="INICIADO">Iniciado</option>
@@ -49,24 +49,24 @@
 </div>
 
 <!-- Cadastro de Nova Tarefa Inline -->
-<div id="taskFormArea" class="bg-surface p-5 border border-slate-200 rounded-2xl mb-10 shadow-sm">
+<div id="taskFormArea" class="bg-discord-200 p-5 border border-discord-400 rounded-[16px] mb-10 shadow-sm">
     <form action="{{ url_for('tasks.add') }}" method="POST" class="flex flex-col lg:flex-row gap-4">
         <div class="relative flex-grow">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                <i class="ph ph-plus-circle text-xl"></i>
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
+                <i class="ph-bold ph-plus-circle text-xl"></i>
             </div>
-            <input type="text" name="descricao" placeholder="Qual o próximo compromisso?" class="block w-full h-12 pl-12 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-base font-medium placeholder:text-slate-400 transition-standard" required autofocus>
+            <input type="text" name="descricao" placeholder="Qual o próximo compromisso?" class="block w-full h-12 pl-12 border-none rounded-xl bg-[#1e1f22] text-text-heading focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold placeholder:text-text-muted transition-standard" required autofocus>
         </div>
         <div class="flex gap-3">
-            <select name="grupo_id" class="h-12 flex-grow lg:w-48 px-4 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold text-slate-600 transition-standard">
+            <select name="grupo_id" class="h-12 flex-grow lg:w-48 px-4 border-none rounded-xl bg-[#1e1f22] focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold text-text-normal transition-standard">
                 <option value="">📁 Grupo: Padrão</option>
                 {% for g in grupos %}
                 <option value="{{ g.id }}">{{ g.denominacao }}</option>
                 {% endfor %}
             </select>
-            <button type="submit" class="h-12 px-8 bg-primary-600 text-white font-black rounded-xl hover:bg-primary-700 transition-standard shadow-lg shadow-primary-600/20 active:scale-95 flex items-center gap-2">
-                <span>ADICIONAR</span>
-                <i class="ph-bold ph-plus"></i>
+            <button type="submit" class="w-12 lg:w-auto h-12 lg:px-8 bg-primary-DEFAULT text-white font-black rounded-xl hover:bg-primary-hover transition-standard shadow-lg shadow-primary-DEFAULT/20 active:scale-95 flex items-center justify-center gap-2" data-tooltip="Adicionar" data-tooltip-pos="top">
+                <span class="hidden lg:inline">ADICIONAR</span>
+                <i class="ph-bold ph-plus lg:hidden text-2xl"></i>
             </button>
         </div>
     </form>
@@ -75,64 +75,63 @@
 <!-- Tarefas Agrupadas -->
 {% for g in grupos %}
 {% if g.tarefas %}
-<div class="task-group mb-12" data-grupo="{{ g.denominacao }}">
-    <div class="flex items-center justify-between mb-4 px-2">
+<div class="task-group mb-8" data-grupo="{{ g.denominacao }}">
+    <div class="flex items-center justify-between mb-3 px-2">
         <div class="flex items-center gap-3">
-            <div class="w-2 h-6 bg-primary-600 rounded-full"></div>
-            <h2 class="text-xl font-black text-slate-800 tracking-wide uppercase text-sm">{{ g.denominacao }}</h2>
-            <span class="bg-slate-100 text-slate-500 text-[10px] font-black px-2 py-0.5 rounded-full">{{ g.tarefas|length }}</span>
+            <h2 class="text-[13px] font-bold text-text-muted tracking-widest uppercase">{{ g.denominacao }}</h2>
+            <span class="bg-discord-400 text-text-normal text-[10px] font-black px-2 py-0.5 rounded-full">{{ g.tarefas|length }}</span>
         </div>
-        <button class="text-slate-400 hover:text-primary-600 transition-standard">
+        <button class="text-text-muted hover:text-text-normal transition-standard">
             <i class="ph-bold ph-dots-three-outline"></i>
         </button>
     </div>
     
-    <div class="grid grid-cols-1 gap-3">
+    <div class="grid grid-cols-1 gap-2">
         {% for t in g.tarefas %}
-        <div class="task-row group bg-surface border border-slate-200 p-4 rounded-2xl flex items-center justify-between hover:border-primary-600/50 hover:shadow-md transition-standard active:scale-[0.99]" data-desc="{{ t.descricao|lower }}" data-status="{{ t.status.denominacao if t.status else '' }}">
+        <div class="task-row group bg-discord-200 border border-transparent p-3 rounded-[8px] flex items-center justify-between hover:bg-discord-400 transition-standard" data-desc="{{ t.descricao|lower }}" data-status="{{ t.status.denominacao if t.status else '' }}">
             <div class="flex items-center gap-4 flex-grow min-w-0">
                 {% set status_name = t.status.denominacao if t.status else 'PENDENTE' %}
                 
                 <!-- Status Checkbox Trigger -->
                 <form action="{{ url_for('tasks.concluir' if status_name != 'FINALIZADO' else 'tasks.iniciar', id=t.id) }}" method="POST">
-                    <button type="submit" class="flex-shrink-0 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-standard
-                        {% if status_name == 'FINALIZADO' %}bg-success border-success text-white shadow-lg shadow-success/20
-                        {% elif status_name == 'INICIADO' %}bg-primary-600 border-primary-600 text-white animate-pulse
-                        {% else %}border-slate-300 hover:border-primary-600 text-transparent hover:text-primary-600{% endif %}">
+                    <button type="submit" class="flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-standard
+                        {% if status_name == 'FINALIZADO' %}bg-success border-success text-white
+                        {% elif status_name == 'INICIADO' %}bg-primary-DEFAULT border-primary-DEFAULT text-white animate-pulse
+                        {% else %}border-text-muted hover:border-text-normal text-transparent hover:text-text-normal{% endif %}">
                         <i class="ph-bold ph-{{ 'check' if status_name == 'FINALIZADO' else 'play' if status_name == 'INICIADO' else 'check' }}"></i>
                     </button>
                 </form>
 
                 <div class="min-w-0">
-                    <span class="block text-sm font-bold truncate {{ 'text-slate-300 line-through' if status_name == 'FINALIZADO' else 'text-slate-800' }}">
+                    <span class="block text-[15px] font-medium truncate {{ 'text-text-muted line-through' if status_name == 'FINALIZADO' else 'text-text-heading' }}">
                         {{ t.descricao }}
                     </span>
-                    <div class="flex items-center gap-2 mt-0.5">
-                        <span class="text-[10px] font-black tracking-widest uppercase
-                            {% if status_name == 'PENDENTE' %}text-orange-500
-                            {% elif status_name == 'INICIADO' %}text-primary-600
-                            {% else %}text-slate-400{% endif %}">
+                    <div class="flex items-center gap-2 hidden group-hover:flex transition-opacity opacity-0 group-hover:opacity-100 mt-1">
+                        <span class="text-[10px] font-bold tracking-widest uppercase
+                            {% if status_name == 'PENDENTE' %}text-[#ffb000]
+                            {% elif status_name == 'INICIADO' %}text-primary-DEFAULT
+                            {% else %}text-text-muted{% endif %}">
                             {{ status_name }}
                         </span>
-                        <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
-                        <span class="text-[10px] text-slate-400 font-medium">Hoje</span>
                     </div>
                 </div>
             </div>
             
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 {% if status_name == 'PENDENTE' %}
-                <form action="{{ url_for('tasks.iniciar', id=t.id) }}" method="POST" class="hidden sm:block">
-                    <button type="submit" class="h-9 px-3 text-primary-600 font-bold hover:bg-primary-50 rounded-lg transition-standard text-xs">INICIAR</button>
+                <form action="{{ url_for('tasks.iniciar', id=t.id) }}" method="POST">
+                    <button type="submit" class="p-2 text-primary-DEFAULT hover:bg-[#313338] rounded-md transition-standard" data-tooltip="Iniciar" data-tooltip-pos="top">
+                        <i class="ph-bold ph-play"></i>
+                    </button>
                 </form>
                 {% endif %}
                 
-                <button onclick='openEditModal("{{ t.id }}", {{ t.descricao|tojson|safe }}, "{{ t.grupo_id }}")' class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-standard">
+                <button data-id="{{ t.id }}" data-desc="{{ t.descricao }}" data-grupo="{{ t.grupo_id }}" onclick="openEditModal(this.dataset.id, this.dataset.desc, this.dataset.grupo)" class="p-2 text-text-muted hover:text-text-normal hover:bg-[#313338] rounded-md transition-standard" data-tooltip="Editar" data-tooltip-pos="top">
                     <i class="ph-bold ph-pencil-simple"></i>
                 </button>
                 
                 <form action="{{ url_for('tasks.delete', id=t.id) }}" method="POST" class="inline" onsubmit="return confirm('Excluir permanentemente?');">
-                    <button type="submit" class="p-2 text-slate-300 hover:text-danger hover:bg-danger/5 rounded-lg transition-standard">
+                    <button type="submit" class="p-2 text-text-muted hover:text-danger hover:bg-[#313338] rounded-md transition-standard" data-tooltip="Excluir" data-tooltip-pos="top">
                         <i class="ph-bold ph-trash"></i>
                     </button>
                 </form>
@@ -152,65 +151,65 @@
 {% endfor %}
 
 {% if not has_tasks %}
-<div class="flex flex-col items-center justify-center py-20 bg-surface rounded-3xl border border-slate-200 border-dashed text-center">
-    <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-        <i class="ph ph-wind text-4xl text-slate-200"></i>
+<div class="flex flex-col items-center justify-center py-20 bg-discord-200 rounded-[16px] border border-discord-400 border-dashed text-center">
+    <div class="w-20 h-20 bg-discord-400 rounded-full flex items-center justify-center mb-6">
+        <i class="ph-bold ph-wind text-4xl text-text-muted"></i>
     </div>
-    <h3 class="text-xl font-bold text-slate-900">Tudo limpo por aqui!</h3>
-    <p class="text-slate-500 mt-2">Nenhuma tarefa encontrada para este grupo.</p>
+    <h3 class="text-xl font-bold text-text-heading">Tudo limpo por aqui!</h3>
+    <p class="text-text-muted mt-2">Nenhuma tarefa encontrada neste filtro.</p>
 </div>
 {% endif %}
 
 
 <!-- Modais (Otimizados) -->
-<div id="modalNovoGrupo" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
-    <div class="bg-surface rounded-3xl shadow-2xl w-full max-w-sm border border-slate-200 animate-in zoom-in-95">
-        <div class="p-8">
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
-                    <i class="ph-bold ph-folder-plus text-primary-600"></i> Novo Grupo
+<div id="modalNovoGrupo" class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
+    <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
+                    <i class="ph-bold ph-folder-plus text-primary-DEFAULT"></i> Novo Grupo
                 </h2>
-                <button onclick="document.getElementById('modalNovoGrupo').classList.add('hidden')" class="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-standard"><i class="ph-bold ph-x"></i></button>
+                <button type="button" onclick="document.getElementById('modalNovoGrupo').classList.add('hidden')" class="p-2 text-text-muted hover:bg-discord-400 hover:text-text-normal rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('tasks.add_grupo') }}" method="POST" class="space-y-6">
                 <div>
-                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Denominação</label>
-                    <input type="text" name="denominacao" placeholder="Ex: TRABALHO, CASA..." class="block w-full h-12 px-4 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold" required autofocus>
+                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Denominação</label>
+                    <input type="text" name="denominacao" placeholder="Ex: TRABALHO, CASA..." class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] focus:ring-2 focus:ring-primary-DEFAULT text-text-normal text-sm font-semibold" required autofocus>
                 </div>
-                <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="document.getElementById('modalNovoGrupo').classList.add('hidden')" class="flex-1 h-12 text-slate-500 font-bold rounded-xl hover:bg-slate-100 transition-standard">CANCELAR</button>
-                    <button type="submit" class="flex-[2] h-12 bg-primary-600 text-white font-black rounded-xl shadow-lg shadow-primary-600/20 active:scale-95 transition-standard">CRIAR GRUPO</button>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="document.getElementById('modalNovoGrupo').classList.add('hidden')" class="flex-1 h-10 text-white font-bold rounded-md hover:underline transition-standard bg-transparent">Cancelar</button>
+                    <button type="submit" class="flex-1 h-10 bg-primary-DEFAULT text-white font-bold rounded-md shadow-lg transition-standard hover:bg-primary-hover">Criar</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<div id="modalEditTarefa" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
-    <div class="bg-surface rounded-3xl shadow-2xl w-full max-w-md border border-slate-200 animate-in zoom-in-95">
-        <div class="p-8">
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
-                    <i class="ph-bold ph-pencil-simple text-primary-600"></i> Editar Tarefa
+<div id="modalEditTarefa" class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
+    <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-md border border-discord-400 animate-in zoom-in-95">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
+                    <i class="ph-bold ph-pencil-simple text-primary-DEFAULT"></i> Editar Tarefa
                 </h2>
-                <button onclick="document.getElementById('modalEditTarefa').classList.add('hidden')" class="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-standard"><i class="ph-bold ph-x"></i></button>
+                <button type="button" onclick="document.getElementById('modalEditTarefa').classList.add('hidden')" class="p-2 text-text-muted hover:bg-discord-400 hover:text-text-normal rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
             </div>
             <form id="formEditTarefa" method="POST" class="space-y-6">
                 <div>
-                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Descrição</label>
-                    <input type="text" name="descricao" id="editDescricao" class="block w-full h-12 px-4 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold" required>
+                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Descrição</label>
+                    <input type="text" name="descricao" id="editDescricao" class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold" required>
                 </div>
                 <div>
-                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Mover para Grupo</label>
-                    <select name="grupo_id" id="editGrupoId" class="block w-full h-12 px-4 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-600/20 focus:border-primary-600 text-sm font-bold">
+                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Mover para Grupo</label>
+                    <select name="grupo_id" id="editGrupoId" class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold">
                         {% for g in grupos %}
                         <option value="{{ g.id }}">{{ g.denominacao }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="document.getElementById('modalEditTarefa').classList.add('hidden')" class="flex-1 h-12 text-slate-500 font-bold rounded-xl hover:bg-slate-100 transition-standard">CANCELAR</button>
-                    <button type="submit" class="flex-[2] h-12 bg-primary-600 text-white font-black rounded-xl shadow-lg shadow-primary-600/20 active:scale-95 transition-standard">SALVAR</button>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="document.getElementById('modalEditTarefa').classList.add('hidden')" class="flex-1 h-10 text-white font-bold rounded-md hover:underline transition-standard bg-transparent">Cancelar</button>
+                    <button type="submit" class="flex-1 h-10 bg-primary-DEFAULT text-white font-bold rounded-md shadow-lg transition-standard hover:bg-primary-hover">Salvar</button>
                 </div>
             </form>
         </div>
@@ -226,15 +225,15 @@ function togglePanel() {
     if (filterBar.classList.contains('hidden')) {
         filterBar.classList.remove('hidden');
         taskForm.classList.add('hidden');
-        toggleBtn.innerHTML = '<i class="ph ph-plus"></i> <span class="hidden sm:inline">Nova Tarefa</span>';
-        toggleBtn.classList.replace('bg-slate-100', 'bg-primary-50');
-        toggleBtn.classList.replace('text-slate-700', 'text-primary-600');
+        toggleBtn.innerHTML = '<i class="ph-bold ph-plus text-lg text-primary-DEFAULT"></i>';
+        toggleBtn.classList.replace('bg-discord-100', 'bg-discord-200');
+        toggleBtn.classList.add('border-discord-400');
     } else {
         filterBar.classList.add('hidden');
         taskForm.classList.remove('hidden');
-        toggleBtn.innerHTML = '<i class="ph ph-magnifying-glass"></i> <span class="hidden sm:inline">Pesquisar / Filtrar</span>';
-        toggleBtn.classList.replace('bg-primary-50', 'bg-slate-100');
-        toggleBtn.classList.replace('text-primary-600', 'text-slate-700');
+        toggleBtn.innerHTML = '<i class="ph-bold ph-magnifying-glass text-lg"></i> <span class="hidden md:inline">Pesquisar</span>';
+        toggleBtn.classList.replace('bg-discord-200', 'bg-discord-100');
+        toggleBtn.classList.remove('border-discord-400');
     }
 }
 

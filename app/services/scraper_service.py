@@ -101,7 +101,7 @@ class ScraperService:
     def _extract_title(soup, url):
         title = None
         # Prioridade 1: Meta Tags (OG / Twitter)
-        og_title = soup.find('meta', property='og:title') or soup.find('meta', name='twitter:title')
+        og_title = soup.find('meta', attrs={'property': 'og:title'}) or soup.find('meta', attrs={'name': 'twitter:title'})
         if og_title and og_title.get('content'):
             title = og_title.get('content').strip()
         

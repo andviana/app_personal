@@ -56,10 +56,14 @@
                 data-tooltip="Nova Lista" data-tooltip-pos="top">
             <i class="ph-bold ph-list-plus text-2xl"></i>
         </button>
-        <button class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-primary-DEFAULT hover:text-white transition-all duration-200"
-                data-tooltip="Exportar PDF" data-tooltip-pos="top">
-            <i class="ph-bold ph-export text-2xl"></i>
-        </button>
+        <a href="{{ url_for('pessoas.add') }}" class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#43b581] hover:text-white transition-all duration-200"
+                data-tooltip="Nova Pessoa" data-tooltip-pos="top">
+            <i class="ph-bold ph-user-plus text-2xl"></i>
+        </a>
+        <a href="{{ url_for('snippets.novo') }}" class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#9a55f3] hover:text-white transition-all duration-200"
+                data-tooltip="Novo Snippet" data-tooltip-pos="top">
+            <i class="ph-bold ph-code text-2xl"></i>
+        </a>
         <a href="{{ url_for('settings.index') }}" class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-discord-400 hover:text-white transition-all duration-200"
                 data-tooltip="Configurações" data-tooltip-pos="top">
             <i class="ph-bold ph-gear-six text-2xl"></i>

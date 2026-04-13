@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Pessoas - AppPessoal{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex justify-between items-end">
+    <div>
+        <h1 class="text-3xl font-black tracking-tight text-text-heading uppercase">Pessoas</h1>
+        <p class="text-text-muted font-medium">Gestão de contatos e documentos vinculados.</p>
+    </div>
+    <a href="{{ url_for('pessoas.add') }}" class="h-12 px-6 bg-[#43b581] text-white flex items-center gap-2 rounded-xl hover:bg-[#43b581]/90 transition-all shadow-lg shadow-[#43b581]/20 font-black uppercase text-xs tracking-widest">
+        <i class="ph-bold ph-user-plus text-xl"></i> Nova Pessoa
+    </a>
+</div>
+
+<!-- Search Bar -->
+<div class="mb-8 relative group">
+    <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-text-muted group-focus-within:text-[#43b581] transition-colors">
+        <i class="ph-bold ph-magnifying-glass text-xl"></i>
+    </div>
+    <form action="{{ url_for('pessoas.index') }}" method="GET">
+        <input type="text" name="search" value="{{ search }}" placeholder="Buscar por nome..." 
+               class="w-full h-12 pl-12 pr-4 bg-discord-200 border border-discord-400 rounded-xl focus:ring-2 focus:ring-[#43b581] focus:border-transparent text-text-normal text-sm font-semibold transition-all">
+    </form>
+</div>
+
+<!-- People Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for p in pessoas %}
+    <div class="bg-discord-200 border border-discord-400 rounded-2xl overflow-hidden hover:border-[#43b581]/50 transition-all group flex flex-col">
+        <div class="p-6 flex-1">
+            <div class="flex items-start justify-between mb-4">
+                <div class="w-12 h-12 bg-discord-300 rounded-xl flex items-center justify-center text-[#43b581] shadow-inner group-hover:scale-110 transition-transform overflow-hidden">
+                    {% if p.foto_url %}
+                        <img src="{{ p.foto_url }}" alt="{{ p.nome_completo }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <i class="ph-fill ph-user text-2xl"></i>
+                    {% endif %}
+                </div>
+                <div class="flex gap-1">
+                    <a href="{{ url_for('pessoas.edit', id=p.id) }}" class="p-2 text-text-muted hover:text-[#43b581] hover:bg-discord-300 rounded-lg transition-all" data-tooltip="Editar">
+                        <i class="ph-bold ph-pencil-simple text-lg"></i>
+                    </a>
+                    <form action="{{ url_for('pessoas.delete', id=p.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja remover esta pessoa?')">
+                        <button type="submit" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-all" data-tooltip="Excluir">
+                            <i class="ph-bold ph-trash text-lg"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <h3 class="text-lg font-black text-text-heading uppercase tracking-tight mb-1">{{ p.nome_completo }}</h3>
+            <div class="flex flex-wrap gap-2 mb-4">
+                {% if p.cpf %}
+                <span class="px-2 py-0.5 bg-discord-300 text-[10px] font-bold text-text-muted rounded-md border border-discord-400 uppercase tracking-widest">CPF: {{ p.cpf }}</span>
+                {% endif %}
+                {% if p.data_nascimento %}
+                <span class="px-2 py-0.5 bg-discord-300 text-[10px] font-bold text-text-muted rounded-md border border-discord-400 uppercase tracking-widest">Nasc: {{ p.data_nascimento.strftime('%d/%m/%Y') }}</span>
+                {% endif %}
+                {% if p.rg_numero %}
+                <span class="px-2 py-0.5 bg-discord-300 text-[10px] font-bold text-text-muted rounded-md border border-discord-400 uppercase tracking-widest">RG: {{ p.rg_numero }} {{ p.rg_orgao or '' }}</span>
+                {% endif %}
+            </div>
+
+            <div class="space-y-3">
+                {% if p.telefones %}
+                <div class="flex flex-col gap-1.5">
+                    <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Telefones</span>
+                    <div class="flex flex-wrap gap-2">
+                        {% for t in p.telefones[:2] %}
+                        <span class="flex items-center gap-1.5 text-xs font-semibold text-text-normal">
+                            <i class="ph-bold ph-phone text-[#43b581]"></i> {{ t.numero }}
+                        </span>
+                        {% endfor %}
+                        {% if p.telefones|length > 2 %}
+                        <span class="text-xs text-text-muted font-bold">+{{ p.telefones|length - 2 }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if p.arquivos %}
+                <div class="flex flex-col gap-1.5">
+                    <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Documentos</span>
+                    <div class="flex flex-col gap-1">
+                        {% for f in p.arquivos[:3] %}
+                        <div class="flex items-center justify-between group/link h-8 px-2 bg-discord-300 rounded-lg border border-discord-400 hover:border-[#43b581]/50 transition-all">
+                            <a href="{{ f.url }}" target="_blank" class="text-[11px] font-bold text-text-normal truncate max-w-[150px] hover:text-[#43b581] transition-colors">
+                                <i class="ph-bold ph-file-text text-[#43b581] mr-1"></i> {{ f.titulo }}
+                            </a>
+                            <button onclick="copyToClipboard('{{ f.url }}')" class="p-1.5 text-text-muted hover:text-[#43b581] transition-colors" title="Copiar URL">
+                                <i class="ph-bold ph-copy text-sm"></i>
+                            </button>
+                        </div>
+                        {% endfor %}
+                        {% if p.arquivos|length > 3 %}
+                        <span class="text-[10px] text-text-muted font-bold text-center mt-1 uppercase tracking-widest">Ver mais {{ p.arquivos|length - 3 }} arquivos...</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="p-4 bg-discord-300 border-t border-discord-400 flex justify-between items-center mt-auto">
+            <span class="text-[10px] text-text-muted font-bold uppercase tracking-widest italic">
+                Desde {{ p.data_cadastro.strftime('%d/%m/%Y') }}
+            </span>
+            <a href="{{ url_for('pessoas.edit', id=p.id) }}" class="text-[10px] font-black text-[#43b581] uppercase tracking-widest hover:underline">
+                Gerenciar Ficha <i class="ph-bold ph-caret-right ml-1"></i>
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-span-full py-20 text-center text-text-muted">
+        <i class="ph-bold ph-users-three text-6xl mb-4 opacity-20"></i>
+        <p class="text-lg font-medium">Nenhuma pessoa encontrada.</p>
+        {% if search %}
+        <a href="{{ url_for('pessoas.index') }}" class="text-[#43b581] hover:underline font-bold mt-2 inline-block">Limpar busca</a>
+        {% else %}
+        <a href="{{ url_for('pessoas.add') }}" class="text-[#43b581] hover:underline font-bold mt-2 inline-block">Cadastrar primeira pessoa</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            background: '#313338',
+            color: '#dbdee1'
+        });
+        Toast.fire({
+            icon: 'success',
+            title: 'URL copiada para o clipboard!'
+        });
+    });
+}
+</script>
+{% endblock %}

@@ -5,57 +5,85 @@
 {% block content %}
 <div class="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
     <div class="flex flex-col gap-2">
-        <a href="{{ url_for('lists.index') }}" class="inline-flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-text-muted hover:text-primary-DEFAULT transition-standard group">
-            <i class="ph-bold ph-arrow-left group-hover:-translate-x-1 transition-standard border border-text-muted group-hover:border-primary-DEFAULT rounded-md p-1"></i> 
-            Voltar para Listas
+        <a href="{{ url_for('lists.index') }}"
+            class="inline-flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase text-text-muted hover:text-primary-DEFAULT transition-standard group">
+            <i
+                class="ph-bold ph-arrow-left group-hover:-translate-x-1 transition-standard border border-text-muted group-hover:border-primary-DEFAULT rounded-md p-1"></i>
+            Voltar
         </a>
         <div class="flex flex-wrap items-center gap-4 mt-2">
             <h1 class="text-4xl font-extrabold text-text-heading tracking-tight flex items-center gap-3">
                 <i class="ph-bold ph-notebook text-primary-DEFAULT"></i> {{ lista.denominacao }}
             </h1>
-            <span class="bg-discord-400 text-text-muted text-[10px] px-3 py-1 rounded-full font-black tracking-widest uppercase shadow-sm">
+            <span
+                class="bg-discord-400 text-text-muted text-[10px] px-3 py-1 rounded-full font-black tracking-widest uppercase shadow-sm">
                 {{ lista.tipo.denominacao if lista.tipo else 'Genérica' }}
             </span>
         </div>
     </div>
-    
+
     <div class="flex gap-2 w-full md:w-auto">
-        <button onclick="document.getElementById('modalNovoGrupoItem').classList.remove('hidden')" class="flex-1 md:flex-none h-11 px-5 bg-discord-200 text-text-normal font-bold rounded-xl hover:bg-discord-400 transition-standard flex items-center justify-center gap-2 border border-discord-400 shadow-sm" data-tooltip="Nova Categoria" data-tooltip-pos="top">
+        <button onclick="document.getElementById('modalNovoGrupoItem').classList.remove('hidden')"
+            class="flex-1 md:flex-none h-11 px-5 bg-discord-200 text-text-normal font-bold rounded-xl hover:bg-discord-400 transition-standard flex items-center justify-center gap-2 border border-discord-400 shadow-sm"
+            data-tooltip="Nova Categoria" data-tooltip-pos="top">
             <i class="ph-bold ph-folder-plus text-primary-DEFAULT text-xl"></i>
         </button>
-        <a href="{{ url_for('lists.export_pdf', id=lista.id) }}" class="flex-1 md:flex-none h-11 px-5 bg-success text-white font-bold rounded-xl hover:bg-[#23a559]/80 transition-standard flex items-center justify-center gap-2 shadow-sm" data-tooltip="Exportar PDF" data-tooltip-pos="top">
+        <a href="{{ url_for('lists.export_pdf', id=lista.id) }}"
+            class="flex-1 md:flex-none h-11 px-5 bg-success text-white font-bold rounded-xl hover:bg-[#23a559]/80 transition-standard flex items-center justify-center gap-2 shadow-sm"
+            data-tooltip="Exportar PDF" data-tooltip-pos="top">
             <i class="ph-bold ph-file-pdf text-xl"></i>
         </a>
     </div>
 </div>
 
-<div class="bg-discord-200 p-5 border border-discord-400 rounded-[16px] mb-10 shadow-sm">
-    <form action="{{ url_for('lists.add_item', id=lista.id) }}" method="POST" class="flex flex-col lg:flex-row gap-4 items-center">
+<div class="bg-discord-200 p-6 border border-discord-400 rounded-3xl mb-12 shadow-sm">
+    <form action="{{ url_for('lists.add_item', id=lista.id) }}" method="POST"
+        class="flex flex-col lg:flex-row gap-5 items-center">
+        <!-- Nome do Item -->
         <div class="relative flex-grow w-full">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
                 <i class="ph-bold ph-plus-circle text-xl"></i>
             </div>
-            <input type="text" name="item" placeholder="O que adicionar à lista?" class="block w-full h-12 pl-12 border-none rounded-xl bg-[#1e1f22] text-text-heading focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold placeholder:text-text-muted transition-standard" required autofocus>
+            <input type="text" name="item" placeholder="O QUE ADICIONAR À LISTA?"
+                class="block w-full h-12 pl-12 border-none rounded-xl bg-[#1e1f22] text-text-heading focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold placeholder:text-text-muted transition-standard uppercase"
+                required autofocus autocomplete="off">
         </div>
-        
-        <div class="flex gap-3 w-full lg:w-auto">
-            <select name="grupo_id" class="h-12 flex-grow lg:w-48 px-4 border-none rounded-xl bg-[#1e1f22] focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold text-text-normal transition-standard" required>
-                <option value="" disabled selected>📂 Categoria</option>
-                {% for g in grupos %}
-                <option value="{{ g.id }}">{{ g.denominacao }}</option>
-                {% endfor %}
-            </select>
 
-            <div class="relative w-28">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
-                    <span class="text-xs font-bold leading-none">R$</span>
+        <div class="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+            <!-- Valor -->
+            <div class="relative w-full sm:w-32">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
+                    <span class="text-xs font-black leading-none uppercase">R$</span>
                 </div>
-                <input type="number" step="0.01" name="valor" placeholder="0,00" class="block w-full h-12 pl-8 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold">
+                <input type="number" step="0.01" name="valor" placeholder="0.00"
+                    class="block w-full h-12 pl-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold placeholder:text-text-muted">
             </div>
-            
-            <button type="submit" class="w-12 lg:w-auto h-12 lg:px-8 bg-primary-DEFAULT text-white font-black rounded-xl hover:bg-primary-hover transition-standard shadow-lg shadow-primary-DEFAULT/20 active:scale-95 flex items-center justify-center gap-2" data-tooltip="Adicionar" data-tooltip-pos="top">
-                <span class="hidden lg:inline">ADICIONAR</span>
-                <i class="ph-bold ph-plus lg:hidden text-2xl"></i>
+
+            <!-- Categoria -->
+            <div class="relative w-full sm:w-56 group">
+                <div
+                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted group-focus-within:text-primary-DEFAULT transition-colors">
+                    <i class="ph-bold ph-tag text-lg"></i>
+                </div>
+                <select name="grupo_id"
+                    class="appearance-none block w-full h-12 pl-11 pr-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold transition-standard cursor-pointer uppercase">
+                    <option value="" selected>OUTROS (PADRÃO)</option>
+                    {% for g in grupos %}
+                    {% if g.denominacao.upper() != 'OUTROS' %}
+                    <option value="{{ g.id }}">{{ g.denominacao.upper() }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-text-muted">
+                    <i class="ph-bold ph-caret-down"></i>
+                </div>
+            </div>
+
+            <!-- Botão Adicionar -->
+            <button type="submit"
+                class="w-full lg:w-auto h-12 lg:px-10 bg-primary-DEFAULT text-white font-black rounded-xl hover:bg-primary-hover transition-all duration-300 shadow-lg shadow-primary-DEFAULT/15 active:scale-95 flex items-center justify-center gap-2 group">
+                <span class="tracking-widest uppercase text-xs">Adicionar</span>
+                <i class="ph-bold ph-plus text-lg group-hover:rotate-90 transition-transform duration-300"></i>
             </button>
         </div>
     </form>
@@ -66,10 +94,15 @@
         <table class="min-w-full divide-y divide-discord-400">
             <thead class="bg-discord-300">
                 <tr>
-                    <th class="px-6 py-4 text-left text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Item</th>
-                    <th class="px-6 py-4 text-left text-[10px] font-black text-text-muted uppercase tracking-[0.2em] hidden sm:table-cell">Categoria</th>
-                    <th class="px-6 py-4 text-right text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Valor Est.</th>
-                    <th class="px-6 py-4 text-center text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Ações</th>
+                    <th class="px-6 py-4 text-left text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
+                        Item</th>
+                    <th
+                        class="px-6 py-4 text-left text-[10px] font-black text-text-muted uppercase tracking-[0.2em] hidden sm:table-cell">
+                        Categoria</th>
+                    <th class="px-6 py-4 text-right text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
+                        Valor Est.</th>
+                    <th class="px-6 py-4 text-center text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
+                        Ações</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-discord-400">
@@ -78,36 +111,60 @@
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center gap-4">
                             <form action="{{ url_for('lists.toggle_item', item_id=it.id) }}" method="POST">
-                                <button type="submit" class="flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-standard
+                                <button type="submit"
+                                    class="flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-standard
                                     {% if it.status %}bg-success border-success text-white
                                     {% else %}border-text-muted hover:border-text-normal text-transparent hover:text-text-normal{% endif %}">
                                     <i class="ph-bold ph-check"></i>
                                 </button>
                             </form>
-                            <span class="text-[15px] font-medium {{ 'text-text-muted line-through' if it.status else 'text-text-heading' }}">
-                                {{ it.item }}
-                            </span>
+                            <div class="flex items-center gap-2 group/info">
+                                <span
+                                    class="text-[15px] font-medium {{ 'text-text-muted line-through' if it.status else 'text-text-heading' }}">
+                                    {{ it.item }}
+                                </span>
+                                <button type="button" onclick="openViewItemModal(this)" 
+                                    data-nome="{{ it.item }}" 
+                                    data-grupo="{{ it.grupo.denominacao if it.grupo else 'OUTROS' }}" 
+                                    data-valor="{{ it.valor or '' }}" 
+                                    data-link="{{ it.link or '' }}"
+                                    class="text-blue-400 opacity-0 group-hover:opacity-100 group-hover/info:opacity-100 transition-standard p-1 hover:bg-discord-400 rounded-md"
+                                    data-tooltip="Ver Detalhes" data-tooltip-pos="top">
+                                    <i class="ph-bold ph-info text-lg"></i>
+                                </button>
+                            </div>
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
-                        <span class="text-[10px] font-black tracking-widest uppercase py-0.5 px-2 bg-discord-400 text-text-normal rounded-md">
+                        <span
+                            class="text-[10px] font-black tracking-widest uppercase py-0.5 px-2 bg-discord-400 text-text-normal rounded-md">
                             {{ it.grupo.denominacao if it.grupo else '-' }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-[15px] font-bold {% if it.status %}text-text-muted{% else %}text-text-heading{% endif %}">
+                    <td
+                        class="px-6 py-4 whitespace-nowrap text-right text-[15px] font-bold {% if it.status %}text-text-muted{% else %}text-text-heading{% endif %}">
                         {% if it.valor %}
-                            R$ {{ "%.2f"|format(it.valor) }}
+                        R$ {{ "%.2f"|format(it.valor) }}
                         {% else %}
-                            <span class="text-text-muted">--</span>
+                        <span class="text-text-muted">--</span>
                         {% endif %}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-center text-right">
-                        <div class="flex justify-end items-center gap-1 opacity-0 group-hover:opacity-100 transition-standard">
-                            <button type="button" onclick="openEditItemModal(this)" data-id="{{ it.id }}" data-nome="{{ it.item }}" data-grupo="{{ it.grupo_id or '' }}" data-valor="{{ it.valor or '' }}" class="p-2 text-text-muted hover:text-text-normal hover:bg-[#313338] rounded-md transition-standard" data-tooltip="Editar" data-tooltip-pos="top">
+                        <div
+                            class="flex justify-end items-center gap-1 opacity-0 group-hover:opacity-100 transition-standard">
+                            <button type="button" onclick="openEditItemModal(this)" data-id="{{ it.id }}"
+                                data-nome="{{ it.item }}" data-grupo="{{ it.grupo_id or '' }}"
+                                data-valor="{{ it.valor or '' }}"
+                                data-link="{{ it.link or '' }}"
+                                class="p-2 text-text-muted hover:text-text-normal hover:bg-[#313338] rounded-md transition-standard"
+                                data-tooltip="Editar" data-tooltip-pos="top">
                                 <i class="ph-bold ph-pencil-simple text-lg"></i>
                             </button>
-                            <form action="{{ url_for('lists.delete_item', item_id=it.id) }}" method="POST" onsubmit="return confirm('Remover item?');" class="inline">
-                                <button type="submit" class="p-2 text-text-muted hover:text-danger hover:bg-[#313338] rounded-md transition-standard" data-tooltip="Excluir" data-tooltip-pos="top">
+                            <form action="{{ url_for('lists.delete_item', item_id=it.id) }}" method="POST"
+                                onsubmit="return confirm('Remover item?');" class="inline">
+                                <button type="submit"
+                                    class="p-2 text-text-muted hover:text-danger hover:bg-[#313338] rounded-md transition-standard"
+                                    data-tooltip="Excluir" data-tooltip-pos="top">
                                     <i class="ph-bold ph-trash text-lg"></i>
                                 </button>
                             </form>
@@ -117,7 +174,8 @@
                 {% else %}
                 <tr>
                     <td colspan="4" class="px-6 py-20 text-center">
-                        <div class="w-16 h-16 bg-discord-400 rounded-full flex items-center justify-center mx-auto mb-4 text-text-muted">
+                        <div
+                            class="w-16 h-16 bg-discord-400 rounded-full flex items-center justify-center mx-auto mb-4 text-text-muted">
                             <i class="ph-bold ph-shopping-cart text-3xl"></i>
                         </div>
                         <p class="text-text-muted font-medium">Sua lista está vazia. Comece a adicionar itens!</p>
@@ -132,53 +190,64 @@
     {% set total = namespace(valor=0) %}
     {% set total_comprado = namespace(valor=0) %}
     {% for it in lista.itens %}
-        {% if it.valor %}
-            {% set total.valor = total.valor + it.valor %}
-            {% if it.status %}
-                {% set total_comprado.valor = total_comprado.valor + it.valor %}
-            {% endif %}
-        {% endif %}
+    {% if it.valor %}
+    {% set total.valor = total.valor + it.valor %}
+    {% if it.status %}
+    {% set total_comprado.valor = total_comprado.valor + it.valor %}
+    {% endif %}
+    {% endif %}
     {% endfor %}
-    
+
     {% if total.valor > 0 %}
-    <div class="bg-discord-300 p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div class="flex items-center gap-6">
-            <div>
-                <p class="text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Comprado</p>
-                <p class="text-lg font-black text-success">R$ {{ "%.2f"|format(total_comprado.valor) }}</p>
+    <div class="bg-discord-300 p-8 flex flex-col sm:flex-row justify-between items-center gap-8">
+        <div class="flex items-center gap-10">
+            <div class="flex flex-col">
+                <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2">Comprado</span>
+                <span class="text-xl font-black text-success leading-none">R$ {{ "%.2f"|format(total_comprado.valor)
+                    }}</span>
             </div>
-            <div class="w-px h-8 bg-discord-400"></div>
-            <div>
-                <p class="text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Restante</p>
-                <p class="text-lg font-black text-primary-DEFAULT">R$ {{ "%.2f"|format(total.valor - total_comprado.valor) }}</p>
+            <div class="w-px h-10 bg-discord-400"></div>
+            <div class="flex flex-col">
+                <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2">Restante</span>
+                <span class="text-xl font-black text-primary-DEFAULT leading-none">R$ {{ "%.2f"|format(total.valor -
+                    total_comprado.valor) }}</span>
             </div>
         </div>
-        <div class="text-right">
-            <p class="text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Total Estimado</p>
-            <p class="text-3xl font-black text-text-heading leading-none">R$ {{ "%.2f"|format(total.valor) }}</p>
+        <div class="text-right flex flex-col sm:items-end">
+            <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2">Total Estimado</span>
+            <span class="text-4xl font-black text-text-heading leading-none">R$ {{ "%.2f"|format(total.valor) }}</span>
         </div>
     </div>
     {% endif %}
 </div>
 
 <!-- Modal Novo Categoria Item -->
-<div id="modalNovoGrupoItem" class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
+<div id="modalNovoGrupoItem"
+    class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
     <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
                     <i class="ph-bold ph-folder-plus text-primary-DEFAULT"></i> Categoria
                 </h2>
-                <button type="button" onclick="document.getElementById('modalNovoGrupoItem').classList.add('hidden')" class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
+                <button type="button" onclick="document.getElementById('modalNovoGrupoItem').classList.add('hidden')"
+                    class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
+                        class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('lists.add_grupo_item', id=lista.id) }}" method="POST" class="space-y-6">
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Denominação</label>
-                    <input type="text" name="denominacao" placeholder="Ex: Higiene, Laticínios..." class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold" required autofocus>
+                    <label
+                        class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Denominação</label>
+                    <input type="text" name="denominacao" placeholder="Ex: Higiene, Laticínios..."
+                        class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold"
+                        required autofocus>
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="document.getElementById('modalNovoGrupoItem').classList.add('hidden')" class="flex-1 h-10 text-white font-bold rounded-md hover:underline transition-standard bg-transparent">Cancelar</button>
-                    <button type="submit" class="flex-1 h-10 bg-primary-DEFAULT text-white font-bold rounded-md shadow-lg transition-standard hover:bg-primary-hover">Adicionar</button>
+                    <button type="button"
+                        onclick="document.getElementById('modalNovoGrupoItem').classList.add('hidden')"
+                        class="flex-1 h-10 text-white font-bold rounded-md hover:underline transition-standard bg-transparent">Cancelar</button>
+                    <button type="submit"
+                        class="flex-1 h-10 bg-primary-DEFAULT text-white font-bold rounded-md shadow-lg transition-standard hover:bg-primary-hover">Adicionar</button>
                 </div>
             </form>
         </div>
@@ -186,59 +255,151 @@
 </div>
 
 <!-- Modal Editar Item -->
-<div id="modalEditarItem" class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
+<div id="modalEditarItem"
+    class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
     <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
                     <i class="ph-bold ph-pencil-simple text-primary-DEFAULT"></i> Editar Item
                 </h2>
-                <button type="button" onclick="document.getElementById('modalEditarItem').classList.add('hidden')" class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
+                <button type="button" onclick="document.getElementById('modalEditarItem').classList.add('hidden')"
+                    class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
+                        class="ph-bold ph-x"></i></button>
             </div>
             <form id="formEditarItem" action="" method="POST" class="space-y-6">
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Item</label>
-                    <input type="text" id="edit_item_nome" name="item" class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold" required>
+                    <label class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">Item</label>
+                    <input type="text" id="edit_item_nome" name="item"
+                        class="block w-full h-11 px-4 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold uppercase"
+                        required>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Categoria</label>
-                    <select id="edit_item_grupo" name="grupo_id" class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold" required>
-                        <option value="" disabled>📂 Categoria</option>
+                    <label
+                        class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">Categoria</label>
+                    <select id="edit_item_grupo" name="grupo_id"
+                        class="block w-full h-11 px-4 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold uppercase">
+                        <option value="">OUTROS (PADRÃO)</option>
                         {% for g in grupos %}
-                        <option value="{{ g.id }}">{{ g.denominacao }}</option>
+                        {% if g.denominacao.upper() != 'OUTROS' %}
+                        <option value="{{ g.id }}">{{ g.denominacao.upper() }}</option>
+                        {% endif %}
                         {% endfor %}
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Valor Estimado</label>
+                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Valor
+                        Estimado</label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
                             <span class="text-xs font-bold leading-none">R$</span>
                         </div>
-                        <input type="number" step="0.01" id="edit_item_valor" name="valor" class="block w-full h-10 pl-8 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold">
+                        <input type="number" step="0.01" id="edit_item_valor" name="valor"
+                            class="block w-full h-10 pl-8 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">URL (Referência Externa)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
+                            <i class="ph-bold ph-link text-lg"></i>
+                        </div>
+                        <input type="url" id="edit_item_link" name="link" placeholder="https://exemplo.com" class="block w-full h-11 pl-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold">
                     </div>
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="document.getElementById('modalEditarItem').classList.add('hidden')" class="flex-1 h-10 text-white font-bold rounded-md hover:underline transition-standard bg-transparent">Cancelar</button>
-                    <button type="submit" class="flex-1 h-10 bg-primary-DEFAULT text-white font-bold rounded-md shadow-lg transition-standard hover:bg-primary-hover">Salvar</button>
+                    <button type="button" onclick="document.getElementById('modalEditarItem').classList.add('hidden')"
+                        class="flex-1 h-10 text-white font-bold rounded-md hover:underline transition-standard bg-transparent">Cancelar</button>
+                    <button type="submit"
+                        class="flex-1 h-10 bg-primary-DEFAULT text-white font-bold rounded-md shadow-lg transition-standard hover:bg-primary-hover">Salvar</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+<!-- Modal Ver Item -->
+<div id="modalVerItem" class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[110] p-4 transition-standard">
+    <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
+                    <i class="ph-bold ph-info text-blue-400"></i> Detalhes do Item
+                </h2>
+                <button type="button" onclick="document.getElementById('modalVerItem').classList.add('hidden')" class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <span class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Item</span>
+                    <p id="view_item_nome" class="text-lg font-bold text-text-heading uppercase"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <span class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Categoria</span>
+                        <p id="view_item_grupo" class="text-sm font-bold text-text-normal uppercase"></p>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Valor</span>
+                        <p id="view_item_valor" class="text-sm font-black text-white"></p>
+                    </div>
+                </div>
+                <div id="view_item_link_container" class="hidden pt-2 border-t border-discord-400">
+                    <span class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-2">Link Externo</span>
+                    <a id="view_item_link" href="#" target="_blank" class="flex items-center gap-2 text-primary-DEFAULT hover:underline font-bold text-[13px] bg-discord-300 p-3 rounded-lg transition-standard">
+                        <i class="ph-bold ph-arrow-square-out flex-shrink-0"></i>
+                        <span id="view_item_link_text" class="truncate"></span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <button type="button" onclick="document.getElementById('modalVerItem').classList.add('hidden')" class="w-full h-11 bg-discord-400 text-white font-bold rounded-xl transition-standard hover:bg-discord-500">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-function openEditItemModal(btn) {
-    const id = btn.getAttribute('data-id');
-    const nome = btn.getAttribute('data-nome');
-    const grupoId = btn.getAttribute('data-grupo');
-    const valor = btn.getAttribute('data-valor');
-    
-    document.getElementById('edit_item_nome').value = nome;
-    document.getElementById('edit_item_grupo').value = grupoId;
-    document.getElementById('edit_item_valor').value = (valor && valor !== 'None') ? valor : '';
-    document.getElementById('formEditarItem').action = '/lists/item/' + id + '/edit';
-    document.getElementById('modalEditarItem').classList.remove('hidden');
-}
+    function openEditItemModal(btn) {
+        const id = btn.getAttribute('data-id');
+        const nome = btn.getAttribute('data-nome');
+        const grupoId = btn.getAttribute('data-grupo');
+        const valor = btn.getAttribute('data-valor');
+        const link = btn.getAttribute('data-link');
+
+        document.getElementById('edit_item_nome').value = nome;
+        document.getElementById('edit_item_grupo').value = grupoId;
+        document.getElementById('edit_item_valor').value = (valor && valor !== 'None') ? valor : '';
+        document.getElementById('edit_item_link').value = (link && link !== 'None') ? link : '';
+        document.getElementById('formEditarItem').action = '/lists/item/' + id + '/edit';
+        document.getElementById('modalEditarItem').classList.remove('hidden');
+    }
+
+    function openViewItemModal(btn) {
+        const nome = btn.getAttribute('data-nome');
+        const grupo = btn.getAttribute('data-grupo');
+        const valor = btn.getAttribute('data-valor');
+        const link = btn.getAttribute('data-link');
+
+        document.getElementById('view_item_nome').innerText = nome;
+        document.getElementById('view_item_grupo').innerText = grupo;
+        document.getElementById('view_item_valor').innerText = valor ? 'R$ ' + parseFloat(valor).toFixed(2) : '--';
+        
+        const linkContainer = document.getElementById('view_item_link_container');
+        const linkElem = document.getElementById('view_item_link');
+        const linkText = document.getElementById('view_item_link_text');
+        
+        if (link && link !== '' && link !== 'None') {
+            linkElem.href = link;
+            linkText.innerText = link;
+            linkContainer.classList.remove('hidden');
+        } else {
+            linkContainer.classList.add('hidden');
+        }
+        
+        document.getElementById('modalVerItem').classList.remove('hidden');
+    }
 </script>
 {% endblock %}

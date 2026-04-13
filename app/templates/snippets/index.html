@@ -119,34 +119,34 @@
                 <p class="text-sm font-medium mt-2 max-w-xs">Clique em um dos itens da lista ao lado para visualizar o conteúdo formado.</p>
             </div>
 
-            <div id="snippet-content" class="hidden bg-discord-200 border border-discord-400 rounded-[2.5rem] p-10 shadow-sm min-h-[600px] sticky top-24">
-                <div class="flex justify-between items-start mb-10 border-b border-discord-400 pb-8">
+            <div id="snippet-content" class="hidden bg-white border border-slate-200 rounded-[2.5rem] p-10 shadow-sm min-h-[600px] sticky top-24">
+                <div class="flex justify-between items-start mb-10 border-b border-slate-100 pb-8">
                     <div>
-                        <h2 id="detail-title" class="text-3xl font-extrabold text-text-heading tracking-tight"></h2>
-                        <p id="detail-desc" class="text-sm text-text-muted font-medium mt-2"></p>
+                        <h2 id="detail-title" class="text-3xl font-extrabold text-slate-900 tracking-tight"></h2>
+                        <p id="detail-desc" class="text-sm text-slate-500 font-medium mt-2"></p>
                     </div>
                     <div class="flex gap-2">
-                        <a id="detail-edit" href="#" class="w-10 h-10 flex items-center justify-center bg-[#313338] text-text-muted hover:text-text-normal rounded-md transition-standard shadow-sm" data-tooltip="Editar" data-tooltip-pos="top">
+                        <a id="detail-edit" href="#" class="w-10 h-10 flex items-center justify-center bg-slate-100 text-slate-500 hover:text-primary-DEFAULT rounded-md transition-standard shadow-sm border border-slate-200" data-tooltip="Editar" data-tooltip-pos="top">
                             <i class="ph-bold ph-pencil-simple text-xl"></i>
                         </a>
-                        <button id="detail-delete" onclick="confirmDelete(this.getAttribute('data-id'), this.getAttribute('data-titulo'))" class="w-10 h-10 flex items-center justify-center bg-[#313338] text-text-muted hover:text-danger rounded-md transition-standard shadow-sm" data-tooltip="Remover" data-tooltip-pos="top">
+                        <button id="detail-delete" onclick="confirmDelete(this.getAttribute('data-id'), this.getAttribute('data-titulo'))" class="w-10 h-10 flex items-center justify-center bg-slate-100 text-slate-500 hover:text-danger rounded-md transition-standard shadow-sm border border-slate-200" data-tooltip="Remover" data-tooltip-pos="top">
                             <i class="ph-bold ph-trash text-xl"></i>
                         </button>
-                        <a id="detail-link" href="#" target="_blank" class="w-10 h-10 flex items-center justify-center bg-[#313338] text-text-muted hover:text-primary-DEFAULT rounded-md transition-standard shadow-sm" data-tooltip="Abrir em aba" data-tooltip-pos="top">
+                        <a id="detail-link" href="#" target="_blank" class="w-10 h-10 flex items-center justify-center bg-slate-100 text-slate-500 hover:text-primary-DEFAULT rounded-md transition-standard shadow-sm border border-slate-200" data-tooltip="Abrir em aba" data-tooltip-pos="top">
                             <i class="ph-bold ph-arrow-square-out text-xl"></i>
                         </a>
                     </div>
                 </div>
 
-                <div id="detail-body" class="markdown-body text-text-normal">
+                <div id="detail-body" class="markdown-body text-slate-800">
                     <!-- Markdown content goes here -->
                 </div>
 
-                <div class="mt-12 pt-8 border-t border-discord-400 flex gap-4">
-                    <button id="copy-content-btn" onclick="copyRawContent(this.getAttribute('data-id'), this.getAttribute('data-raw'))" class="px-6 py-4 bg-[#1e1f22] text-text-normal rounded-xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 hover:bg-[#111214] transition-standard shadow-sm">
+                <div class="mt-12 pt-8 border-t border-slate-100 flex gap-4">
+                    <button id="copy-content-btn" onclick="copyRawContent(this.getAttribute('data-id'), this.getAttribute('data-raw'))" class="px-6 py-4 bg-slate-900 text-white rounded-xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 hover:bg-black transition-standard shadow-sm">
                         <i class="ph-bold ph-copy text-lg"></i> Copiar Código
                     </button>
-                    <button onclick="copySnippetUrl(window.location.host + document.getElementById('detail-link').getAttribute('href'))" class="px-6 py-4 bg-[#313338] text-text-muted rounded-xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 hover:text-text-normal transition-standard">
+                    <button onclick="copySnippetUrl(window.location.host + document.getElementById('detail-link').getAttribute('href'))" class="px-6 py-4 bg-slate-100 text-slate-500 rounded-xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 hover:text-slate-900 border border-slate-200 transition-standard">
                         <i class="ph-bold ph-link text-lg"></i> Copiar Link
                     </button>
                 </div>

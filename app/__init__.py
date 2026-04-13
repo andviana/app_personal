@@ -54,6 +54,12 @@ def create_app(config_class=Config):
     from app.snippets import bp as snippets_bp
     app.register_blueprint(snippets_bp, url_prefix='/snippets')
 
+    from app.perfumes import bp as perfumes_bp
+    app.register_blueprint(perfumes_bp, url_prefix='/perfumes')
+
+    from app.pessoas import bp as pessoas_bp
+    app.register_blueprint(pessoas_bp, url_prefix='/pessoas')
+
     from app.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
 

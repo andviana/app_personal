@@ -216,6 +216,24 @@
                 <div class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'snippets' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}"></div>
             </a>
 
+            <!-- Perfumes -->
+            <a href="{{ url_for('perfumes.index') }}" 
+                class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
+                {% if request.endpoint and 'perfumes' in request.endpoint %}bg-[#ffb000] text-black rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#ffb000] hover:text-black{% endif %}"
+                data-tooltip="Perfumes" data-tooltip-pos="right">
+                <i class="ph-fill ph-drop text-2xl"></i>
+                <div class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'perfumes' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}"></div>
+            </a>
+
+            <!-- Pessoas -->
+            <a href="{{ url_for('pessoas.index') }}" 
+                class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
+                {% if request.endpoint and 'pessoas' in request.endpoint %}bg-[#43b581] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#43b581] hover:text-white{% endif %}"
+                data-tooltip="Pessoas" data-tooltip-pos="right">
+                <i class="ph-fill ph-users text-2xl"></i>
+                <div class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'pessoas' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}"></div>
+            </a>
+
             <!-- Configurações -->
             <a href="{{ url_for('settings.index') }}" 
                 class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative mt-auto
@@ -272,6 +290,9 @@
 
         <a href="{{ url_for('lists.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading' if request.endpoint and 'lists' in request.endpoint else 'text-text-muted hover:text-text-normal' }}">
             <i class="{{ 'ph-fill' if request.endpoint and 'lists' in request.endpoint else 'ph-bold' }} ph-shopping-bag text-2xl"></i>
+        </a>
+        <a href="{{ url_for('perfumes.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading' if request.endpoint and 'perfumes' in request.endpoint else 'text-text-muted hover:text-text-normal' }}">
+            <i class="{{ 'ph-fill' if request.endpoint and 'perfumes' in request.endpoint else 'ph-bold' }} ph-drop text-2xl"></i>
         </a>
         <a href="{{ url_for('settings.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading' if request.endpoint and 'settings' in request.endpoint else 'text-text-muted hover:text-text-normal' }}">
             <i class="{{ 'ph-fill' if request.endpoint and 'settings' in request.endpoint else 'ph-bold' }} ph-gear-six text-2xl"></i>

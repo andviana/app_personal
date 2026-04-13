@@ -43,7 +43,19 @@ def add_item(id):
     grupo_id = request.form.get('grupo_id')
     valor = request.form.get('valor')
     
-    if item and grupo_id:
+    if item:
+        # Forçar Caixa Alta
+        item = item.upper()
+        
+        # Categoria Padrão: OUTROS
+        if not grupo_id:
+            grupo_outros = GrupoItem.query.filter(GrupoItem.denominacao.ilike('OUTROS')).first()
+            if not grupo_outros:
+                grupo_outros = GrupoItem(denominacao='OUTROS')
+                db.session.add(grupo_outros)
+                db.session.commit()
+            grupo_id = grupo_outros.id
+            
         try:
             v_float = float(valor) if valor else None
         except ValueError:
@@ -86,15 +98,26 @@ def edit_item(item_id):
     valor = request.form.get('valor')
     
     if descricao:
-        item.item = descricao
+        item.item = descricao.upper() # Forçar Caixa Alta
+    
     if grupo_id:
         item.grupo_id = grupo_id
+    else:
+        # Fallback para OUTROS se esvaziar a categoria
+        grupo_outros = GrupoItem.query.filter(GrupoItem.denominacao.ilike('OUTROS')).first()
+        if not grupo_outros:
+            grupo_outros = GrupoItem(denominacao='OUTROS')
+            db.session.add(grupo_outros)
+            db.session.commit()
+        item.grupo_id = grupo_outros.id
     
     try:
         v_float = float(valor) if valor else None
         item.valor = v_float
     except ValueError:
         item.valor = None
+
+    item.link = request.form.get('link')
 
     db.session.commit()
     return redirect(url_for('lists.detail', id=item.lista_id))

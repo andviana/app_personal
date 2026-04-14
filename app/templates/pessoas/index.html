@@ -62,63 +62,47 @@
             </div>
 
             <h3 class="text-lg font-black text-text-heading uppercase tracking-tight mb-1">{{ p.nome_completo }}</h3>
-            <div class="flex flex-wrap gap-2 mb-4">
+            <div class="flex flex-wrap gap-x-3 gap-y-2 mb-4">
                 {% if p.cpf %}
-                <span
-                    class="px-2 py-0.5 bg-discord-300 text-[10px] font-bold text-text-muted rounded-md border border-discord-400 uppercase tracking-widest">CPF:
-                    {{ p.cpf }}</span>
-                {% endif %}
-                {% if p.data_nascimento %}
-                <span
-                    class="px-2 py-0.5 bg-discord-300 text-[10px] font-bold text-text-muted rounded-md border border-discord-400 uppercase tracking-widest">Nasc:
-                    {{ p.data_nascimento.strftime('%d/%m/%Y') }}</span>
+                <span class="text-[10px] font-bold text-text-muted uppercase tracking-widest"><span class="opacity-50">CPF:</span> {{ p.cpf }}</span>
                 {% endif %}
                 {% if p.rg_numero %}
-                <span
-                    class="px-2 py-0.5 bg-discord-300 text-[10px] font-bold text-text-muted rounded-md border border-discord-400 uppercase tracking-widest">RG:
-                    {{ p.rg_numero }} {{ p.rg_orgao or '' }}</span>
+                <span class="text-[10px] font-bold text-text-muted uppercase tracking-widest"><span class="opacity-50">RG:</span> {{ p.rg_numero }}</span>
+                {% endif %}
+                {% if p.data_nascimento %}
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-text-muted uppercase tracking-widest">{{ p.data_nascimento.strftime('%d/%m/%Y') }}</span>
+                    {% if p.idade %}
+                    <span class="px-1.5 py-0.5 bg-[#43b581]/10 text-[#43b581] text-[9px] font-black rounded border border-[#43b581]/20">{{ p.idade }} anos</span>
+                    {% endif %}
+                </div>
                 {% endif %}
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-4">
                 {% if p.telefones %}
                 <div class="flex flex-col gap-1.5">
                     <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Telefones</span>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap gap-3">
                         {% for t in p.telefones[:2] %}
                         <span class="flex items-center gap-1.5 text-xs font-semibold text-text-normal">
                             <i class="ph-bold ph-phone text-[#43b581]"></i> {{ t.numero }}
                         </span>
                         {% endfor %}
-                        {% if p.telefones|length > 2 %}
-                        <span class="text-xs text-text-muted font-bold">+{{ p.telefones|length - 2 }}</span>
-                        {% endif %}
                     </div>
                 </div>
                 {% endif %}
 
-                {% if p.arquivos %}
+                {% if p.enderecos %}
                 <div class="flex flex-col gap-1.5">
-                    <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Documentos</span>
+                    <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Endereços</span>
                     <div class="flex flex-col gap-1">
-                        {% for f in p.arquivos[:3] %}
-                        <div
-                            class="flex items-center justify-between group/link h-8 px-2 bg-discord-300 rounded-lg border border-discord-400 hover:border-[#43b581]/50 transition-all">
-                            <a href="{{ f.url }}" target="_blank"
-                                class="text-[11px] font-bold text-text-normal truncate max-w-[150px] hover:text-[#43b581] transition-colors">
-                                <i class="ph-bold ph-file-text text-[#43b581] mr-1"></i> {{ f.titulo }}
-                            </a>
-                            <button onclick="copyToClipboard('{{ f.url }}')"
-                                class="p-1.5 text-text-muted hover:text-[#43b581] transition-colors" title="Copiar URL">
-                                <i class="ph-bold ph-copy text-sm"></i>
-                            </button>
+                        {% for e in p.enderecos[:1] %}
+                        <div class="flex items-start gap-2 text-[11px] text-text-muted italic leading-snug">
+                            <i class="ph-bold ph-map-pin text-[#43b581] mt-0.5 flex-shrink-0"></i>
+                            <span class="line-clamp-2">{{ e.descricao }}</span>
                         </div>
                         {% endfor %}
-                        {% if p.arquivos|length > 3 %}
-                        <span
-                            class="text-[10px] text-text-muted font-bold text-center mt-1 uppercase tracking-widest">Ver
-                            mais {{ p.arquivos|length - 3 }} arquivos...</span>
-                        {% endif %}
                     </div>
                 </div>
                 {% endif %}
@@ -128,10 +112,174 @@
             <span class="text-[10px] text-text-muted font-bold uppercase tracking-widest italic">
                 Desde {{ p.data_cadastro.strftime('%d/%m/%Y') }}
             </span>
-            <a href="{{ url_for('pessoas.edit', id=p.id) }}"
+            <button onclick="toggleModal('modal-pessoa-{{ p.id }}')"
                 class="text-[10px] font-black text-[#43b581] uppercase tracking-widest hover:underline">
-                Gerenciar Ficha <i class="ph-bold ph-caret-right ml-1"></i>
-            </a>
+                Mostrar ficha <i class="ph-bold ph-caret-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Digital Profile -->
+    <div id="modal-pessoa-{{ p.id }}" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-[#000000]/80 backdrop-blur-sm" onclick="toggleModal('modal-pessoa-{{ p.id }}')"></div>
+        <div class="relative bg-discord-200 w-full max-w-2xl rounded-3xl border border-discord-400 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+            <!-- Header -->
+            <div class="relative h-14 bg-gradient-to-r from-[#43b581] to-[#3a9c6e] flex-shrink-0">
+                <button onclick="toggleModal('modal-pessoa-{{ p.id }}')" class="absolute top-4 right-4 w-8 h-8 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center transition-all z-10">
+                    <i class="ph-bold ph-x text-base"></i>
+                </button>
+                <div class="absolute -bottom-6 left-8 p-1 bg-discord-200 rounded-2xl shadow-xl">
+                    <div class="w-16 h-16 bg-discord-300 rounded-xl flex items-center justify-center text-[#43b581] overflow-hidden">
+                        {% if p.foto_url %}
+                        <img src="{{ p.foto_url }}" alt="{{ p.nome_completo }}" class="w-full h-full object-cover">
+                        {% else %}
+                        <i class="ph-fill ph-user text-4xl"></i>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="pt-10 pb-8 px-8 overflow-y-auto custom-scrollbar">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-black text-text-heading uppercase tracking-tight leading-tight">{{ p.nome_completo }}</h2>
+                </div>
+
+                <div class="flex flex-col gap-6">
+                    <!-- Section 1: Personal Data -->
+                    <div class="bg-discord-300/30 p-6 rounded-2xl border border-discord-400/50">
+                        <h3 class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-5">
+                            <i class="ph-bold ph-identification-card text-lg text-[#43b581]"></i> Dados Pessoais
+                        </h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                            {% if p.cpf %}
+                            <div class="flex flex-col group/item">
+                                <span class="text-[9px] font-black text-text-muted/50 uppercase flex items-center gap-2">
+                                    CPF
+                                    <button onclick="copyToClipboard('{{ p.cpf }}', 'numbers', 'CPF')" class="opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all text-text-muted hover:text-[#43b581]" title="Copiar apenas números">
+                                        <i class="ph-bold ph-copy text-[10px]"></i>
+                                    </button>
+                                </span>
+                                <span class="text-sm font-bold text-text-normal">{{ p.cpf }}</span>
+                            </div>
+                            {% endif %}
+                            {% if p.data_nascimento %}
+                            <div class="flex flex-col group/item">
+                                <span class="text-[9px] font-black text-text-muted/50 uppercase flex items-center gap-2">
+                                    Nascimento / Idade
+                                    <button onclick="copyToClipboard('{{ p.data_nascimento.strftime('%d/%m/%Y') }}', 'date', 'Nascimento')" class="opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all text-text-muted hover:text-[#43b581]" title="Copiar em formato AAAA-MM-DD">
+                                        <i class="ph-bold ph-copy text-[10px]"></i>
+                                    </button>
+                                </span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-bold text-text-normal">{{ p.data_nascimento.strftime('%d/%m/%Y') }}</span>
+                                    {% if p.idade %}
+                                    <span class="px-1.5 py-0.5 bg-[#43b581]/10 text-[#43b581] text-[9px] font-black rounded border border-[#43b581]/20">{{ p.idade }}<span class="hidden sm:inline"> anos</span></span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if p.rg_numero %}
+                            <div class="flex flex-col group/item">
+                                <span class="text-[9px] font-black text-text-muted/50 uppercase flex items-center gap-2">
+                                    RG / Expedição
+                                    <button onclick="copyToClipboard('{{ p.rg_numero }}', 'numbers', 'RG')" class="opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all text-text-muted hover:text-[#43b581]" title="Copiar apenas números">
+                                        <i class="ph-bold ph-copy text-[10px]"></i>
+                                    </button>
+                                </span>
+                                <span class="text-sm font-bold text-text-normal">
+                                    {{ p.rg_numero }} {{ p.rg_orgao or '' }}
+                                    {% if p.rg_data_expedicao %}
+                                    <span class="text-text-muted font-normal ml-1">({{ p.rg_data_expedicao.strftime('%d/%m/%Y') }})</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                            {% endif %}
+                            {% if p.pis %}
+                            <div class="flex flex-col group/item">
+                                <span class="text-[9px] font-black text-text-muted/50 uppercase flex items-center gap-2">
+                                    PIS
+                                    <button onclick="copyToClipboard('{{ p.pis }}', 'numbers', 'PIS')" class="opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all text-text-muted hover:text-[#43b581]" title="Copiar apenas números">
+                                        <i class="ph-bold ph-copy text-[10px]"></i>
+                                    </button>
+                                </span>
+                                <span class="text-sm font-bold text-text-normal">{{ p.pis }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Contact Methods -->
+                    {% if p.telefones %}
+                    <div class="bg-discord-300/30 p-6 rounded-2xl border border-discord-400/50">
+                        <h3 class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-5">
+                            <i class="ph-bold ph-phone text-lg text-[#43b581]"></i> Telefone
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            {% for t in p.telefones %}
+                            <div class="px-3 py-2 bg-discord-300 rounded-xl text-xs font-bold text-text-normal flex items-center gap-3 border border-discord-400 shadow-sm group/tel transition-all hover:border-[#43b581]/30">
+                                <div class="flex items-center gap-2">
+                                    <i class="ph-fill ph-phone-call text-[#43b581]"></i> {{ t.numero }}
+                                </div>
+                                <button onclick="copyToClipboard('{{ t.numero }}', 'numbers', 'Telefone')" class="text-text-muted hover:text-[#43b581] transition-all" title="Copiar apenas números">
+                                    <i class="ph-bold ph-copy text-sm"></i>
+                                </button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Section 3: Addresses -->
+                    {% if p.enderecos %}
+                    <div class="bg-discord-300/30 p-6 rounded-2xl border border-discord-400/50">
+                        <h3 class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-5">
+                            <i class="ph-bold ph-map-pin text-lg text-[#43b581]"></i> Endereços
+                        </h3>
+                        <div class="space-y-3">
+                            {% for e in p.enderecos %}
+                            <div class="flex items-center justify-between p-3 bg-discord-300 rounded-xl border border-discord-400 group/addr transition-all">
+                                <span class="text-xs font-semibold text-text-normal leading-relaxed pr-4">{{ e.descricao }}</span>
+                                <button onclick="copyToClipboard('{{ e.descricao }}')" class="w-8 h-8 flex items-center justify-center bg-discord-400 text-text-muted hover:text-[#43b581] rounded-lg transition-all flex-shrink-0" data-tooltip="Copiar Endereço">
+                                    <i class="ph-bold ph-copy text-lg"></i>
+                                </button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Section 4: Documentation -->
+                    {% if p.arquivos %}
+                    <div class="bg-discord-300/30 p-6 rounded-2xl border border-discord-400/50">
+                        <h3 class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-5">
+                            <i class="ph-bold ph-files text-lg text-[#43b581]"></i> Documentação
+                        </h3>
+                        <div class="space-y-3">
+                            {% for f in p.arquivos %}
+                            <div class="flex items-center justify-between p-3 bg-discord-300 rounded-xl border border-discord-400 group/doc transition-all">
+                                <span class="text-xs font-bold text-text-normal truncate pr-2">{{ f.titulo }}</span>
+                                <div class="flex items-center gap-1">
+                                    <a href="{{ f.url }}" target="_blank" class="w-8 h-8 flex items-center justify-center bg-discord-400 text-text-muted hover:text-[#43b581] rounded-lg transition-all" data-tooltip="Abrir em Nova Aba">
+                                        <i class="ph-bold ph-arrow-square-out text-lg"></i>
+                                    </a>
+                                    <button onclick="copyToClipboard('{{ f.url }}')" class="w-8 h-8 flex items-center justify-center bg-discord-400 text-text-muted hover:text-[#43b581] rounded-lg transition-all" data-tooltip="Copiar URL">
+                                        <i class="ph-bold ph-copy text-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-6 bg-discord-300 border-t border-discord-400 flex justify-end gap-3 flex-shrink-0">
+                <button onclick="toggleModal('modal-pessoa-{{ p.id }}')" class="px-6 py-2 text-xs font-black uppercase tracking-widest text-text-muted hover:text-white transition-all">Fechar</button>
+                <a href="{{ url_for('pessoas.edit', id=p.id) }}" class="px-6 py-2 bg-[#43b581] text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-[#43b581]/90 shadow-lg shadow-[#43b581]/20 transition-all">Editar Dados</a>
+            </div>
         </div>
     </div>
     {% else %}
@@ -150,8 +298,32 @@
 </div>
 
 <script>
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
+    function toggleModal(id) {
+        const modal = document.getElementById(id);
+        if (modal.classList.contains('hidden')) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        } else {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    function copyToClipboard(text, type = 'default', label = '') {
+        let finalContent = text;
+        let displayLabel = label || 'Informação';
+
+        if (type === 'numbers') {
+            finalContent = text.replace(/\D/g, '');
+        } else if (type === 'date') {
+            // Converte DD/MM/YYYY para YYYY-MM-DD
+            const parts = text.split('/');
+            if (parts.length === 3) {
+                finalContent = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+        }
+
+        navigator.clipboard.writeText(finalContent).then(() => {
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -161,9 +333,14 @@
                 background: '#313338',
                 color: '#dbdee1'
             });
+            
+            let message = `${displayLabel} copiado!`;
+            if (type === 'numbers') message = `${displayLabel} (apenas números) copiado!`;
+            if (type === 'date') message = `${displayLabel} (formato data) copiado!`;
+
             Toast.fire({
                 icon: 'success',
-                title: 'URL copiada para o clipboard!'
+                title: message
             });
         });
     }

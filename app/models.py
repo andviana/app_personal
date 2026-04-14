@@ -101,6 +101,14 @@ class Pessoa(db.Model):
     telefones = db.relationship('Telefone', backref='pessoa', lazy=True, cascade="all, delete-orphan")
     arquivos = db.relationship('PessoaArquivo', backref='pessoa', lazy=True, cascade="all, delete-orphan")
 
+    @property
+    def idade(self):
+        if not self.data_nascimento:
+            return None
+        from datetime import date
+        today = date.today()
+        return today.year - self.data_nascimento.year - ((today.month, today.day) < (self.data_nascimento.month, self.data_nascimento.day))
+
     def __repr__(self):
         return f'<Pessoa {self.nome_completo}>'
 

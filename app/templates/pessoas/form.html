@@ -4,66 +4,80 @@
 
 {% block content %}
 <div class="mb-8 flex items-center gap-4">
-    <a href="{{ url_for('pessoas.index') }}" class="w-10 h-10 flex items-center justify-center bg-discord-200 border border-discord-400 rounded-xl text-text-muted hover:text-white transition-all">
+    <a href="{{ url_for('pessoas.index') }}"
+        class="w-10 h-10 flex items-center justify-center bg-discord-200 border border-discord-400 rounded-xl text-text-muted hover:text-white transition-all">
         <i class="ph-bold ph-caret-left text-xl"></i>
     </a>
     <div>
-        <h1 class="text-3xl font-black tracking-tight text-text-heading uppercase">{{ 'Editar Registro' if pessoa else 'Novo Cadastro' }}</h1>
+        <h1 class="text-3xl font-black tracking-tight text-text-heading ">{{ 'Edição' if pessoa else 'Cadastro
+            Cadastro' }}</h1>
         <p class="text-text-muted font-medium">Preencha os dados e gerencie os vínculos documentais.</p>
     </div>
 </div>
 
-<form action="{{ url_for('pessoas.edit', id=pessoa.id) if pessoa else url_for('pessoas.add') }}" method="POST" class="space-y-8 pb-10">
+<form action="{{ url_for('pessoas.edit', id=pessoa.id) if pessoa else url_for('pessoas.add') }}" method="POST"
+    class="space-y-8 pb-10">
     <!-- Seção 1: Dados Pessoais -->
     <div class="bg-discord-200 border border-discord-400 rounded-3xl p-8">
         <div class="flex items-center gap-3 mb-8 border-b border-discord-300 pb-4">
             <i class="ph-bold ph-identification-card text-2xl text-[#43b581]"></i>
             <h2 class="text-lg font-black text-text-heading uppercase tracking-wide">Informações Básicas</h2>
         </div>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="md:col-span-2">
-                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">Nome Completo *</label>
+                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">Nome
+                    Completo *</label>
                 <input type="text" name="nome_completo" value="{{ pessoa.nome_completo if pessoa else '' }}" required
-                       class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
+                    class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
             </div>
             <div>
-                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">Data de Nascimento</label>
-                <input type="date" name="data_nascimento" value="{{ pessoa.data_nascimento.strftime('%Y-%m-%d') if pessoa and pessoa.data_nascimento else '' }}"
-                       class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
+                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">Data de
+                    Nascimento</label>
+                <input type="date" name="data_nascimento"
+                    value="{{ pessoa.data_nascimento.strftime('%Y-%m-%d') if pessoa and pessoa.data_nascimento else '' }}"
+                    class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
             </div>
             <div>
-                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">CPF</label>
+                <label
+                    class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">CPF</label>
                 <input type="text" name="cpf" value="{{ pessoa.cpf if pessoa else '' }}" placeholder="000.000.000-00"
-                       oninput="maskCPF(this)" maxlength="14"
-                       class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
+                    oninput="maskCPF(this)" maxlength="14"
+                    class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
             </div>
 
             <div class="lg:col-span-1">
-                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">RG (Número)</label>
+                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">RG
+                    (Número)</label>
                 <input type="text" name="rg_numero" value="{{ pessoa.rg_numero if pessoa else '' }}"
-                       class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
+                    class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
             </div>
             <div>
-                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">RG (Órgão)</label>
+                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">RG
+                    (Órgão)</label>
                 <input type="text" name="rg_orgao" value="{{ pessoa.rg_orgao if pessoa else '' }}" placeholder="SSP/SP"
-                       class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
+                    class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
             </div>
             <div>
-                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">RG (Expedição)</label>
-                <input type="date" name="rg_data_expedicao" value="{{ pessoa.rg_data_expedicao.strftime('%Y-%m-%d') if pessoa and pessoa.rg_data_expedicao else '' }}"
-                       class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
+                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">RG
+                    (Expedição)</label>
+                <input type="date" name="rg_data_expedicao"
+                    value="{{ pessoa.rg_data_expedicao.strftime('%Y-%m-%d') if pessoa and pessoa.rg_data_expedicao else '' }}"
+                    class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
             </div>
             <div>
-                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">PIS</label>
+                <label
+                    class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">PIS</label>
                 <input type="text" name="pis" value="{{ pessoa.pis if pessoa else '' }}" placeholder="000.00000.00-0"
-                       oninput="maskPIS(this)" maxlength="14"
-                       class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
+                    oninput="maskPIS(this)" maxlength="14"
+                    class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
             </div>
             <div class="md:col-span-2">
-                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">URL da Foto</label>
-                <input type="url" name="foto_url" value="{{ pessoa.foto_url if pessoa else '' }}" placeholder="https://..."
-                       class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
+                <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">URL da
+                    Foto</label>
+                <input type="url" name="foto_url" value="{{ pessoa.foto_url if pessoa else '' }}"
+                    placeholder="https://..."
+                    class="w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#43b581] text-text-normal text-sm font-semibold transition-all">
             </div>
         </div>
     </div>
@@ -76,25 +90,30 @@
                     <i class="ph-bold ph-map-pin text-2xl text-[#43b581]"></i>
                     <h2 class="text-lg font-black text-text-heading uppercase tracking-wide">Endereços</h2>
                 </div>
-                <button type="button" onclick="addRow('addresses-container')" class="w-8 h-8 bg-[#43b581]/10 text-[#43b581] rounded-lg hover:bg-[#43b581] hover:text-white transition-all">
+                <button type="button" onclick="addRow('addresses-container')"
+                    class="w-8 h-8 bg-[#43b581]/10 text-[#43b581] rounded-lg hover:bg-[#43b581] hover:text-white transition-all">
                     <i class="ph-bold ph-plus"></i>
                 </button>
             </div>
             <div id="addresses-container" class="space-y-4">
                 {% if pessoa and pessoa.enderecos %}
-                    {% for end in pessoa.enderecos %}
-                    <div class="flex gap-2 animate-in fade-in duration-200">
-                        <input type="text" name="enderecos[]" value="{{ end.descricao }}" 
-                               class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
-                        <button type="button" onclick="this.parentElement.remove()" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i class="ph-bold ph-x"></i></button>
-                    </div>
-                    {% endfor %}
+                {% for end in pessoa.enderecos %}
+                <div class="flex gap-2 animate-in fade-in duration-200">
+                    <input type="text" name="enderecos[]" value="{{ end.descricao }}"
+                        class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
+                    <button type="button" onclick="this.parentElement.remove()"
+                        class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i
+                            class="ph-bold ph-x"></i></button>
+                </div>
+                {% endfor %}
                 {% else %}
-                    <div class="flex gap-2">
-                        <input type="text" name="enderecos[]" placeholder="Rua, Número, Bairro, Cidade..." 
-                               class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
-                        <button type="button" onclick="this.parentElement.remove()" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i class="ph-bold ph-x"></i></button>
-                    </div>
+                <div class="flex gap-2">
+                    <input type="text" name="enderecos[]" placeholder="Rua, Número, Bairro, Cidade..."
+                        class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
+                    <button type="button" onclick="this.parentElement.remove()"
+                        class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i
+                            class="ph-bold ph-x"></i></button>
+                </div>
                 {% endif %}
             </div>
         </div>
@@ -106,25 +125,32 @@
                     <i class="ph-bold ph-phone text-2xl text-[#43b581]"></i>
                     <h2 class="text-lg font-black text-text-heading uppercase tracking-wide">Contatos</h2>
                 </div>
-                <button type="button" onclick="addRow('phones-container')" class="w-8 h-8 bg-[#43b581]/10 text-[#43b581] rounded-lg hover:bg-[#43b581] hover:text-white transition-all">
+                <button type="button" onclick="addRow('phones-container')"
+                    class="w-8 h-8 bg-[#43b581]/10 text-[#43b581] rounded-lg hover:bg-[#43b581] hover:text-white transition-all">
                     <i class="ph-bold ph-plus"></i>
                 </button>
             </div>
             <div id="phones-container" class="space-y-4">
                 {% if pessoa and pessoa.telefones %}
-                    {% for tel in pessoa.telefones %}
-                    <div class="flex gap-2 animate-in fade-in duration-200">
-                        <input type="text" name="telefones[]" value="{{ tel.numero }}" oninput="maskPhone(this)" maxlength="15"
-                               class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
-                        <button type="button" onclick="this.parentElement.remove()" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i class="ph-bold ph-x"></i></button>
-                    </div>
-                    {% endfor %}
+                {% for tel in pessoa.telefones %}
+                <div class="flex gap-2 animate-in fade-in duration-200">
+                    <input type="text" name="telefones[]" value="{{ tel.numero }}" oninput="maskPhone(this)"
+                        maxlength="15"
+                        class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
+                    <button type="button" onclick="this.parentElement.remove()"
+                        class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i
+                            class="ph-bold ph-x"></i></button>
+                </div>
+                {% endfor %}
                 {% else %}
-                    <div class="flex gap-2">
-                        <input type="text" name="telefones[]" placeholder="(XX) XXXXX-XXXX" oninput="maskPhone(this)" maxlength="15"
-                               class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
-                        <button type="button" onclick="this.parentElement.remove()" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i class="ph-bold ph-x"></i></button>
-                    </div>
+                <div class="flex gap-2">
+                    <input type="text" name="telefones[]" placeholder="(XX) XXXXX-XXXX" oninput="maskPhone(this)"
+                        maxlength="15"
+                        class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
+                    <button type="button" onclick="this.parentElement.remove()"
+                        class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i
+                            class="ph-bold ph-x"></i></button>
+                </div>
                 {% endif %}
             </div>
         </div>
@@ -135,62 +161,75 @@
         <div class="flex items-center justify-between mb-8 border-b border-discord-300 pb-4">
             <div class="flex items-center gap-3">
                 <i class="ph-bold ph-files text-2xl text-[#43b581]"></i>
-                <h2 class="text-lg font-black text-text-heading uppercase tracking-wide">Documentos Vinculados (Links Externos)</h2>
+                <h2 class="text-lg font-black text-text-heading uppercase tracking-wide">Documentos Vinculados (Links
+                    Externos)</h2>
             </div>
-            <button type="button" onclick="addRow('files-container')" class="w-10 h-10 bg-[#43b581]/10 text-[#43b581] rounded-xl hover:bg-[#43b581] hover:text-white transition-all">
+            <button type="button" onclick="addRow('files-container')"
+                class="w-10 h-10 bg-[#43b581]/10 text-[#43b581] rounded-xl hover:bg-[#43b581] hover:text-white transition-all">
                 <i class="ph-bold ph-plus-circle text-xl"></i>
             </button>
         </div>
         <div class="mb-4 p-4 bg-discord-100/50 rounded-2xl flex items-center gap-3 text-xs text-text-muted">
             <i class="ph-bold ph-info text-xl text-[#43b581]"></i>
-            <p>O sistema armazena apenas **referências externas**. Certifique-se de que a URL inserida é válida e acessível.</p>
+            <p>O sistema armazena apenas **referências externas**. Certifique-se de que a URL inserida é válida e
+                acessível.</p>
         </div>
         <div id="files-container" class="space-y-3">
             {% if pessoa and pessoa.arquivos %}
-                {% for f in pessoa.arquivos %}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-center animate-in fade-in duration-200 bg-discord-300/30 p-3 rounded-2xl border border-discord-400">
-                    <input type="text" name="arquivo_titulos[]" value="{{ f.titulo }}" placeholder="Título do Documento (Ex: RG Digital)"
-                           class="h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
-                    <div class="flex gap-2">
-                        <input type="text" name="arquivo_urls[]" value="{{ f.url }}" placeholder="URL (Google Drive, OneDrive, etc)"
-                               class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
-                        <button type="button" onclick="this.closest('.grid').remove()" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i class="ph-bold ph-trash"></i></button>
-                    </div>
+            {% for f in pessoa.arquivos %}
+            <div
+                class="grid grid-cols-1 md:grid-cols-2 gap-3 items-center animate-in fade-in duration-200 bg-discord-300/30 p-3 rounded-2xl border border-discord-400">
+                <input type="text" name="arquivo_titulos[]" value="{{ f.titulo }}"
+                    placeholder="Título do Documento (Ex: RG Digital)"
+                    class="h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
+                <div class="flex gap-2">
+                    <input type="text" name="arquivo_urls[]" value="{{ f.url }}"
+                        placeholder="URL (Google Drive, OneDrive, etc)"
+                        class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
+                    <button type="button" onclick="this.closest('.grid').remove()"
+                        class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i
+                            class="ph-bold ph-trash"></i></button>
                 </div>
-                {% endfor %}
+            </div>
+            {% endfor %}
             {% else %}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-center bg-discord-300/30 p-3 rounded-2xl border border-discord-400">
-                    <input type="text" name="arquivo_titulos[]" placeholder="Título do Documento (Ex: RG Digital)"
-                           class="h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
-                    <div class="flex gap-2">
-                        <input type="text" name="arquivo_urls[]" placeholder="URL (Google Drive, OneDrive, etc)"
-                               class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
-                        <button type="button" onclick="this.closest('.grid').remove()" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i class="ph-bold ph-trash"></i></button>
-                    </div>
+            <div
+                class="grid grid-cols-1 md:grid-cols-2 gap-3 items-center bg-discord-300/30 p-3 rounded-2xl border border-discord-400">
+                <input type="text" name="arquivo_titulos[]" placeholder="Título do Documento (Ex: RG Digital)"
+                    class="h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
+                <div class="flex gap-2">
+                    <input type="text" name="arquivo_urls[]" placeholder="URL (Google Drive, OneDrive, etc)"
+                        class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
+                    <button type="button" onclick="this.closest('.grid').remove()"
+                        class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i
+                            class="ph-bold ph-trash"></i></button>
                 </div>
+            </div>
             {% endif %}
         </div>
     </div>
 
     <!-- Actions -->
     <div class="flex gap-4 pt-4">
-        <button type="submit" class="flex-1 h-14 bg-[#43b581] text-white font-black rounded-2xl hover:bg-[#43b581]/90 transition-all uppercase text-sm tracking-widest shadow-xl shadow-[#43b581]/20">
+        <button type="submit"
+            class="flex-1 h-14 bg-[#43b581] text-white font-black rounded-2xl hover:bg-[#43b581]/90 transition-all uppercase text-sm tracking-widest shadow-xl shadow-[#43b581]/20">
             <i class="ph-bold ph-check-circle mr-2 text-xl"></i> Salvar Registro Completo
         </button>
-        <a href="{{ url_for('pessoas.index') }}" class="flex-1 h-14 bg-discord-300 text-text-muted font-black rounded-2xl hover:bg-discord-400 hover:text-white transition-all uppercase text-sm tracking-widest flex items-center justify-center">
+        <a href="{{ url_for('pessoas.index') }}"
+            class="flex-1 h-14 bg-discord-300 text-text-muted font-black rounded-2xl hover:bg-discord-400 hover:text-white transition-all uppercase text-sm tracking-widest flex items-center justify-center">
             Cancelar
         </a>
     </div>
 </form>
 
 <script>
-function addRow(containerId) {
-    const container = document.getElementById(containerId);
-    const div = document.createElement('div');
-    
-    if (containerId === 'files-container') {
-        div.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 items-center animate-in fade-in slide-in-from-left-2 duration-300 bg-discord-300/30 p-3 rounded-2xl border border-discord-400';
-        div.innerHTML = `
+    function addRow(containerId) {
+        const container = document.getElementById(containerId);
+        const div = document.createElement('div');
+
+        if (containerId === 'files-container') {
+            div.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 items-center animate-in fade-in slide-in-from-left-2 duration-300 bg-discord-300/30 p-3 rounded-2xl border border-discord-400';
+            div.innerHTML = `
             <input type="text" name="arquivo_titulos[]" placeholder="Título do Documento"
                    class="h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
             <div class="flex gap-2">
@@ -199,48 +238,48 @@ function addRow(containerId) {
                 <button type="button" onclick="this.closest('.grid').remove()" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i class="ph-bold ph-trash"></i></button>
             </div>
         `;
-    } else {
-        div.className = 'flex gap-2 animate-in fade-in slide-in-from-left-2 duration-300';
-        const name = containerId === 'addresses-container' ? 'enderecos[]' : 'telefones[]';
-        const placeholder = containerId === 'addresses-container' ? 'Endereço completo...' : '(XX) XXXXX-XXXX';
-        const mask = containerId === 'phones-container' ? 'oninput="maskPhone(this)" maxlength="15"' : '';
-        
-        div.innerHTML = `
+        } else {
+            div.className = 'flex gap-2 animate-in fade-in slide-in-from-left-2 duration-300';
+            const name = containerId === 'addresses-container' ? 'enderecos[]' : 'telefones[]';
+            const placeholder = containerId === 'addresses-container' ? 'Endereço completo...' : '(XX) XXXXX-XXXX';
+            const mask = containerId === 'phones-container' ? 'oninput="maskPhone(this)" maxlength="15"' : '';
+
+            div.innerHTML = `
             <input type="text" name="${name}" placeholder="${placeholder}" ${mask}
                    class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
             <button type="button" onclick="this.parentElement.remove()" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i class="ph-bold ph-x"></i></button>
         `;
+        }
+        container.appendChild(div);
+        div.querySelector('input').focus();
     }
-    container.appendChild(div);
-    div.querySelector('input').focus();
-}
 
-// Máscaras Simples
-function maskCPF(i) {
-    let v = i.value.replace(/\D/g, "");
-    if (v.length <= 11) {
-        v = v.replace(/(\d{3})(\d)/, "$1.$2");
-        v = v.replace(/(\d{3})(\d)/, "$1.$2");
-        v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    // Máscaras Simples
+    function maskCPF(i) {
+        let v = i.value.replace(/\D/g, "");
+        if (v.length <= 11) {
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        }
+        i.value = v;
     }
-    i.value = v;
-}
 
-function maskPIS(i) {
-    let v = i.value.replace(/\D/g, "");
-    if (v.length <= 11) {
-        v = v.replace(/(\d{3})(\d)/, "$1.$2");
-        v = v.replace(/(\d{5})(\d)/, "$1.$2");
-        v = v.replace(/(\d{5}\.\d{2})(\d)/, "$1-$2");
+    function maskPIS(i) {
+        let v = i.value.replace(/\D/g, "");
+        if (v.length <= 11) {
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{5})(\d)/, "$1.$2");
+            v = v.replace(/(\d{5}\.\d{2})(\d)/, "$1-$2");
+        }
+        i.value = v;
     }
-    i.value = v;
-}
 
-function maskPhone(i) {
-    let v = i.value.replace(/\D/g, "");
-    v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
-    v = v.replace(/(\d)(\d{4})$/, "$1-$2");
-    i.value = v;
-}
+    function maskPhone(i) {
+        let v = i.value.replace(/\D/g, "");
+        v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+        v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+        i.value = v;
+    }
 </script>
 {% endblock %}

@@ -7,6 +7,45 @@ from app.services.log_service import LogService
 
 class ScraperService:
     @staticmethod
+    def scrape_and_add(url, list_id, current_user):
+        """Scrapes URL and automatically creates a list item in the provided list."""
+        data = ScraperService.scrape_url(url)
+        from app.services.list_service import ListService
+        from flask import flash
+        
+        if data['success']:
+            ListService.create_list_item(
+                lista_id=list_id,
+                item_text=data['item'],
+                grupo_id=None,
+                valor=data['valor'],
+                link=url,
+                current_user=current_user
+            )
+            flash('Item extraído e adicionado com sucesso!', 'success')
+        elif data.get('is_restricted'):
+            flash('O site bloqueou a extração ou exige login. Item adicionado com nome genérico.', 'warning')
+            ListService.create_list_item(
+                lista_id=list_id,
+                item_text=data['item'] or "SITE RESTRITO",
+                grupo_id=None,
+                valor=data.get('valor'),
+                link=url,
+                current_user=current_user
+            )
+        else:
+            flash('Não foi possível extrair. Um item genérico foi criado.', 'warning')
+            ListService.create_list_item(
+                lista_id=list_id,
+                item_text="ITEM IMPORTADO (FALHA)",
+                grupo_id=None,
+                valor=None,
+                link=url,
+                current_user=current_user
+            )
+        return data
+
+    @staticmethod
     def scrape_url(url):
         """
         Main entry point for scraping.

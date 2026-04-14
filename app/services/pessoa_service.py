@@ -27,14 +27,14 @@ class PessoaService:
             nasc_data = form_data.get('data_nascimento')
             
             pessoa = Pessoa(
-                nome_completo=form_data.get('nome_completo'),
-                rg_numero=form_data.get('rg_numero'),
-                rg_orgao=form_data.get('rg_orgao'),
+                nome_completo=form_data.get('nome_completo', '').strip(),
+                rg_numero=form_data.get('rg_numero', '').strip() or None,
+                rg_orgao=form_data.get('rg_orgao', '').strip() or None,
                 rg_data_expedicao=datetime.strptime(rg_data, '%Y-%m-%d') if rg_data else None,
-                cpf=form_data.get('cpf'),
-                pis=form_data.get('pis'),
+                cpf=form_data.get('cpf', '').strip() or None,
+                pis=form_data.get('pis', '').strip() or None,
                 data_nascimento=datetime.strptime(nasc_data, '%Y-%m-%d') if nasc_data else None,
-                foto_url=form_data.get('foto_url')
+                foto_url=form_data.get('foto_url', '').strip() or None
             )
             repo.add(pessoa)
             repo.flush()
@@ -76,14 +76,14 @@ class PessoaService:
             rg_data = form_data.get('rg_data_expedicao')
             nasc_data = form_data.get('data_nascimento')
             
-            pessoa.nome_completo = form_data.get('nome_completo')
-            pessoa.rg_numero = form_data.get('rg_numero')
-            pessoa.rg_orgao = form_data.get('rg_orgao')
+            pessoa.nome_completo = form_data.get('nome_completo', '').strip()
+            pessoa.rg_numero = form_data.get('rg_numero', '').strip() or None
+            pessoa.rg_orgao = form_data.get('rg_orgao', '').strip() or None
             pessoa.rg_data_expedicao = datetime.strptime(rg_data, '%Y-%m-%d') if rg_data else None
-            pessoa.cpf = form_data.get('cpf')
-            pessoa.pis = form_data.get('pis')
+            pessoa.cpf = form_data.get('cpf', '').strip() or None
+            pessoa.pis = form_data.get('pis', '').strip() or None
             pessoa.data_nascimento = datetime.strptime(nasc_data, '%Y-%m-%d') if nasc_data else None
-            pessoa.foto_url = form_data.get('foto_url')
+            pessoa.foto_url = form_data.get('foto_url', '').strip() or None
 
             # Limpar relacionados para reinserir
             repo.delete_related(id)

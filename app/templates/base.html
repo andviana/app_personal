@@ -397,62 +397,25 @@
         </div>
     </div>
 
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
     <script>
-        function showLoading() {
-            document.getElementById('loading-overlay').classList.add('active');
-        }
-
-        function hideLoading() {
-            document.getElementById('loading-overlay').classList.remove('active');
-        }
-
-        document.addEventListener('submit', function (e) {
-            if (e.defaultPrevented) return;
-            showLoading();
-            setTimeout(() => {
-                const submits = e.target.querySelectorAll('button[type="submit"], input[type="submit"]');
-                submits.forEach(btn => {
-                    btn.disabled = true;
-                    btn.classList.add('opacity-50', 'cursor-not-allowed');
-                });
-            }, 0);
-        });
-
-        window.addEventListener('pageshow', function (event) { hideLoading(); });
-        window.addEventListener('load', function () { hideLoading(); });
-
         // Global Flash Message Handler
         {% with messages = get_flashed_messages(with_categories = true) %}
         {% if messages %}
         document.addEventListener('DOMContentLoaded', () => {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                customClass: {
-                    popup: 'discord-theme'
-                },
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                }
-            });
-
             {% for category, message in messages %}
             // Skip login errors here as they are handled locally in login.html
             {% if request.endpoint != 'auth.login' %}
-            Toast.fire({
-                icon: '{{ "success" if category == "success" else "error" if category == "danger" else "info" }}',
-                title: '{{ message }}'
-            });
+            if (window.showToast) {
+                window.showToast({{ message|tojson|safe }}, '{{ "success" if category == "success" else "error" if category == "danger" else "info" }}');
+            }
             {% endif %}
             {% endfor %}
         });
         {% endif %}
         {% endwith %}
     </script>
+
 
     {% block scripts_extra %}{% endblock %}
 </body>

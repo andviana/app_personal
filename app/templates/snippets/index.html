@@ -82,12 +82,12 @@
                                 <a href="{{ url_for('snippets.editar', id=s.id) }}" class="p-2 bg-[#313338] text-text-muted hover:text-text-normal rounded-md transition-standard" data-tooltip="Editar" data-tooltip-pos="top">
                                     <i class="ph-bold ph-pencil-simple text-lg"></i>
                                 </a>
-                                <button data-id="{{ s.id }}" data-titulo="{{ s.titulo }}" onclick="confirmDelete(this.dataset.id, this.dataset.titulo)" class="p-2 bg-[#313338] text-text-muted hover:text-danger rounded-md transition-standard" data-tooltip="Excluir" data-tooltip-pos="top">
+                                <button data-id="{{ s.id }}" data-titulo="{{ s.titulo }}" onclick="confirmDelete(this.dataset.id, this.dataset.titulo, '{{ url_for('snippets.delete', id=0) }}')" class="p-2 bg-[#313338] text-text-muted hover:text-danger rounded-md transition-standard" data-tooltip="Excluir" data-tooltip-pos="top">
                                     <i class="ph-bold ph-trash text-lg"></i>
                                 </button>
                             </div>
                             <div class="flex flex-wrap gap-2">
-                                <button data-id="{{ s.id }}" data-raw="{{ s.conteudo }}" onclick="copyRawContent(this.dataset.id, this.dataset.raw)" class="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center gap-1.5 p-2 bg-[#313338] rounded-md whitespace-nowrap hover:text-text-normal transition-standard">
+                                <button data-id="{{ s.id }}" data-raw="{{ s.conteudo }}" onclick="copyRawContent(this.dataset.raw)" class="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center gap-1.5 p-2 bg-[#313338] rounded-md whitespace-nowrap hover:text-text-normal transition-standard">
                                     <i class="ph-bold ph-copy text-lg"></i> Copiar Código
                                 </button>
                                 <button data-url="{{ url_for('snippets.view', id=s.id, _external=True) }}" onclick="copySnippetUrl(this.dataset.url)" class="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center gap-1.5 p-2 bg-[#313338] rounded-md whitespace-nowrap hover:text-text-normal transition-standard">
@@ -129,7 +129,7 @@
                         <a id="detail-edit" href="#" class="w-10 h-10 flex items-center justify-center bg-slate-100 text-slate-500 hover:text-primary-DEFAULT rounded-md transition-standard shadow-sm border border-slate-200" data-tooltip="Editar" data-tooltip-pos="top">
                             <i class="ph-bold ph-pencil-simple text-xl"></i>
                         </a>
-                        <button id="detail-delete" onclick="confirmDelete(this.getAttribute('data-id'), this.getAttribute('data-titulo'))" class="w-10 h-10 flex items-center justify-center bg-slate-100 text-slate-500 hover:text-danger rounded-md transition-standard shadow-sm border border-slate-200" data-tooltip="Remover" data-tooltip-pos="top">
+                        <button id="detail-delete" onclick="confirmDelete(this.getAttribute('data-id'), this.getAttribute('data-titulo'), '{{ url_for('snippets.delete', id=0) }}')" class="w-10 h-10 flex items-center justify-center bg-slate-100 text-slate-500 hover:text-danger rounded-md transition-standard shadow-sm border border-slate-200" data-tooltip="Remover" data-tooltip-pos="top">
                             <i class="ph-bold ph-trash text-xl"></i>
                         </button>
                         <a id="detail-link" href="#" target="_blank" class="w-10 h-10 flex items-center justify-center bg-slate-100 text-slate-500 hover:text-primary-DEFAULT rounded-md transition-standard shadow-sm border border-slate-200" data-tooltip="Abrir em aba" data-tooltip-pos="top">
@@ -143,10 +143,10 @@
                 </div>
 
                 <div class="mt-12 pt-8 border-t border-slate-100 flex gap-4">
-                    <button id="copy-content-btn" onclick="copyRawContent(this.getAttribute('data-id'), this.getAttribute('data-raw'))" class="px-6 py-4 bg-slate-900 text-white rounded-xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 hover:bg-black transition-standard shadow-sm">
+                    <button id="copy-content-btn" onclick="copyRawContent(this.getAttribute('data-raw'))" class="px-6 py-4 bg-slate-900 text-white rounded-xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 hover:bg-black transition-standard shadow-sm">
                         <i class="ph-bold ph-copy text-lg"></i> Copiar Código
                     </button>
-                    <button onclick="copySnippetUrl(window.location.host + document.getElementById('detail-link').getAttribute('href'))" class="px-6 py-4 bg-slate-100 text-slate-500 rounded-xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 hover:text-slate-900 border border-slate-200 transition-standard">
+                    <button onclick="copySnippetUrl(window.location.protocol + '//' + window.location.host + document.getElementById('detail-link').getAttribute('href'))" class="px-6 py-4 bg-slate-100 text-slate-500 rounded-xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 hover:text-slate-900 border border-slate-200 transition-standard">
                         <i class="ph-bold ph-link text-lg"></i> Copiar Link
                     </button>
                 </div>
@@ -156,149 +156,11 @@
 </div>
 
 <!-- Forms for hidden actions -->
-<form id="delete-form" method="POST" style="display: none;"></form>
+<form id="delete-form" method="POST" style="display: none;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+</form>
 {% endblock %}
 
 {% block scripts_extra %}
-<script>
-    // Global Toast Notification
-    const showToast = (message) => {
-        Swal.fire({
-            text: message,
-            icon: 'success',
-            toast: true,
-            position: 'top-right',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-        });
-    }
-
-    function confirmDelete(id, titulo) {
-        Swal.fire({
-            title: 'Tem certeza?',
-            text: `Deseja realmente remover o snippet "${titulo}"? Esta ação não pode ser desfeita.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#94a3b8',
-            confirmButtonText: 'Sim, remover!',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true,
-            customClass: {
-                popup: 'rounded-[2rem]',
-                confirmButton: 'rounded-xl px-6 py-3 font-bold',
-                cancelButton: 'rounded-xl px-6 py-3 font-bold'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const form = document.getElementById('delete-form');
-                form.action = `/snippets/${id}/deletar`;
-                form.submit();
-            }
-        });
-    }
-
-    function copyRawContent(id, content) {
-        navigator.clipboard.writeText(content).then(() => {
-            showToast('Markdown copiado para a área de transferência!');
-        });
-    }
-
-    function copySnippetUrl(url) {
-        // Ensure absolute URL
-        const finalUrl = url.includes('http') ? url : window.location.origin + url;
-        navigator.clipboard.writeText(finalUrl).then(() => {
-            showToast('Link copiado com sucesso!');
-        });
-    }
-
-    function toggleAccordion(id) {
-        const content = document.getElementById('content-' + id);
-        const icon = document.getElementById('icon-' + id);
-        const parent = content.closest('.mobile-snippet-item');
-        
-        if (content.classList.contains('hidden')) {
-            content.classList.remove('hidden');
-            icon.classList.add('rotate-180');
-            parent.classList.add('ring-2', 'ring-primary-600', 'border-transparent');
-        } else {
-            content.classList.add('hidden');
-            icon.classList.remove('rotate-180');
-            parent.classList.remove('ring-2', 'ring-primary-600', 'border-transparent');
-        }
-    }
-
-    function loadSnippet(id, element) {
-        document.querySelectorAll('.snippet-list-item').forEach(el => el.classList.remove('active'));
-        element.classList.add('active');
-
-        const bodyContent = document.getElementById('detail-body');
-        bodyContent.style.opacity = '0.5';
-
-        fetch(`/snippets/${id}`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('empty-state').classList.add('hidden');
-            document.getElementById('snippet-content').classList.remove('hidden');
-            
-            document.getElementById('detail-title').textContent = data.titulo;
-            document.getElementById('detail-desc').textContent = data.descricao || '';
-            document.getElementById('detail-body').innerHTML = data.html;
-            document.getElementById('detail-body').style.opacity = '1';
-            
-            // Update action buttons and data
-            document.getElementById('detail-edit').href = `/snippets/${data.id}/editar`;
-            document.getElementById('detail-link').href = `/snippets/${data.id}`;
-            document.getElementById('detail-delete').setAttribute('data-id', data.id);
-            document.getElementById('detail-delete').setAttribute('data-titulo', data.titulo);
-            
-            // Set raw content for copy button
-            document.getElementById('copy-content-btn').setAttribute('data-id', data.id);
-            document.getElementById('copy-content-btn').setAttribute('data-raw', data.conteudo);
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    }
-
-    // Search logic with Debounce
-    let searchTimeout;
-    const searchInput = document.getElementById('snippet-search');
-    
-    searchInput.addEventListener('input', (e) => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            const q = e.target.value.toLowerCase();
-            
-            // Desktop filtering
-            let desktopResults = 0;
-            document.querySelectorAll('.snippet-list-item').forEach(item => {
-                const text = item.innerText.toLowerCase();
-                if (text.includes(q)) {
-                    item.style.display = 'block';
-                    desktopResults++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-            
-            const emptyDesktop = document.getElementById('desktop-empty');
-            if (emptyDesktop) emptyDesktop.style.display = desktopResults === 0 ? 'block' : 'none';
-
-            // Mobile filtering
-            document.querySelectorAll('.mobile-snippet-item').forEach(item => {
-                const text = item.innerText.toLowerCase();
-                if (text.includes(q)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        }, 300);
-    });
-</script>
+<script src="{{ url_for('static', filename='js/snippets.js') }}" defer></script>
 {% endblock %}

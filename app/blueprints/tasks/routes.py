@@ -21,7 +21,8 @@ def add():
 def edit(id):
     descricao = request.form.get('descricao')
     grupo_id = request.form.get('grupo_id')
-    TaskService.update_task_basic(id, descricao, grupo_id, current_user)
+    status_nome = request.form.get('status_nome')
+    TaskService.update_task_basic(id, descricao, grupo_id, status_nome, current_user)
     return redirect(url_for('tasks.index'))
 
 @bp.route('/iniciar/<int:id>', methods=['POST'])

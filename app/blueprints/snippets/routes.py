@@ -1,12 +1,18 @@
 from flask import render_template, request, redirect, url_for, jsonify
 from app.blueprints.snippets import bp
 from app.services.snippet_service import SnippetService
+from app.services.markdown_renderer import render_markdown
 from flask_login import current_user
 
 @bp.route('/')
 def index():
     search = request.args.get('search', '')
     snippets = SnippetService.get_all_snippets(search)
+    
+    # Pre-render Markdown content for mobile accordion
+    for s in snippets:
+        s.html = render_markdown(s.conteudo)
+        
     return render_template('snippets/index.html', snippets=snippets, search=search)
 
 @bp.route('/novo')
@@ -21,10 +27,9 @@ def view(id):
             'id': snippet.id,
             'titulo': snippet.titulo,
             'conteudo': snippet.conteudo,
-            'linguagem': snippet.linguagem,
-            'html': snippet.conteudo # In a real app we'd convert markdown/code to HTML
+            'html': render_markdown(snippet.conteudo)
         })
-    return render_template('snippets/view.html', snippet=snippet)
+    return render_template('snippets/view.html', snippet=snippet, snippet_html=render_markdown(snippet.conteudo))
 
 @bp.route('/editar/<int:id>')
 def editar(id):

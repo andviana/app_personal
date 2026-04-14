@@ -233,8 +233,8 @@
                 </form>
                 {% endif %}
 
-                <button data-id="{{ t.id }}" data-desc="{{ t.descricao }}" data-grupo="{{ t.grupo_id }}"
-                    onclick="openEditModal(this.dataset.id, this.dataset.desc, this.dataset.grupo)"
+                <button data-id="{{ t.id }}" data-desc="{{ t.descricao }}" data-grupo="{{ t.grupo_id }}" data-status="{{ status_name }}"
+                    onclick="openEditModal(this.dataset.id, this.dataset.desc, this.dataset.grupo, this.dataset.status)"
                     class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-md transition-standard"
                     data-tooltip="Editar" data-tooltip-pos="top">
                     <i class="ph-bold ph-pencil-simple"></i>
@@ -349,6 +349,25 @@
                         </div>
                     </div>
                 </div>
+                <div>
+                    <label class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">Ponteiro de Status</label>
+                    <div class="relative group">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted group-focus-within:text-primary-DEFAULT transition-colors">
+                            <i class="ph-bold ph-activity text-lg"></i>
+                        </div>
+                        <select name="status_nome" id="editStatusNome"
+                            class="appearance-none block w-full h-11 pl-11 pr-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold transition-standard cursor-pointer uppercase">
+                            <option value="PENDENTE">PENDENTE</option>
+                            <option value="INICIADO">INICIADO</option>
+                            <option value="FINALIZADO">FINALIZADO</option>
+                        </select>
+                        <div
+                            class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-text-muted">
+                            <i class="ph-bold ph-caret-down"></i>
+                        </div>
+                    </div>
+                </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button" onclick="document.getElementById('modalEditTarefa').classList.add('hidden')"
                         class="flex-1 h-10 text-white font-bold rounded-md hover:underline transition-standard bg-transparent">Cancelar</button>
@@ -361,95 +380,23 @@
 </div>
 
 <!-- Formulário Oculto para Deletar -->
-<form id="delete-task-form" method="POST" style="display: none;"></form>
+<form id="delete-task-form" method="POST" style="display: none;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+</form>
+{% endblock %}
 
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='js/tasks.js') }}" defer></script>
 <script>
-    function togglePanel() {
-        const filterBar = document.getElementById('filterBar');
-        const taskForm = document.getElementById('taskFormArea');
-        const toggleBtn = document.getElementById('toggleModeBtn');
-
-        if (filterBar.classList.contains('hidden')) {
-            filterBar.classList.remove('hidden');
-            taskForm.classList.add('hidden');
-            toggleBtn.innerHTML = '<i class="ph-bold ph-plus text-lg text-primary-DEFAULT"></i>';
-            toggleBtn.classList.replace('bg-discord-100', 'bg-discord-200');
-            toggleBtn.classList.add('border-discord-400');
-        } else {
-            filterBar.classList.add('hidden');
-            taskForm.classList.remove('hidden');
-            toggleBtn.innerHTML = '<i class="ph-bold ph-magnifying-glass text-lg"></i> <span class="hidden md:inline">Pesquisar</span>';
-            toggleBtn.classList.replace('bg-discord-200', 'bg-discord-100');
-            toggleBtn.classList.remove('border-discord-400');
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'new') {
+            // Task index handles "New Group" as a modal, but for tasks it's just a visible form by default
+            // unless we want to trigger specific focus.
+            // On dashboard, "Nova Tarefa" should probably focus the description input.
+            const taskInput = document.querySelector('input[name="descricao"]');
+            if (taskInput) taskInput.focus();
         }
-    }
-
-    function openEditModal(id, descricao, grupo_id) {
-        document.getElementById('editDescricao').value = descricao;
-        document.getElementById('editGrupoId').value = grupo_id;
-        document.getElementById('formEditTarefa').action = "/tasks/edit/" + id;
-        document.getElementById('modalEditTarefa').classList.remove('hidden');
-    }
-
-    function confirmDeleteTask(id, descricao) {
-        Swal.fire({
-            title: 'Excluir Tarefa?',
-            text: `Deseja realmente remover a tarefa "${descricao}"?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#da373c',
-            cancelButtonColor: '#4e5058',
-            confirmButtonText: 'Sim, excluir!',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true,
-            customClass: {
-                popup: 'discord-theme',
-                confirmButton: 'rounded-xl px-6 py-3 font-bold',
-                cancelButton: 'rounded-xl px-6 py-3 font-bold'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const form = document.getElementById('delete-task-form');
-                form.action = "/tasks/delete/" + id;
-                form.submit();
-            }
-        });
-    }
-
-    function filterTasks() {
-        const descFilter = document.getElementById('filterDesc').value.toLowerCase();
-        const grupoFilter = document.getElementById('filterGrupo').value;
-        const statusFilter = document.getElementById('filterStatus').value;
-        const groups = document.querySelectorAll('.task-group');
-
-        groups.forEach(group => {
-            let hasVisibleTasks = false;
-            const gName = group.getAttribute('data-grupo');
-            const rows = group.querySelectorAll('.task-row');
-
-            rows.forEach(row => {
-                const rDesc = row.getAttribute('data-desc');
-                const rStatus = row.getAttribute('data-status');
-                const matchDesc = rDesc.includes(descFilter);
-                const matchGrupo = (grupoFilter === "" || gName === grupoFilter);
-                const matchStatus = (statusFilter === "" || rStatus === statusFilter);
-
-                if (matchDesc && matchGrupo && matchStatus) {
-                    row.classList.replace('hidden', 'flex');
-                    hasVisibleTasks = true;
-                } else {
-                    row.classList.replace('flex', 'hidden');
-                }
-            });
-            group.style.display = hasVisibleTasks ? 'block' : 'none';
-        });
-    }
-
-    function clearFilters() {
-        document.getElementById('filterDesc').value = '';
-        document.getElementById('filterGrupo').selectedIndex = 0;
-        document.getElementById('filterStatus').selectedIndex = 0;
-        filterTasks();
-    }
+    });
 </script>
 {% endblock %}

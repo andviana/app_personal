@@ -9,8 +9,7 @@
         <i class="ph-bold ph-caret-left text-xl"></i>
     </a>
     <div>
-        <h1 class="text-3xl font-black tracking-tight text-text-heading ">{{ 'Edição' if pessoa else 'Cadastro
-            Cadastro' }}</h1>
+        <h1 class="text-3xl font-black tracking-tight text-text-heading ">{{ 'Edição' if pessoa else 'Cadastro' }}</h1>
         <p class="text-text-muted font-medium">Preencha os dados e gerencie os vínculos documentais.</p>
     </div>
 </div>
@@ -223,65 +222,8 @@
         </a>
     </div>
 </form>
+{% endblock %}
 
-<script>
-    function addRow(containerId) {
-        const container = document.getElementById(containerId);
-        const div = document.createElement('div');
-
-        if (containerId === 'files-container') {
-            div.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 items-center animate-in fade-in slide-in-from-left-2 duration-300 bg-discord-300/30 p-3 rounded-2xl border border-discord-400';
-            div.innerHTML = `
-            <input type="text" name="arquivo_titulos[]" placeholder="Título do Documento"
-                   class="h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
-            <div class="flex gap-2">
-                <input type="text" name="arquivo_urls[]" placeholder="URL (Google Drive, OneDrive, etc)"
-                       class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
-                <button type="button" onclick="this.closest('.grid').remove()" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i class="ph-bold ph-trash"></i></button>
-            </div>
-        `;
-        } else {
-            div.className = 'flex gap-2 animate-in fade-in slide-in-from-left-2 duration-300';
-            const name = containerId === 'addresses-container' ? 'enderecos[]' : 'telefones[]';
-            const placeholder = containerId === 'addresses-container' ? 'Endereço completo...' : '(XX) XXXXX-XXXX';
-            const mask = containerId === 'phones-container' ? 'oninput="maskPhone(this)" maxlength="15"' : '';
-
-            div.innerHTML = `
-            <input type="text" name="${name}" placeholder="${placeholder}" ${mask}
-                   class="flex-1 h-10 px-3 bg-[#1e1f22] border-none rounded-xl focus:ring-1 focus:ring-[#43b581] text-text-normal text-xs font-semibold">
-            <button type="button" onclick="this.parentElement.remove()" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-xl transition-all"><i class="ph-bold ph-x"></i></button>
-        `;
-        }
-        container.appendChild(div);
-        div.querySelector('input').focus();
-    }
-
-    // Máscaras Simples
-    function maskCPF(i) {
-        let v = i.value.replace(/\D/g, "");
-        if (v.length <= 11) {
-            v = v.replace(/(\d{3})(\d)/, "$1.$2");
-            v = v.replace(/(\d{3})(\d)/, "$1.$2");
-            v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-        }
-        i.value = v;
-    }
-
-    function maskPIS(i) {
-        let v = i.value.replace(/\D/g, "");
-        if (v.length <= 11) {
-            v = v.replace(/(\d{3})(\d)/, "$1.$2");
-            v = v.replace(/(\d{5})(\d)/, "$1.$2");
-            v = v.replace(/(\d{5}\.\d{2})(\d)/, "$1-$2");
-        }
-        i.value = v;
-    }
-
-    function maskPhone(i) {
-        let v = i.value.replace(/\D/g, "");
-        v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
-        v = v.replace(/(\d)(\d{4})$/, "$1-$2");
-        i.value = v;
-    }
-</script>
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='js/pessoas.js') }}" defer></script>
 {% endblock %}

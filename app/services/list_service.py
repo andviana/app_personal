@@ -7,16 +7,16 @@ class ListService:
     def get_lists_data():
         repo_listas = BaseRepository(Lista)
         repo_tipos = BaseRepository(TipoLista)
-        return repo_listas.list_all(order_by=Lista.titulo), repo_tipos.list_all(order_by=TipoLista.denominacao)
+        return repo_listas.list_all(order_by=Lista.denominacao), repo_tipos.list_all(order_by=TipoLista.denominacao)
 
     @staticmethod
-    def create_list(titulo, tipo_id, current_user):
-        if titulo:
+    def create_list(denominacao, tipo_id, current_user):
+        if denominacao:
             repo = BaseRepository(Lista)
-            nova_lista = Lista(titulo=titulo, tipo_id=tipo_id)
+            nova_lista = Lista(denominacao=denominacao, tipo_id=tipo_id)
             repo.add(nova_lista)
             repo.commit()
-            LogService.log_action(current_user.username, 'LIST_CREATED', f'ID: {nova_lista.id} | TITLE: {titulo}')
+            LogService.log_action(current_user.username, 'LIST_CREATED', f'ID: {nova_lista.id} | TITLE: {denominacao}')
             return nova_lista
         return None
 
@@ -24,11 +24,11 @@ class ListService:
     def delete_list(id, current_user):
         repo = BaseRepository(Lista)
         lista = repo.get_or_404(id)
-        titulo = lista.titulo
+        denominacao = lista.denominacao
         repo.delete(lista)
         repo.commit()
-        LogService.log_action(current_user.username, 'LIST_DELETED', f'ID: {id} | TITLE: {titulo}')
-        return titulo
+        LogService.log_action(current_user.username, 'LIST_DELETED', f'ID: {id} | TITLE: {denominacao}')
+        return denominacao
 
     @staticmethod
     def get_list_detail(id):
@@ -39,8 +39,8 @@ class ListService:
         return lista, grupos
 
     @staticmethod
-    def create_list_item(lista_id, descricao, grupo_id, valor, url, current_user):
-        if descricao:
+    def create_list_item(lista_id, item_text, grupo_id, valor, link, current_user):
+        if item_text:
             repo = BaseRepository(ItemLista)
             # Garantir grupo 'OUTROS' se não informado
             if not grupo_id:
@@ -54,33 +54,72 @@ class ListService:
             
             novo_item = ItemLista(
                 lista_id=lista_id,
-                descricao=descricao,
+                item=item_text,
                 grupo_id=grupo_id,
                 valor=valor,
-                url=url
+                link=link
             )
             repo.add(novo_item)
             repo.commit()
-            LogService.log_action(current_user.username, 'LIST_ITEM_CREATED', f'LIST_ID: {lista_id} | DESC: {descricao}')
+            LogService.log_action(current_user.username, 'LIST_ITEM_CREATED', f'LIST_ID: {lista_id} | ITEM: {item_text}')
             return novo_item
+        return None
+
+    @staticmethod
+    def update_list_item(item_id, item_text, grupo_id, valor, link, current_user):
+        repo = BaseRepository(ItemLista)
+        item = repo.get_or_404(item_id)
+        if item_text:
+            item.item = item_text
+            item.grupo_id = grupo_id if grupo_id else None
+            item.valor = valor if valor else None
+            item.link = link if link else None
+            repo.commit()
+            LogService.log_action(current_user.username, 'LIST_ITEM_UPDATED', f'ID: {item_id} | ITEM: {item_text}')
+            return item
         return None
 
     @staticmethod
     def toggle_item_check(item_id, checked, current_user):
         repo = BaseRepository(ItemLista)
         item = repo.get_or_404(item_id)
-        item.comprado = checked
+        if checked is None:
+            item.status = not item.status
+        else:
+            item.status = checked
         repo.commit()
-        status = "COMPRADO" if checked else "PENDENTE"
-        LogService.log_action(current_user.username, 'LIST_ITEM_TOGGLE', f'ID: {item_id} | NEW_STATUS: {status}')
+        log_status = "COMPRADO" if item.status else "PENDENTE"
+        LogService.log_action(current_user.username, 'LIST_ITEM_TOGGLE', f'ID: {item_id} | NEW_STATUS: {log_status}')
         return item
 
     @staticmethod
     def delete_item(item_id, current_user):
         repo = BaseRepository(ItemLista)
         item = repo.get_or_404(item_id)
-        desc = item.descricao
+        item_text = item.item
         repo.delete(item)
         repo.commit()
         LogService.log_action(current_user.username, 'LIST_ITEM_DELETED', f'ID: {item_id}')
-        return desc
+        return item_text
+
+    @staticmethod
+    def create_list_type(denominacao, current_user):
+        if denominacao:
+            repo = BaseRepository(TipoLista)
+            novo_tipo = TipoLista(denominacao=denominacao)
+            repo.add(novo_tipo)
+            repo.commit()
+            LogService.log_action(current_user.username, 'LIST_TYPE_CREATED', f'NAME: {denominacao}')
+            return novo_tipo
+        return None
+
+    @staticmethod
+    def create_item_group(denominacao, current_user):
+        if denominacao:
+            repo = BaseRepository(GrupoItem)
+            novo_grupo = GrupoItem(denominacao=denominacao)
+            repo.add(novo_grupo)
+            repo.commit()
+            LogService.log_action(current_user.username, 'ITEM_GROUP_CREATED', f'NAME: {denominacao}')
+            return novo_grupo
+        return None

@@ -86,7 +86,14 @@
             {% endif %}
             
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                <button onclick='openModal("edit", {{ p.id }}, {{ p.nome|tojson|safe }}, {{ (p.marca if p.marca else "")|tojson|safe }}, {{ (p.correspondente if p.correspondente else "")|tojson|safe }}, "{{ p.valor or "" }}", {{ (p.url if p.url else "")|tojson|safe }}, {{ (p.url_imagem if p.url_imagem else "")|tojson|safe }})' 
+                <button onclick="openPerfumeModal(this)" 
+                        data-id="{{ p.id }}"
+                        data-nome="{{ p.nome }}"
+                        data-marca="{{ p.marca or '' }}"
+                        data-correspondente="{{ p.correspondente or '' }}"
+                        data-valor="{{ p.valor or '' }}"
+                        data-url="{{ p.url or '' }}"
+                        data-url-imagem="{{ p.url_imagem or '' }}"
                         class="w-full h-10 bg-white/10 backdrop-blur-md text-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white/20 transition-all">
                     Editar Detalhes
                 </button>
@@ -221,84 +228,5 @@
 {% endblock %}
 
 {% block scripts_extra %}
-<script>
-    function filterPerfumes() {
-        const query = document.getElementById('searchPerfume').value.toLowerCase();
-        const cards = document.querySelectorAll('.perfume-card');
-        
-        cards.forEach(card => {
-            const nome = card.getAttribute('data-nome');
-            const corr = card.getAttribute('data-correspondente');
-            if (nome.includes(query) || corr.includes(query)) {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    }
-
-    function openModal(mode, id = '', nome = '', marca = '', corr = '', valor = '', url = '', url_imagem = '') {
-        const modal = document.getElementById('modalPerfume');
-        const form = document.getElementById('perfumeForm');
-        const title = document.getElementById('modalTitle');
-        
-        title.innerText = mode === 'add' ? 'Novo Perfume' : 'Editar Perfume';
-        form.action = mode === 'add' ? "{{ url_for('perfumes.add') }}" : `/perfumes/edit/${id}`;
-        
-        document.getElementById('field-nome').value = nome;
-        document.getElementById('field-marca').value = marca;
-        document.getElementById('field-correspondente').value = corr;
-        document.getElementById('field-valor').value = valor;
-        document.getElementById('field-url').value = url;
-        document.getElementById('field-url-imagem').value = url_imagem;
-        
-        updateImagePreview(url_imagem || url);
-        
-        modal.classList.remove('hidden');
-        document.getElementById('field-nome').focus();
-    }
-
-    function closeModal() {
-        document.getElementById('modalPerfume').classList.add('hidden');
-    }
-
-    function updateImagePreview(url) {
-        const previewArea = document.getElementById('formImgPreview');
-        const previewImg = document.getElementById('previewImg');
-        
-        if (url && (url.match(/\.(jpeg|jpg|gif|png|webp|avif)$/) != null)) {
-            previewImg.src = url;
-            previewArea.classList.remove('hidden');
-        } else {
-            previewArea.classList.add('hidden');
-        }
-    }
-
-    function confirmDeleteByForm(action, nome) {
-        Swal.fire({
-            title: 'Remover Perfume?',
-            text: `Deseja realmente excluir "${nome}"? Esta ação não pode ser desfeita.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#da373c',
-            cancelButtonColor: '#383a40',
-            confirmButtonText: 'Sim, excluir!',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true,
-            customClass: {
-                popup: 'rounded-[1.5rem] bg-discord-200 text-text-normal',
-                title: 'text-text-heading font-black',
-                content: 'text-text-muted',
-                confirmButton: 'rounded-xl px-6 py-2.5 font-bold uppercase tracking-widest text-xs',
-                cancelButton: 'rounded-xl px-6 py-2.5 font-bold uppercase tracking-widest text-xs'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const form = document.getElementById('deletePerfumeForm');
-                form.action = action;
-                form.submit();
-            }
-        });
-    }
-</script>
+<script src="{{ url_for('static', filename='js/perfumes.js') }}" defer></script>
 {% endblock %}

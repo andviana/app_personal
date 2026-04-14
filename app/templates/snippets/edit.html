@@ -14,7 +14,8 @@
         </div>
     </div>
 
-    <form action="{{ url_for('snippets.editar', id=snippet.id) }}" method="POST" class="bg-discord-200 border border-discord-400 rounded-3xl p-8 md:p-10 shadow-sm flex flex-col gap-6">
+    <form action="{{ url_for('snippets.edit', id=snippet.id) }}" method="POST" class="bg-discord-200 border border-discord-400 rounded-3xl p-8 md:p-10 shadow-sm flex flex-col gap-6">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <!-- Título -->
         <div class="flex flex-col gap-2">
             <label for="titulo" class="text-xs font-bold uppercase tracking-widest text-text-muted">Título do Snippet <span class="text-danger">*</span></label>

@@ -28,13 +28,24 @@ class TaskService:
         return None
 
     @staticmethod
-    def update_task_basic(id, descricao, grupo_id, current_user):
+    def update_task_basic(id, descricao, grupo_id, status_nome, current_user):
         repo = BaseRepository(Tarefa)
         tarefa = repo.get_or_404(id)
         if descricao:
             tarefa.descricao = descricao
         if grupo_id:
             tarefa.grupo_id = grupo_id
+            
+        if status_nome:
+            status_pendente, status_iniciado, status_finalizado, _ = SeedService.init_tasks_defaults()
+            if status_nome.upper() == 'PENDENTE':
+                tarefa.status_id = status_pendente.id
+            elif status_nome.upper() == 'INICIADO':
+                tarefa.status_id = status_iniciado.id
+            elif status_nome.upper() == 'FINALIZADO':
+                tarefa.status_id = status_finalizado.id
+                tarefa.data_executado = datetime.now(timezone.utc)
+                
         repo.commit()
         LogService.log_action(current_user.username, 'TASK_EDITED', f'ID: {id} | NEW_DESCRIPTION: {descricao}')
         return tarefa

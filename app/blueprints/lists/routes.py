@@ -10,9 +10,9 @@ def index():
 
 @bp.route('/add', methods=['POST'])
 def add():
-    titulo = request.form.get('titulo')
+    denominacao = request.form.get('denominacao')
     tipo_id = request.form.get('tipo_id')
-    ListService.create_list(titulo, tipo_id, current_user)
+    ListService.create_list(denominacao, tipo_id, current_user)
     return redirect(url_for('lists.index'))
 
 @bp.route('/delete/<int:id>', methods=['POST'])
@@ -27,21 +27,68 @@ def detail(id):
 
 @bp.route('/<int:lista_id>/item/add', methods=['POST'])
 def add_item(lista_id):
-    descricao = request.form.get('descricao')
+    item_nome = request.form.get('item')
     grupo_id = request.form.get('grupo_id')
     valor = request.form.get('valor')
-    url = request.form.get('url')
-    ListService.create_list_item(lista_id, descricao, grupo_id, valor, url, current_user)
+    link = request.form.get('link')
+    ListService.create_list_item(lista_id, item_nome, grupo_id, valor, link, current_user)
     return redirect(url_for('lists.detail', id=lista_id))
 
-@bp.route('/item/check/<int:item_id>', methods=['POST'])
-def check_item(item_id):
-    data = request.json
-    item = ListService.toggle_item_check(item_id, data.get('checked', False), current_user)
-    return jsonify({'success': True, 'comprado': item.comprado})
+@bp.route('/item/<int:item_id>/edit', methods=['POST'])
+def edit_item(item_id):
+    item_nome = request.form.get('item')
+    grupo_id = request.form.get('grupo_id')
+    valor = request.form.get('valor')
+    link = request.form.get('link')
+    item = ListService.update_list_item(item_id, item_nome, grupo_id, valor, link, current_user)
+    if item:
+        return redirect(url_for('lists.detail', id=item.lista_id))
+    return redirect(url_for('lists.index'))
+
+@bp.route('/item/toggle/<int:item_id>', methods=['POST'])
+def toggle_item(item_id):
+    data = request.get_json(silent=True)
+    # Handle both JSON (from JS) and Form (from fallback)
+    if data and 'checked' in data:
+        checked = data['checked']
+    elif 'checked' in request.form:
+        checked = request.form.get('checked') == 'true'
+    else:
+        # Default toggle behavior if no explicit state is provided
+        checked = None
+        
+    item = ListService.toggle_item_check(item_id, checked, current_user)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({'success': True, 'status': item.status})
+    return redirect(url_for('lists.detail', id=item.lista_id))
 
 @bp.route('/item/delete/<int:item_id>', methods=['POST'])
 def delete_item(item_id):
     lista_id = request.form.get('lista_id')
     ListService.delete_item(item_id, current_user)
     return redirect(url_for('lists.detail', id=lista_id))
+
+@bp.route('/tipo/add', methods=['POST'])
+def add_tipo():
+    denominacao = request.form.get('denominacao')
+    ListService.create_list_type(denominacao, current_user)
+    return redirect(url_for('lists.index'))
+
+@bp.route('/grupo/add/<int:id>', methods=['POST'])
+def add_grupo_item(id):
+    denominacao = request.form.get('denominacao')
+    ListService.create_item_group(denominacao, current_user)
+    return redirect(url_for('lists.detail', id=id))
+
+@bp.route('/scrape/<int:list_id>', methods=['POST'])
+def scrape_add(list_id):
+    url = request.form.get('url')
+    # Use the ScraperService if available, otherwise fallback
+    from app.services.scraper_service import ScraperService
+    ScraperService.scrape_and_add(url, list_id, current_user)
+    return redirect(url_for('lists.detail', id=list_id))
+
+@bp.route('/export/<int:id>')
+def export_pdf(id):
+    from app.services.pdf_service import PDFService
+    return PDFService.generate_list_pdf(id)

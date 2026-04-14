@@ -50,16 +50,14 @@
                         data-tooltip="Editar">
                         <i class="ph-bold ph-pencil-simple text-lg"></i>
                     </a>
-                    <form action="{{ url_for('pessoas.delete', id=p.id) }}" method="POST"
-                        onsubmit="return confirm('Tem certeza que deseja remover esta pessoa?')">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-                        <button type="submit"
-                            class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-all"
-                            data-tooltip="Excluir">
-                            <i class="ph-bold ph-trash text-lg"></i>
-                        </button>
-                    </form>
+                    <button type="button" 
+                        data-id="{{ p.id }}" 
+                        data-nome="{{ p.nome_completo }}"
+                        onclick="confirmDelete(this.dataset.id, this.dataset.nome, '{{ url_for('pessoas.delete', id=0) }}')"
+                        class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-all"
+                        data-tooltip="Excluir">
+                        <i class="ph-bold ph-trash text-lg"></i>
+                    </button>
                 </div>
             </div>
 
@@ -299,52 +297,12 @@
     {% endfor %}
 </div>
 
-<script>
-    function toggleModal(id) {
-        const modal = document.getElementById(id);
-        if (modal.classList.contains('hidden')) {
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        } else {
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-    }
+<!-- Hidden Delete Form -->
+<form id="delete-form" action="" method="POST" class="hidden">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+</form>
+{% endblock %}
 
-    function copyToClipboard(text, type = 'default', label = '') {
-        let finalContent = text;
-        let displayLabel = label || 'Informação';
-
-        if (type === 'numbers') {
-            finalContent = text.replace(/\D/g, '');
-        } else if (type === 'date') {
-            // Converte DD/MM/YYYY para YYYY-MM-DD
-            const parts = text.split('/');
-            if (parts.length === 3) {
-                finalContent = `${parts[2]}-${parts[1]}-${parts[0]}`;
-            }
-        }
-
-        navigator.clipboard.writeText(finalContent).then(() => {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-                background: '#313338',
-                color: '#dbdee1'
-            });
-            
-            let message = `${displayLabel} copiado!`;
-            if (type === 'numbers') message = `${displayLabel} (apenas números) copiado!`;
-            if (type === 'date') message = `${displayLabel} (formato data) copiado!`;
-
-            Toast.fire({
-                icon: 'success',
-                title: message
-            });
-        });
-    }
-</script>
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='js/pessoas.js') }}" defer></script>
 {% endblock %}

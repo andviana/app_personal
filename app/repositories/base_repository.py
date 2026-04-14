@@ -12,7 +12,7 @@ class BaseRepository:
 
     def list_all(self, order_by=None):
         query = self.model.query
-        if order_by:
+        if order_by is not None:
             query = query.order_by(order_by)
         return query.all()
 

@@ -46,8 +46,9 @@
 </div>
 
 <div class="bg-discord-200 p-6 border border-discord-400 rounded-3xl mb-12 shadow-sm">
-    <form action="{{ url_for('lists.add_item', id=lista.id) }}" method="POST"
+    <form action="{{ url_for('lists.add_item', lista_id=lista.id) }}" method="POST"
         class="flex flex-col lg:flex-row gap-5 items-center">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <!-- Nome do Item -->
         <div class="relative flex-grow w-full">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
@@ -192,7 +193,9 @@
                                 <i class="ph-bold ph-pencil-simple text-lg"></i>
                             </button>
                             <form action="{{ url_for('lists.delete_item', item_id=it.id) }}" method="POST"
-                                onsubmit="return confirm('Remover item?');" class="inline">
+                                onsubmit="confirmDelete(event, this)" class="inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="lista_id" value="{{ lista.id }}">
                                 <button type="submit"
                                     class="p-2 text-text-muted hover:text-danger hover:bg-discord-400 rounded-md transition-standard"
                                     data-tooltip="Excluir" data-tooltip-pos="top">
@@ -481,8 +484,10 @@
                     class="flex-1 h-11 bg-discord-400 text-text-normal font-bold rounded-xl transition-standard hover:bg-discord-500 flex items-center justify-center gap-2">
                     <i class="ph-bold ph-pencil-simple"></i> Editar
                 </button>
-                <form id="formDeleteFromView" action="" method="POST" onsubmit="return confirm('Remover item?');"
+                <form id="formDeleteFromView" action="" method="POST" onsubmit="confirmDelete(event, this)"
                     class="flex-1">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="lista_id" value="{{ lista.id }}">
                     <button type="submit"
                         class="w-full h-11 bg-danger/10 text-danger font-bold rounded-xl transition-standard hover:bg-danger hover:text-white flex items-center justify-center gap-2">
                         <i class="ph-bold ph-trash"></i> Excluir
@@ -497,102 +502,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
-<script>
-    function openEditItemModal(btn) {
-        const id = btn.getAttribute('data-id');
-        const nome = btn.getAttribute('data-nome');
-        const grupoId = btn.getAttribute('data-grupo');
-        const valor = btn.getAttribute('data-valor');
-        const link = btn.getAttribute('data-link');
-
-        document.getElementById('edit_item_nome').value = nome;
-        document.getElementById('edit_item_grupo').value = grupoId;
-        document.getElementById('edit_item_valor').value = (valor && valor !== 'None') ? valor : '';
-        document.getElementById('edit_item_link').value = (link && link !== 'None') ? link : '';
-        document.getElementById('formEditarItem').action = '/lists/item/' + id + '/edit';
-        document.getElementById('modalEditarItem').classList.remove('hidden');
-    }
-
-    function openScrapeModal() {
-        const modal = document.getElementById('modalImportarURL');
-        const content = modal.querySelector('.modal-content');
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            content.classList.remove('scale-95', 'opacity-0');
-            content.classList.add('scale-100', 'opacity-100');
-        }, 10);
-        document.getElementById('urlInputScrape').focus();
-    }
-
-    function closeScrapeModal() {
-        const modal = document.getElementById('modalImportarURL');
-        const content = modal.querySelector('.modal-content');
-        content.classList.add('scale-95', 'opacity-0');
-        content.classList.remove('scale-100', 'opacity-100');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 300);
-    }
-
-    document.getElementById('formScrape').addEventListener('submit', function (e) {
-        const btn = document.getElementById('btnScrapeSubmit');
-        const txt = document.getElementById('txtScrapeBtn');
-        const loader = document.getElementById('loaderScrape');
-        const icon = document.getElementById('iconScrapeBtn');
-
-        btn.disabled = true;
-        btn.classList.add('opacity-80', 'cursor-not-allowed');
-        txt.innerText = 'EXTRAINDO DADOS...';
-        loader.classList.remove('hidden');
-        icon.classList.add('hidden');
-    });
-
-    function openViewItemModal(btn) {
-        const modal = document.getElementById('modalVerItem');
-        const content = modal.querySelector('.bg-discord-200');
-
-        const id = btn.getAttribute('data-id');
-        const nome = btn.getAttribute('data-nome').toUpperCase();
-        const grupo = btn.getAttribute('data-grupo').toUpperCase();
-        const valor = btn.getAttribute('data-valor');
-        const link = btn.getAttribute('data-link');
-
-        document.getElementById('view_item_nome').innerText = nome;
-        document.getElementById('view_item_grupo').innerText = grupo;
-
-        if (valor) {
-            document.getElementById('view_item_valor').innerText = parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        } else {
-            document.getElementById('view_item_valor').innerText = '--';
-        }
-
-        const linkContainer = document.getElementById('view_item_link_container');
-        const linkElem = document.getElementById('view_item_link');
-        const linkText = document.getElementById('view_item_link_text');
-
-        if (link && link !== '' && link !== 'None') {
-            linkContainer.classList.remove('hidden');
-            linkElem.href = link;
-            linkText.innerText = link;
-        } else {
-            linkContainer.classList.add('hidden');
-        }
-
-        // Configurar botões de Editar/Excluir no Modal
-        const btnEdit = document.getElementById('btnEditFromView');
-        btnEdit.setAttribute('data-id', id);
-        btnEdit.setAttribute('data-nome', btn.getAttribute('data-nome'));
-        btnEdit.setAttribute('data-grupo', btn.getAttribute('data-grupo-id') || '');
-        btnEdit.setAttribute('data-valor', valor);
-        btnEdit.setAttribute('data-link', link);
-
-        document.getElementById('formDeleteFromView').action = '/lists/item/' + id + '/delete';
-
-        modal.classList.remove('hidden');
-        content.classList.remove('animate-in', 'zoom-in-95');
-        void content.offsetWidth;
-        content.classList.add('animate-in', 'zoom-in-95');
-    }
-</script>
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='js/lists.js') }}" defer></script>
 {% endblock %}

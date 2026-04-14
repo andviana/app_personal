@@ -15,8 +15,7 @@ class SnippetService:
         if search:
             return Snippet.query.filter(
                 (Snippet.titulo.ilike(f'%{search}%')) | 
-                (Snippet.conteudo.ilike(f'%{search}%')) |
-                (Snippet.linguagem.ilike(f'%{search}%'))
+                (Snippet.conteudo.ilike(f'%{search}%'))
             ).all()
         return repo.list_all(order_by=Snippet.data_criacao.desc())
 
@@ -25,10 +24,8 @@ class SnippetService:
         repo = BaseRepository(Snippet)
         titulo = form_data.get('titulo')
         conteudo = form_data.get('conteudo')
-        linguagem = form_data.get('linguagem', 'plaintext')
-        
         if titulo and conteudo:
-            snippet = Snippet(titulo=titulo, conteudo=conteudo, linguagem=linguagem)
+            snippet = Snippet(titulo=titulo, conteudo=conteudo)
             repo.add(snippet)
             repo.commit()
             LogService.log_action(current_user.username, 'SNIPPET_CREATED', f'ID: {snippet.id} | TITLE: {titulo}')
@@ -41,12 +38,9 @@ class SnippetService:
         snippet = repo.get_or_404(id)
         titulo = form_data.get('titulo')
         conteudo = form_data.get('conteudo')
-        linguagem = form_data.get('linguagem', 'plaintext')
-        
         if titulo and conteudo:
             snippet.titulo = titulo
             snippet.conteudo = conteudo
-            snippet.linguagem = linguagem
             repo.commit()
             LogService.log_action(current_user.username, 'SNIPPET_UPDATED', f'ID: {id} | TITLE: {titulo}')
             return snippet

@@ -62,7 +62,8 @@
             </a>
 
             <form action="{{ url_for('lists.delete', id=l.id) }}" method="POST"
-                onsubmit="return confirm('Apagar esta lista?');" class="flex-shrink-0">
+                onsubmit="confirmListDelete(event, this)" class="flex-shrink-0">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit"
                     class="w-10 h-10 flex items-center justify-center text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard"
                     data-tooltip="Excluir" data-tooltip-pos="top">
@@ -162,4 +163,38 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+function confirmListDelete(event, form) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Apagar esta lista?',
+        text: "Todos os itens dentro dela também serão removidos permanentemente!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sim, apagar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            popup: 'discord-theme',
+            confirmButton: 'bg-danger text-white px-4 py-2 rounded-md hover:bg-danger/80 border-none ml-2',
+            cancelButton: 'bg-discord-400 text-text-normal px-4 py-2 rounded-md hover:bg-discord-500 border-none'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('action') === 'new') {
+        const modal = document.getElementById('modalNovaLista');
+        if (modal) modal.classList.remove('hidden');
+    }
+});
+</script>
 {% endblock %}

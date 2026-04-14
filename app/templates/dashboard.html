@@ -11,7 +11,7 @@
     <p class="text-text-muted mt-2 font-medium">Bem-vindo de volta! Aqui está um resumo da sua produtividade.</p>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
     <!-- Tasks Summary Card -->
     <div
         class="group bg-discord-200 rounded-[12px] p-8 border border-discord-400 shadow-sm hover:border-text-muted transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
@@ -44,6 +44,106 @@
             <div class="p-4 bg-discord-400 text-[#ffb000] rounded-full group-hover:bg-[#ffb000] group-hover:text-white transition-all duration-300"
                 data-tooltip="Gerenciar Listas" data-tooltip-pos="top">
                 <a href="{{ url_for('lists.index') }}"><i class="ph-fill ph-shopping-bag text-3xl"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Finance Summary Card -->
+    <div
+        class="group bg-discord-200 rounded-[12px] p-8 border border-discord-400 shadow-sm hover:border-text-muted transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
+        <div
+            class="absolute top-0 left-0 w-full h-1 bg-primary-DEFAULT opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
+        <div class="flex items-start justify-between">
+            <div>
+                <span class="text-xs font-bold text-text-muted uppercase tracking-widest">Resumo de Valores</span>
+                <div class="mt-2 space-y-1">
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-xs text-text-muted">Estimado:</span>
+                        <h3 class="text-2xl font-black text-text-heading">R$ {{
+                            "%.2f"|format(shopping_metrics.total_estimated) }}</h3>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-xs text-text-muted">Comprado:</span>
+                        <h3 class="text-2xl font-black text-success">R$ {{
+                            "%.2f"|format(shopping_metrics.total_purchased) }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="p-4 bg-discord-400 text-primary-DEFAULT rounded-full group-hover:bg-primary-DEFAULT group-hover:text-white transition-all duration-300">
+                <i class="ph-fill ph-package text-3xl"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contribution Calendar Panel -->
+<div class="mt-8 bg-discord-200 border border-discord-400 rounded-2xl p-6 md:p-8">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <span class="text-xs font-bold text-text-muted uppercase tracking-widest">Contribuições</span>
+            <h3 class="text-lg font-bold text-text-heading">Atividade de tarefas no último ano</h3>
+        </div>
+        <!-- Legend -->
+        <div class="flex items-center gap-2 text-[10px] text-text-muted font-bold uppercase tracking-widest">
+            <span>Less</span>
+            <div class="flex gap-1">
+                <div class="w-3 h-3 rounded-sm bg-discord-400/50" data-tooltip="Sem contribuições"
+                    data-tooltip-pos="top"></div>
+                <div class="w-3 h-3 rounded-sm bg-[#0e4429]" data-tooltip="Baixo" data-tooltip-pos="top"></div>
+                <div class="w-3 h-3 rounded-sm bg-[#006d32]" data-tooltip="Médio" data-tooltip-pos="top"></div>
+                <div class="w-3 h-3 rounded-sm bg-[#26a641]" data-tooltip="Alto" data-tooltip-pos="top"></div>
+                <div class="w-3 h-3 rounded-sm bg-[#39d353]" data-tooltip="Muito Alto" data-tooltip-pos="top"></div>
+            </div>
+            <span>More</span>
+        </div>
+    </div>
+
+    <!-- Calendar Container -->
+    <div class="overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 scrollbar-hide">
+        <div class="flex gap-2 md:gap-4 min-w-max lg:min-w-0 lg:justify-center">
+            <!-- Y-Axis (Day Labels) -->
+            <div class="grid grid-rows-7 gap-[6px] pt-6 leading-none">
+                <span class="text-[9px] text-text-muted h-3 flex items-center">Seg</span>
+                <span class="text-[9px] text-text-muted h-3 flex items-center invisible">Ter</span>
+                <span class="text-[9px] text-text-muted h-3 flex items-center">Qua</span>
+                <span class="text-[9px] text-text-muted h-3 flex items-center invisible">Qui</span>
+                <span class="text-[9px] text-text-muted h-3 flex items-center">Sex</span>
+                <span class="text-[9px] text-text-muted h-3 flex items-center invisible">Sab</span>
+                <span class="text-[9px] text-text-muted h-3 flex items-center">Dom</span>
+            </div>
+
+            <!-- Header + Grid -->
+            <div class="flex-1">
+                <!-- X-Axis (Month Labels) -->
+                <div class="grid grid-flow-col gap-[2.5px] mb-1.5" style="grid-template-columns: repeat(26, 12px);">
+                    {% for label in month_labels %}
+                    <span class="text-[9px] text-text-muted whitespace-nowrap"
+                        style="grid-column-start: {{ label.col + 1 }}">{{ label.name }}</span>
+                    {% endfor %}
+                </div>
+
+                <!-- Main Activity Grid -->
+                <div class="grid grid-rows-7 grid-flow-col gap-[2.5px]">
+                    {% for item in biweekly_calendar %}
+                    {% set count = item.count %}
+                    {% set level = 0 %}
+                    {% if count > 0 and count <= 2 %}{% set level=1 %} {% elif count> 2 and count <= 5 %}{% set level=2
+                            %} {% elif count> 5 and count <= 9 %}{% set level=3 %} {% elif count> 9 %}{% set level = 4
+                                %}
+                                {% endif %}
+
+                                <div class="w-3 h-3 rounded-[2.5px] transition-all duration-300 
+                            {% if level == 0 %}bg-discord-400/50 hover:bg-discord-400
+                            {% elif level == 1 %}bg-[#0e4429] hover:brightness-125
+                            {% elif level == 2 %}bg-[#006d32] hover:brightness-125
+                            {% elif level == 3 %}bg-[#26a641] hover:brightness-125
+                            {% elif level == 4 %}bg-[#39d353] hover:brightness-125
+                            {% endif %}" data-tooltip="{{ count }} contribuições ({{ item.range }})"
+                                    data-tooltip-pos="top"></div>
+                                {% endfor %}
+                </div>
             </div>
         </div>
     </div>
@@ -108,16 +208,16 @@
 <div class="mt-12">
     <h3 class="text-xs font-bold text-text-muted uppercase tracking-widest mb-4">Ações Rápidas</h3>
     <div class="flex flex-wrap gap-4">
-        <button
+        <a href="{{ url_for('tasks.index', action='new') }}"
             class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-success hover:text-white transition-all duration-200"
             data-tooltip="Nova Tarefa" data-tooltip-pos="top">
             <i class="ph-bold ph-check-square-offset text-2xl"></i>
-        </button>
-        <button
+        </a>
+        <a href="{{ url_for('lists.index', action='new') }}"
             class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#ffb000] hover:text-white transition-all duration-200"
             data-tooltip="Nova Lista" data-tooltip-pos="top">
             <i class="ph-bold ph-list-plus text-2xl"></i>
-        </button>
+        </a>
         <a href="{{ url_for('pessoas.add') }}"
             class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#43b581] hover:text-white transition-all duration-200"
             data-tooltip="Nova Pessoa" data-tooltip-pos="top">

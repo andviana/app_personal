@@ -65,6 +65,7 @@
         [data-tooltip] {
             position: relative;
         }
+
         [data-tooltip]::before {
             content: attr(data-tooltip);
             position: absolute;
@@ -81,24 +82,28 @@
             transform: scale(0.95);
             z-index: 100;
             pointer-events: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
+
         /* Posições */
         [data-tooltip-pos="right"]::before {
             top: 50%;
             left: calc(100% + 12px);
             transform: translate(0, -50%) scale(0.95);
         }
+
         [data-tooltip-pos="right"]:hover::before {
             opacity: 1;
             visibility: visible;
             transform: translate(0, -50%) scale(1);
         }
+
         [data-tooltip-pos="top"]::before {
             bottom: calc(100% + 8px);
             left: 50%;
             transform: translate(-50%, 0) scale(0.95);
         }
+
         [data-tooltip-pos="top"]:hover::before {
             opacity: 1;
             visibility: visible;
@@ -110,34 +115,65 @@
             background-color: #313338 !important;
             color: #dbdee1 !important;
             border-radius: 8px !important;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
         }
-        .discord-theme .swal2-title { color: #f2f3f5 !important; font-weight: 700 !important; }
-        .discord-theme .swal2-html-container { color: #dbdee1 !important; }
-        .discord-theme .swal2-confirm { background-color: #5865F2 !important; border-radius: 4px !important; }
-        .discord-theme .swal2-confirm:hover { background-color: #4752C4 !important; }
-        .discord-theme .swal2-cancel { background-color: #4e5058 !important; color: white !important; border-radius: 4px !important; }
-        .discord-theme .swal2-cancel:hover { background-color: #6d6f78 !important; }
-        .discord-theme .swal2-input, .discord-theme .swal2-textarea {
+
+        .discord-theme .swal2-title {
+            color: #f2f3f5 !important;
+            font-weight: 700 !important;
+        }
+
+        .discord-theme .swal2-html-container {
+            color: #dbdee1 !important;
+        }
+
+        .discord-theme .swal2-confirm {
+            background-color: #5865F2 !important;
+            border-radius: 4px !important;
+        }
+
+        .discord-theme .swal2-confirm:hover {
+            background-color: #4752C4 !important;
+        }
+
+        .discord-theme .swal2-cancel {
+            background-color: #4e5058 !important;
+            color: white !important;
+            border-radius: 4px !important;
+        }
+
+        .discord-theme .swal2-cancel:hover {
+            background-color: #6d6f78 !important;
+        }
+
+        .discord-theme .swal2-input,
+        .discord-theme .swal2-textarea {
             background: #1e1f22 !important;
             color: #dbdee1 !important;
             border: none !important;
             border-radius: 4px !important;
         }
-        .discord-theme .swal2-input:focus { box-shadow: none !important; border: 1px solid #dbdee1 !important; }
+
+        .discord-theme .swal2-input:focus {
+            box-shadow: none !important;
+            border: 1px solid #dbdee1 !important;
+        }
 
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
+
         ::-webkit-scrollbar-track {
             background: #2b2d31;
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #1a1b1e;
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: #111214;
         }
@@ -160,8 +196,19 @@
             display: flex;
         }
 
-        .spinner { animation: spin 1s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 
     {% block head_extra %}{% endblock %}
@@ -171,101 +218,118 @@
 
     <!-- Desktop Sidebar (Server List Pattern) -->
     <nav class="hidden md:flex flex-col w-[72px] bg-discord-100 items-center py-3 gap-2 flex-shrink-0 z-50 relative">
-        <a href="{{ url_for('main.index') }}" 
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] bg-discord-300 text-text-normal hover:bg-primary-DEFAULT hover:text-white flex items-center justify-center transition-all duration-200 relative mb-2" 
+        <a href="{{ url_for('main.index') }}"
+            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] bg-discord-300 text-text-normal hover:bg-primary-DEFAULT hover:text-white flex items-center justify-center transition-all duration-200 relative mb-2"
             data-tooltip="DayLog" data-tooltip-pos="right">
             <i class="ph-bold ph-check-square-offset text-2xl"></i>
         </a>
-        
+
         <div class="w-8 h-[2px] bg-discord-300 rounded-full mb-2"></div>
 
         {% if current_user.is_authenticated %}
-            <!-- Dashboard -->
-            <a href="{{ url_for('main.index') }}" 
-                class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
+        <!-- Dashboard -->
+        <a href="{{ url_for('main.index') }}"
+            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
                 {% if request.endpoint == 'main.index' %}bg-primary-DEFAULT text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-primary-DEFAULT hover:text-white{% endif %}"
-                data-tooltip="Dashboard" data-tooltip-pos="right">
-                <i class="ph-fill ph-squares-four text-2xl"></i>
-                <div class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint == 'main.index' %}h-10{% else %}h-0 group-hover:h-5{% endif %}"></div>
-            </a>
+            data-tooltip="Dashboard" data-tooltip-pos="right">
+            <i class="ph-fill ph-squares-four text-2xl"></i>
+            <div
+                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint == 'main.index' %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
+            </div>
+        </a>
 
-            <!-- Tarefas -->
-            <a href="{{ url_for('tasks.index') }}" 
-                class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
+        <!-- Tarefas -->
+        <a href="{{ url_for('tasks.index') }}"
+            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
                 {% if request.endpoint and 'tasks' in request.endpoint %}bg-success text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-success hover:text-white{% endif %}"
-                data-tooltip="Tarefas" data-tooltip-pos="right">
-                <i class="ph-fill ph-list-checks text-2xl"></i>
-                <div class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'tasks' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}"></div>
-            </a>
+            data-tooltip="Tarefas" data-tooltip-pos="right">
+            <i class="ph-fill ph-list-checks text-2xl"></i>
+            <div
+                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'tasks' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
+            </div>
+        </a>
 
-            <!-- Listas -->
-            <a href="{{ url_for('lists.index') }}" 
-                class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
+        <!-- Listas -->
+        <a href="{{ url_for('lists.index') }}"
+            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
                 {% if request.endpoint and 'lists' in request.endpoint %}bg-[#ffb000] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#ffb000] hover:text-white{% endif %}"
-                data-tooltip="Listas" data-tooltip-pos="right">
-                <i class="ph-fill ph-shopping-bag text-2xl"></i>
-                <div class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'lists' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}"></div>
-            </a>
+            data-tooltip="Listas" data-tooltip-pos="right">
+            <i class="ph-fill ph-shopping-bag text-2xl"></i>
+            <div
+                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'lists' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
+            </div>
+        </a>
 
-            <!-- Snippets -->
-            <a href="{{ url_for('snippets.index') }}" 
-                class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
+        <!-- Snippets -->
+        <a href="{{ url_for('snippets.index') }}"
+            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
                 {% if request.endpoint and 'snippets' in request.endpoint %}bg-[#9a55f3] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#9a55f3] hover:text-white{% endif %}"
-                data-tooltip="Snippets" data-tooltip-pos="right">
-                <i class="ph-fill ph-code text-2xl"></i>
-                <div class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'snippets' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}"></div>
-            </a>
+            data-tooltip="Snippets" data-tooltip-pos="right">
+            <i class="ph-fill ph-code text-2xl"></i>
+            <div
+                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'snippets' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
+            </div>
+        </a>
 
-            <!-- Perfumes -->
-            <a href="{{ url_for('perfumes.index') }}" 
-                class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
+        <!-- Perfumes -->
+        <a href="{{ url_for('perfumes.index') }}"
+            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
                 {% if request.endpoint and 'perfumes' in request.endpoint %}bg-[#ffb000] text-black rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#ffb000] hover:text-black{% endif %}"
-                data-tooltip="Perfumes" data-tooltip-pos="right">
-                <i class="ph-fill ph-drop text-2xl"></i>
-                <div class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'perfumes' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}"></div>
-            </a>
+            data-tooltip="Perfumes" data-tooltip-pos="right">
+            <i class="ph-fill ph-drop text-2xl"></i>
+            <div
+                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'perfumes' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
+            </div>
+        </a>
 
-            <!-- Pessoas -->
-            <a href="{{ url_for('pessoas.index') }}" 
-                class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
+        <!-- Pessoas -->
+        <a href="{{ url_for('pessoas.index') }}"
+            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
                 {% if request.endpoint and 'pessoas' in request.endpoint %}bg-[#43b581] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#43b581] hover:text-white{% endif %}"
-                data-tooltip="Pessoas" data-tooltip-pos="right">
-                <i class="ph-fill ph-users text-2xl"></i>
-                <div class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'pessoas' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}"></div>
-            </a>
+            data-tooltip="Pessoas" data-tooltip-pos="right">
+            <i class="ph-fill ph-users text-2xl"></i>
+            <div
+                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'pessoas' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
+            </div>
+        </a>
 
-            <!-- Configurações -->
-            <a href="{{ url_for('settings.index') }}" 
-                class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative mt-auto
+        <!-- Configurações -->
+        <a href="{{ url_for('settings.index') }}"
+            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative mt-auto
                 {% if request.endpoint and 'settings' in request.endpoint %}bg-discord-400 text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-discord-400 hover:text-white{% endif %}"
-                data-tooltip="Configurações" data-tooltip-pos="right">
-                <i class="ph-fill ph-gear-six text-2xl"></i>
-                <div class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'settings' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}"></div>
-            </a>
-            
-            <!-- Logout -->
-            <a href="{{ url_for('auth.logout') }}" 
-                class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative bg-discord-300 text-danger hover:bg-danger hover:text-white"
-                title="Sair">
-                <i class="ph-bold ph-sign-out text-2xl"></i>
-            </a>
+            data-tooltip="Configurações" data-tooltip-pos="right">
+            <i class="ph-fill ph-gear-six text-2xl"></i>
+            <div
+                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'settings' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
+            </div>
+        </a>
+
+        <!-- Logout -->
+        <a href="{{ url_for('auth.logout') }}"
+            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative bg-discord-300 text-danger hover:bg-danger hover:text-white"
+            title="Sair">
+            <i class="ph-bold ph-sign-out text-2xl"></i>
+        </a>
         {% endif %}
     </nav>
 
     <!-- Mobile Header (Visible only on mobile) -->
-    <header class="md:hidden bg-discord-200 border-b border-discord-100 flex items-center justify-between px-4 h-[56px] flex-shrink-0 shadow-sm z-30">
+    <header
+        class="md:hidden bg-discord-200 border-b border-discord-100 flex items-center justify-between px-4 h-[56px] flex-shrink-0 shadow-sm z-30">
         <a href="{{ url_for('main.index') }}" class="flex items-center gap-2 text-text-heading font-bold text-lg">
             <i class="ph-fill ph-check-square-offset text-primary-DEFAULT"></i> DayLog
         </a>
         {% if current_user.is_authenticated %}
-            <div class="flex items-center gap-3">
-                <a href="{{ url_for('auth.logout') }}" class="text-text-muted hover:text-danger"><i class="ph-bold ph-sign-out text-xl"></i></a>
-            </div>
+        <div class="flex items-center gap-3">
+            <a href="{{ url_for('auth.logout') }}" class="text-text-muted hover:text-danger"><i
+                    class="ph-bold ph-sign-out text-xl"></i></a>
+        </div>
         {% endif %}
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-1 w-full h-[calc(100vh-56px)] md:h-screen overflow-y-auto bg-discord-300 rounded-tl-lg md:rounded-tl-[8px] shadow-inner relative z-10 pb-20 md:pb-0">
+    <main
+        class="flex-1 w-full h-[calc(100vh-56px)] md:h-screen overflow-y-auto bg-discord-300 rounded-tl-lg md:rounded-tl-[8px] shadow-inner relative z-10 pb-20 md:pb-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             {% block content %}{% endblock %}
         </div>
@@ -273,31 +337,47 @@
 
     <!-- Mobile Bottom Navigation (Discord approach) -->
     {% if current_user.is_authenticated %}
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-discord-100 border-t border-discord-200 px-6 py-2 flex justify-between items-center z-50 shadow-t-xl h-[64px]">
-        <a href="{{ url_for('main.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading' if request.endpoint == 'main.index' else 'text-text-muted hover:text-text-normal' }}">
-            <i class="{{ 'ph-fill' if request.endpoint == 'main.index' else 'ph-bold' }} ph-squares-four text-2xl"></i>
+    <nav
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-discord-100 border-t border-discord-200 px-4 py-2 flex justify-between items-center z-50 shadow-t-xl h-[64px]">
+        <a href="{{ url_for('main.index') }}"
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-primary-DEFAULT' if request.endpoint == 'main.index' else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
+            <i
+                class="{{ 'ph-fill' if request.endpoint == 'main.index' else 'ph-bold' }} ph-squares-four text-[22px]"></i>
         </a>
-        <a href="{{ url_for('tasks.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading' if request.endpoint and 'tasks' in request.endpoint else 'text-text-muted hover:text-text-normal' }}">
-            <i class="{{ 'ph-fill' if request.endpoint and 'tasks' in request.endpoint else 'ph-bold' }} ph-list-checks text-2xl"></i>
+        <a href="{{ url_for('tasks.index') }}"
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-primary-DEFAULT' if request.endpoint and 'tasks' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
+            <i
+                class="{{ 'ph-fill' if request.endpoint and 'tasks' in request.endpoint else 'ph-bold' }} ph-list-checks text-[22px]"></i>
         </a>
-        
-        <div class="relative -top-5">
-            <button onclick="document.dispatchEvent(new CustomEvent('open-quick-add'))"
-                class="w-14 h-14 bg-primary-DEFAULT text-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary-hover active:scale-95 transition-all">
-                <i class="ph-bold ph-plus text-2xl"></i>
-            </button>
-        </div>
+        <a href="{{ url_for('lists.index') }}"
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-primary-DEFAULT' if request.endpoint and 'lists' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
+            <i
+                class="{{ 'ph-fill' if request.endpoint and 'lists' in request.endpoint else 'ph-bold' }} ph-shopping-bag text-[22px]"></i>
+        </a>
 
-        <a href="{{ url_for('lists.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading' if request.endpoint and 'lists' in request.endpoint else 'text-text-muted hover:text-text-normal' }}">
-            <i class="{{ 'ph-fill' if request.endpoint and 'lists' in request.endpoint else 'ph-bold' }} ph-shopping-bag text-2xl"></i>
+        <a href="{{ url_for('snippets.index') }}"
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-primary-DEFAULT' if request.endpoint and 'snippets' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
+            <i
+                class="{{ 'ph-fill' if request.endpoint and 'snippets' in request.endpoint else 'ph-bold' }} ph-code text-[22px]"></i>
         </a>
-        <a href="{{ url_for('perfumes.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading' if request.endpoint and 'perfumes' in request.endpoint else 'text-text-muted hover:text-text-normal' }}">
-            <i class="{{ 'ph-fill' if request.endpoint and 'perfumes' in request.endpoint else 'ph-bold' }} ph-drop text-2xl"></i>
+
+        <a href="{{ url_for('perfumes.index') }}"
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-primary-DEFAULT' if request.endpoint and 'perfumes' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
+            <i
+                class="{{ 'ph-fill' if request.endpoint and 'perfumes' in request.endpoint else 'ph-bold' }} ph-drop text-[22px]"></i>
         </a>
-        <a href="{{ url_for('settings.index') }}" class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading' if request.endpoint and 'settings' in request.endpoint else 'text-text-muted hover:text-text-normal' }}">
-            <i class="{{ 'ph-fill' if request.endpoint and 'settings' in request.endpoint else 'ph-bold' }} ph-gear-six text-2xl"></i>
+        <a href="{{ url_for('pessoas.index') }}"
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-primary-DEFAULT' if request.endpoint and 'pessoas' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
+            <i
+                class="{{ 'ph-fill' if request.endpoint and 'pessoas' in request.endpoint else 'ph-bold' }} ph-users text-[22px]"></i>
+        </a>
+        <a href="{{ url_for('settings.index') }}"
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-primary-DEFAULT' if request.endpoint and 'settings' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
+            <i
+                class="{{ 'ph-fill' if request.endpoint and 'settings' in request.endpoint else 'ph-bold' }} ph-gear-six text-[22px]"></i>
         </a>
     </nav>
+
     {% endif %}
 
     <!-- Loading Overlay -->
@@ -340,35 +420,35 @@
         window.addEventListener('load', function () { hideLoading(); });
 
         // Global Flash Message Handler
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                document.addEventListener('DOMContentLoaded', () => {
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        customClass: {
-                            popup: 'discord-theme'
-                        },
-                        didOpen: (toast) => {
-                            toast.addEventListener('mouseenter', Swal.stopTimer)
-                            toast.addEventListener('mouseleave', Swal.resumeTimer)
-                        }
-                    });
+        {% with messages = get_flashed_messages(with_categories = true) %}
+        {% if messages %}
+        document.addEventListener('DOMContentLoaded', () => {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'discord-theme'
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
 
-                    {% for category, message in messages %}
-                        // Skip login errors here as they are handled locally in login.html
-                        {% if request.endpoint != 'auth.login' %}
-                        Toast.fire({
-                            icon: '{{ "success" if category == "success" else "error" if category == "danger" else "info" }}',
-                            title: '{{ message }}'
-                        });
-                        {% endif %}
-                    {% endfor %}
-                });
+            {% for category, message in messages %}
+            // Skip login errors here as they are handled locally in login.html
+            {% if request.endpoint != 'auth.login' %}
+            Toast.fire({
+                icon: '{{ "success" if category == "success" else "error" if category == "danger" else "info" }}',
+                title: '{{ message }}'
+            });
             {% endif %}
+            {% endfor %}
+        });
+        {% endif %}
         {% endwith %}
     </script>
 

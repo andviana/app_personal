@@ -4,10 +4,11 @@
 
 {% block content %}
 <div class="mb-10">
-    <h1 class="text-3xl font-black tracking-tight text-text-heading uppercase flex items-center gap-3">
-        <i class="ph-bold ph-gear-six text-primary-DEFAULT"></i> Configurações
+    <h1 class="text-3xl font-extrabold tracking-tight text-text-heading flex items-center gap-3">
+        <i class="ph-bold ph-gear-six text-text-muted"></i> Configurações
     </h1>
-    <p class="text-text-muted mt-1 font-medium italic">Personalize sua experiência e gerencie seus dados.</p>
+
+    <p class="text-text-muted mt-1 font-normal">Gerenciamento da aplicação.</p>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -16,7 +17,8 @@
         <div>
             <h3 class="px-4 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-3">Minha Conta</h3>
             <div class="space-y-1">
-                <button onclick="switchTab('conta')" id="tab-btn-conta" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard bg-discord-400 text-primary-DEFAULT border border-transparent">
+                <button onclick="switchTab('conta')" id="tab-btn-conta"
+                    class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard bg-discord-400 text-primary-DEFAULT border border-transparent">
                     <i class="ph-bold ph-user-circle text-xl"></i> Perfil e Segurança
                 </button>
             </div>
@@ -25,13 +27,16 @@
         <div>
             <h3 class="px-4 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-3">Coleções</h3>
             <div class="space-y-1">
-                <button onclick="switchTab('grupos_tarefas')" id="tab-btn-grupos_tarefas" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard text-text-muted hover:bg-discord-400 border border-transparent">
+                <button onclick="switchTab('grupos_tarefas')" id="tab-btn-grupos_tarefas"
+                    class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard text-text-muted hover:bg-discord-400 border border-transparent">
                     <i class="ph-bold ph-folder-open text-xl"></i> Grupos de Tarefas
                 </button>
-                <button onclick="switchTab('tipos_listas')" id="tab-btn-tipos_listas" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard text-text-muted hover:bg-discord-400 border border-transparent">
+                <button onclick="switchTab('tipos_listas')" id="tab-btn-tipos_listas"
+                    class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard text-text-muted hover:bg-discord-400 border border-transparent">
                     <i class="ph-bold ph-tag text-xl"></i> Categorias de Listas
                 </button>
-                <button onclick="switchTab('grupos_itens')" id="tab-btn-grupos_itens" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard text-text-muted hover:bg-discord-400 border border-transparent">
+                <button onclick="switchTab('grupos_itens')" id="tab-btn-grupos_itens"
+                    class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard text-text-muted hover:bg-discord-400 border border-transparent">
                     <i class="ph-bold ph-package text-xl"></i> Grupos de Itens
                 </button>
             </div>
@@ -40,10 +45,12 @@
         <div>
             <h3 class="px-4 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-3">Manutenção</h3>
             <div class="space-y-1">
-                <button onclick="switchTab('backup')" id="tab-btn-backup" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard text-text-muted hover:bg-discord-400 border border-transparent">
+                <button onclick="switchTab('backup')" id="tab-btn-backup"
+                    class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard text-text-muted hover:bg-discord-400 border border-transparent">
                     <i class="ph-bold ph-database text-xl"></i> Backup e Dados
                 </button>
-                <button onclick="switchTab('logs')" id="tab-btn-logs" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard text-text-muted hover:bg-discord-400 border border-transparent">
+                <button onclick="switchTab('logs')" id="tab-btn-logs"
+                    class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-standard text-text-muted hover:bg-discord-400 border border-transparent">
                     <i class="ph-bold ph-terminal-window text-xl"></i> Logs do Sistema
                 </button>
             </div>
@@ -52,7 +59,7 @@
 
     <!-- Área de Conteúdo Única -->
     <div class="lg:col-span-3">
-        
+
         <!-- ABA: CONTA -->
         <div id="tab-conta" class="tab-content space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div class="bg-discord-200 border border-discord-400 rounded-[24px] p-8">
@@ -62,20 +69,26 @@
                     </div>
                     <div>
                         <h2 class="text-xl font-black text-text-heading uppercase">Segurança de Acesso</h2>
-                        <p class="text-sm text-text-muted font-medium">Mantenha sua conta protegida com uma senha forte.</p>
+                        <p class="text-sm text-text-muted font-medium">Mantenha sua conta protegida com uma senha forte.
+                        </p>
                     </div>
                 </div>
-                <div class="flex flex-col sm:flex-row items-center justify-between p-6 bg-discord-100/50 rounded-3xl border border-discord-400 gap-4">
+                <div
+                    class="flex flex-col sm:flex-row items-center justify-between p-6 bg-discord-100/50 rounded-3xl border border-discord-400 gap-4">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-discord-300 rounded-2xl flex items-center justify-center text-text-muted shadow-sm">
+                        <div
+                            class="w-12 h-12 bg-discord-300 rounded-2xl flex items-center justify-center text-text-muted shadow-sm">
                             <i class="ph-bold ph-password text-2xl"></i>
                         </div>
                         <div>
-                            <span class="block text-sm font-black text-text-heading uppercase tracking-tight">Senha Geral</span>
-                            <span class="text-[10px] text-text-muted font-bold uppercase tracking-widest">Atualizada recentemente</span>
+                            <span class="block text-sm font-black text-text-heading uppercase tracking-tight">Senha
+                                Geral</span>
+                            <span class="text-[10px] text-text-muted font-bold uppercase tracking-widest">Atualizada
+                                recentemente</span>
                         </div>
                     </div>
-                    <a href="{{ url_for('settings.alterar_senha') }}" class="w-full sm:w-auto px-8 py-3 bg-primary-DEFAULT text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary-DEFAULT/20 text-center">
+                    <a href="{{ url_for('settings.alterar_senha') }}"
+                        class="w-full sm:w-auto px-8 py-3 bg-primary-DEFAULT text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary-DEFAULT/20 text-center">
                         Alterar Senha
                     </a>
                 </div>
@@ -83,7 +96,8 @@
         </div>
 
         <!-- ABA: BACKUP -->
-        <div id="tab-backup" class="tab-content hidden space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div id="tab-backup"
+            class="tab-content hidden space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div class="bg-discord-200 border border-discord-400 rounded-[24px] p-8">
                 <div class="flex items-center gap-4 mb-8">
                     <div class="p-4 bg-discord-300 text-primary-DEFAULT rounded-2xl">
@@ -91,18 +105,21 @@
                     </div>
                     <div>
                         <h2 class="text-xl font-black text-text-heading uppercase">Gestão de Dados</h2>
-                        <p class="text-sm text-text-muted font-medium">Exporte seus dados para backup ou restaure uma cópia anterior.</p>
+                        <p class="text-sm text-text-muted font-medium">Exporte seus dados para backup ou restaure uma
+                            cópia anterior.</p>
                     </div>
                 </div>
-                
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="p-6 bg-discord-300 rounded-3xl border border-discord-400 flex flex-col gap-4">
                         <div class="flex items-center gap-3">
                             <i class="ph-bold ph-cloud-arrow-down text-2xl text-success"></i>
                             <h3 class="font-bold text-text-heading">Exportar Backup</h3>
                         </div>
-                        <p class="text-xs text-text-muted leading-relaxed">Gera um arquivo JSON contendo todas as suas tarefas, listas e configurações atuais.</p>
-                        <a href="{{ url_for('settings.backup_export') }}" download class="mt-2 w-full py-3 bg-discord-100 text-text-normal rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-discord-400 transition-standard text-center border border-discord-400">
+                        <p class="text-xs text-text-muted leading-relaxed">Gera um arquivo JSON contendo todas as suas
+                            tarefas, listas e configurações atuais.</p>
+                        <a href="{{ url_for('settings.backup_export') }}" download
+                            class="mt-2 w-full py-3 bg-discord-100 text-text-normal rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-discord-400 transition-standard text-center border border-discord-400">
                             Fazer Download
                         </a>
                     </div>
@@ -112,40 +129,53 @@
                             <i class="ph-bold ph-cloud-arrow-up text-2xl text-danger"></i>
                             <h3 class="font-bold text-text-heading">Restaurar Sistema</h3>
                         </div>
-                        <p class="text-xs text-text-muted leading-relaxed italic">Atenção: A restauração substituirá todos os dados atuais permanentemente.</p>
-                        <button onclick="handleRestore()" class="mt-2 w-full py-3 bg-danger/10 text-danger rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-danger hover:text-white transition-standard border border-danger/30">
+                        <p class="text-xs text-text-muted leading-relaxed italic">Atenção: A restauração substituirá
+                            todos os dados atuais permanentemente.</p>
+                        <button onclick="handleRestore()"
+                            class="mt-2 w-full py-3 bg-danger/10 text-danger rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-danger hover:text-white transition-standard border border-danger/30">
                             Carregar Arquivo
                         </button>
-                        <input type="file" id="backup_file" class="hidden" accept=".json" onchange="processRestore(this)">
+                        <input type="file" id="backup_file" class="hidden" accept=".json"
+                            onchange="processRestore(this)">
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- ABA: GRUPOS TAREFAS -->
-        <div id="tab-grupos_tarefas" class="tab-content hidden space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div id="tab-grupos_tarefas"
+            class="tab-content hidden space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div class="border border-discord-400 bg-discord-200 rounded-[24px] overflow-hidden">
                 <div class="p-6 border-b border-discord-400 flex justify-between items-center bg-discord-300">
                     <h2 class="font-black text-text-heading uppercase tracking-widest text-sm">Grupos de Tarefas</h2>
-                    <button onclick="openAddModal('grupo_tarefa')" class="h-10 px-4 bg-primary-DEFAULT text-white flex items-center gap-2 rounded-xl hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary-DEFAULT/10">
-                        <i class="ph-bold ph-plus"></i> <span class="text-[10px] font-black uppercase tracking-widest">Novo</span>
+                    <button onclick="openAddModal('grupo_tarefa')"
+                        class="h-10 px-4 bg-primary-DEFAULT text-white flex items-center gap-2 rounded-xl hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary-DEFAULT/10">
+                        <i class="ph-bold ph-plus"></i> <span
+                            class="text-[10px] font-black uppercase tracking-widest">Novo</span>
                     </button>
                 </div>
                 <div class="divide-y divide-discord-400">
                     {% for g in grupos_tarefas %}
-                    <div class="p-5 flex items-center justify-between hover:bg-discord-100/30 transition-standard group">
+                    <div
+                        class="p-5 flex items-center justify-between hover:bg-discord-100/30 transition-standard group">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 bg-discord-300 text-primary-DEFAULT rounded-xl flex items-center justify-center font-black shadow-inner border border-discord-400">
+                            <div
+                                class="w-10 h-10 bg-discord-300 text-primary-DEFAULT rounded-xl flex items-center justify-center font-black shadow-inner border border-discord-400">
                                 {{ g.denominacao[0] }}
                             </div>
-                            <span class="font-bold text-text-heading uppercase tracking-tight">{{ g.denominacao }}</span>
+                            <span class="font-bold text-text-heading uppercase tracking-tight">{{ g.denominacao
+                                }}</span>
                         </div>
-                        <div class="flex items-center gap-1 opacity-10 md:opacity-100 group-hover:opacity-100 transition-opacity">
-                            <button onclick='openEditModal("grupo_tarefa", "{{ g.id }}", "{{ g.denominacao }}")' class="p-2 text-text-muted hover:text-primary-DEFAULT hover:bg-discord-400 rounded-lg transition-standard">
+                        <div
+                            class="flex items-center gap-1 opacity-10 md:opacity-100 group-hover:opacity-100 transition-opacity">
+                            <button onclick='openEditModal("grupo_tarefa", "{{ g.id }}", "{{ g.denominacao }}")'
+                                class="p-2 text-text-muted hover:text-primary-DEFAULT hover:bg-discord-400 rounded-lg transition-standard">
                                 <i class="ph-bold ph-pencil-simple text-lg"></i>
                             </button>
-                            <form action="{{ url_for('settings.delete_grupo_tarefa', id=g.id) }}" method="POST" onsubmit="return confirm('Excluir este grupo?');">
-                                <button type="submit" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard">
+                            <form action="{{ url_for('settings.delete_grupo_tarefa', id=g.id) }}" method="POST"
+                                onsubmit="return confirm('Excluir este grupo?');">
+                                <button type="submit"
+                                    class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard">
                                     <i class="ph-bold ph-trash text-lg"></i>
                                 </button>
                             </form>
@@ -162,29 +192,39 @@
         </div>
 
         <!-- ABA: CATEGORIAS LISTAS -->
-        <div id="tab-tipos_listas" class="tab-content hidden space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div id="tab-tipos_listas"
+            class="tab-content hidden space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div class="border border-discord-400 bg-discord-200 rounded-[24px] overflow-hidden">
                 <div class="p-6 border-b border-discord-400 flex justify-between items-center bg-discord-300">
                     <h2 class="font-black text-text-heading uppercase tracking-widest text-sm">Categorias de Listas</h2>
-                    <button onclick="openAddModal('tipo_lista')" class="h-10 px-4 bg-primary-DEFAULT text-white flex items-center gap-2 rounded-xl hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary-DEFAULT/10">
-                        <i class="ph-bold ph-plus"></i> <span class="text-[10px] font-black uppercase tracking-widest">Nova</span>
+                    <button onclick="openAddModal('tipo_lista')"
+                        class="h-10 px-4 bg-primary-DEFAULT text-white flex items-center gap-2 rounded-xl hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary-DEFAULT/10">
+                        <i class="ph-bold ph-plus"></i> <span
+                            class="text-[10px] font-black uppercase tracking-widest">Nova</span>
                     </button>
                 </div>
                 <div class="divide-y divide-discord-400">
                     {% for t in tipos_listas %}
-                    <div class="p-5 flex items-center justify-between hover:bg-discord-100/30 transition-standard group">
+                    <div
+                        class="p-5 flex items-center justify-between hover:bg-discord-100/30 transition-standard group">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 bg-[#23a559]/10 text-success rounded-xl flex items-center justify-center font-black shadow-inner border border-discord-400">
+                            <div
+                                class="w-10 h-10 bg-[#23a559]/10 text-success rounded-xl flex items-center justify-center font-black shadow-inner border border-discord-400">
                                 {{ t.denominacao[0] }}
                             </div>
-                            <span class="font-bold text-text-heading uppercase tracking-tight">{{ t.denominacao }}</span>
+                            <span class="font-bold text-text-heading uppercase tracking-tight">{{ t.denominacao
+                                }}</span>
                         </div>
-                        <div class="flex items-center gap-1 opacity-10 md:opacity-100 group-hover:opacity-100 transition-opacity">
-                            <button onclick='openEditModal("tipo_lista", "{{ t.id }}", "{{ t.denominacao }}")' class="p-2 text-text-muted hover:text-primary-DEFAULT hover:bg-discord-400 rounded-lg transition-standard">
+                        <div
+                            class="flex items-center gap-1 opacity-10 md:opacity-100 group-hover:opacity-100 transition-opacity">
+                            <button onclick='openEditModal("tipo_lista", "{{ t.id }}", "{{ t.denominacao }}")'
+                                class="p-2 text-text-muted hover:text-primary-DEFAULT hover:bg-discord-400 rounded-lg transition-standard">
                                 <i class="ph-bold ph-pencil-simple text-lg"></i>
                             </button>
-                            <form action="{{ url_for('settings.delete_tipo_lista', id=t.id) }}" method="POST" onsubmit="return confirm('Excluir esta categoria?');">
-                                <button type="submit" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard">
+                            <form action="{{ url_for('settings.delete_tipo_lista', id=t.id) }}" method="POST"
+                                onsubmit="return confirm('Excluir esta categoria?');">
+                                <button type="submit"
+                                    class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard">
                                     <i class="ph-bold ph-trash text-lg"></i>
                                 </button>
                             </form>
@@ -201,29 +241,40 @@
         </div>
 
         <!-- ABA: GRUPOS ITENS -->
-        <div id="tab-grupos_itens" class="tab-content hidden space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div id="tab-grupos_itens"
+            class="tab-content hidden space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div class="border border-discord-400 bg-discord-200 rounded-[24px] overflow-hidden">
                 <div class="p-6 border-b border-discord-400 flex justify-between items-center bg-discord-300">
-                    <h2 class="font-black text-text-heading uppercase tracking-widest text-sm">Grupos de Itens (Listas)</h2>
-                    <button onclick="openAddModal('grupo_item')" class="h-10 px-4 bg-primary-DEFAULT text-white flex items-center gap-2 rounded-xl hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary-DEFAULT/10">
-                        <i class="ph-bold ph-plus"></i> <span class="text-[10px] font-black uppercase tracking-widest">Novo</span>
+                    <h2 class="font-black text-text-heading uppercase tracking-widest text-sm">Grupos de Itens (Listas)
+                    </h2>
+                    <button onclick="openAddModal('grupo_item')"
+                        class="h-10 px-4 bg-primary-DEFAULT text-white flex items-center gap-2 rounded-xl hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary-DEFAULT/10">
+                        <i class="ph-bold ph-plus"></i> <span
+                            class="text-[10px] font-black uppercase tracking-widest">Novo</span>
                     </button>
                 </div>
                 <div class="divide-y divide-discord-400">
                     {% for g in grupos_itens %}
-                    <div class="p-5 flex items-center justify-between hover:bg-discord-100/30 transition-standard group">
+                    <div
+                        class="p-5 flex items-center justify-between hover:bg-discord-100/30 transition-standard group">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 bg-[#ffb000]/10 text-[#ffb000] rounded-xl flex items-center justify-center font-black shadow-inner border border-discord-400">
+                            <div
+                                class="w-10 h-10 bg-[#ffb000]/10 text-[#ffb000] rounded-xl flex items-center justify-center font-black shadow-inner border border-discord-400">
                                 {{ g.denominacao[0] }}
                             </div>
-                            <span class="font-bold text-text-heading uppercase tracking-tight">{{ g.denominacao }}</span>
+                            <span class="font-bold text-text-heading uppercase tracking-tight">{{ g.denominacao
+                                }}</span>
                         </div>
-                        <div class="flex items-center gap-1 opacity-10 md:opacity-100 group-hover:opacity-100 transition-opacity">
-                            <button onclick='openEditModal("grupo_item", "{{ g.id }}", "{{ g.denominacao }}")' class="p-2 text-text-muted hover:text-primary-DEFAULT hover:bg-discord-400 rounded-lg transition-standard">
+                        <div
+                            class="flex items-center gap-1 opacity-10 md:opacity-100 group-hover:opacity-100 transition-opacity">
+                            <button onclick='openEditModal("grupo_item", "{{ g.id }}", "{{ g.denominacao }}")'
+                                class="p-2 text-text-muted hover:text-primary-DEFAULT hover:bg-discord-400 rounded-lg transition-standard">
                                 <i class="ph-bold ph-pencil-simple text-lg"></i>
                             </button>
-                            <form action="{{ url_for('settings.delete_grupo_item', id=g.id) }}" method="POST" onsubmit="return confirm('Excluir este grupo?');">
-                                <button type="submit" class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard">
+                            <form action="{{ url_for('settings.delete_grupo_item', id=g.id) }}" method="POST"
+                                onsubmit="return confirm('Excluir este grupo?');">
+                                <button type="submit"
+                                    class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard">
                                     <i class="ph-bold ph-trash text-lg"></i>
                                 </button>
                             </form>
@@ -248,18 +299,21 @@
                     </div>
                     <div>
                         <h2 class="text-xl font-black text-text-heading uppercase">Logs de Auditoria</h2>
-                        <p class="text-sm text-text-muted font-medium">Veja o histórico de todas as ações realizadas no sistema.</p>
+                        <p class="text-sm text-text-muted font-medium">Veja o histórico de todas as ações realizadas no
+                            sistema.</p>
                     </div>
                 </div>
                 <div class="p-6 bg-[#111214] border border-discord-400 rounded-3xl space-y-4">
                     <div class="flex items-start gap-3 text-sm">
                         <i class="ph-bold ph-info text-primary-DEFAULT mt-1"></i>
                         <p class="text-text-muted leading-relaxed">
-                            O arquivo de log registra cada login, criação de itens, exclusões e mudanças de configuração para garantir a segurança e rastreabilidade dos seus dados.
+                            O arquivo de log registra cada login, criação de itens, exclusões e mudanças de configuração
+                            para garantir a segurança e rastreabilidade dos seus dados.
                         </p>
                     </div>
                     <div class="pt-4 border-t border-discord-400">
-                        <a href="{{ url_for('settings.download_logs') }}" class="flex items-center justify-center gap-2 w-full py-4 bg-discord-300 text-text-normal font-black rounded-xl text-xs uppercase tracking-widest hover:bg-discord-400 transition-all border border-discord-400 shadow-sm active:scale-[0.98]">
+                        <a href="{{ url_for('settings.download_logs') }}"
+                            class="flex items-center justify-center gap-2 w-full py-4 bg-discord-300 text-text-normal font-black rounded-xl text-xs uppercase tracking-widest hover:bg-discord-400 transition-all border border-discord-400 shadow-sm active:scale-[0.98]">
                             <i class="ph-bold ph-file-arrow-down text-lg"></i> Baixar Arquivo App.log
                         </a>
                     </div>
@@ -271,25 +325,33 @@
 </div>
 
 <!-- Modal Genérico para Adicionar/Editar -->
-<div id="modalCrud" class="hidden fixed inset-0 bg-[#000000]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[200] p-4 transition-all duration-300">
-    <div class="bg-discord-modal rounded-[32px] shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95 duration-200">
+<div id="modalCrud"
+    class="hidden fixed inset-0 bg-[#000000]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[200] p-4 transition-all duration-300">
+    <div
+        class="bg-discord-modal rounded-[32px] shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95 duration-200">
         <div class="p-8">
             <div class="flex items-center justify-between mb-8">
-                <h2 id="modalActionTitle" class="text-xl font-black text-text-heading uppercase tracking-tight">Novo</h2>
-                <button type="button" onclick="closeModal()" class="w-10 h-10 flex items-center justify-center text-text-muted hover:text-white hover:bg-discord-400 rounded-full transition-all">
+                <h2 id="modalActionTitle" class="text-xl font-black text-text-heading uppercase tracking-tight">Novo
+                </h2>
+                <button type="button" onclick="closeModal()"
+                    class="w-10 h-10 flex items-center justify-center text-text-muted hover:text-white hover:bg-discord-400 rounded-full transition-all">
                     <i class="ph-bold ph-x text-xl"></i>
                 </button>
             </div>
             <form id="modalForm" method="POST" class="space-y-6">
                 <div>
-                    <label class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">NOME DA ENTIDADE</label>
-                    <input type="text" name="denominacao" id="inputDenominacao" placeholder="Ex: TRABALHO, CASA..." 
-                           class="block w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl text-text-normal focus:ring-2 focus:ring-primary-DEFAULT focus:outline-none text-sm font-semibold transition-all" 
-                           required autofocus>
+                    <label
+                        class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">NOME
+                        DA ENTIDADE</label>
+                    <input type="text" name="denominacao" id="inputDenominacao" placeholder="Ex: TRABALHO, CASA..."
+                        class="block w-full h-12 px-4 bg-[#1e1f22] border-none rounded-xl text-text-normal focus:ring-2 focus:ring-primary-DEFAULT focus:outline-none text-sm font-semibold transition-all"
+                        required autofocus>
                 </div>
                 <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="closeModal()" class="flex-1 h-12 text-text-muted font-black rounded-xl hover:bg-discord-400 transition-all uppercase text-[10px] tracking-widest">Cancelar</button>
-                    <button type="submit" id="submitBtn" class="flex-1 h-12 bg-primary-DEFAULT text-white font-black rounded-xl hover:bg-primary-hover shadow-lg shadow-primary-DEFAULT/20 transition-all uppercase text-[10px] tracking-widest active:scale-95">Salvar</button>
+                    <button type="button" onclick="closeModal()"
+                        class="flex-1 h-12 text-text-muted font-black rounded-xl hover:bg-discord-400 transition-all uppercase text-[10px] tracking-widest">Cancelar</button>
+                    <button type="submit" id="submitBtn"
+                        class="flex-1 h-12 bg-primary-DEFAULT text-white font-black rounded-xl hover:bg-primary-hover shadow-lg shadow-primary-DEFAULT/20 transition-all uppercase text-[10px] tracking-widest active:scale-95">Salvar</button>
                 </div>
             </form>
         </div>
@@ -297,67 +359,67 @@
 </div>
 
 <script>
-function switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-    document.getElementById('tab-' + tabId).classList.remove('hidden');
-    
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-discord-400', 'text-primary-DEFAULT');
-        btn.classList.add('text-text-muted', 'hover:bg-discord-400');
-    });
-    
-    const activeBtn = document.getElementById('tab-btn-' + tabId);
-    activeBtn.classList.add('bg-discord-400', 'text-primary-DEFAULT');
-    activeBtn.classList.remove('text-text-muted', 'hover:bg-discord-400');
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+        document.getElementById('tab-' + tabId).classList.remove('hidden');
 
-    // Salvar aba ativa no localStorage
-    localStorage.setItem('activeSettingsTab', tabId);
-}
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('bg-discord-400', 'text-primary-DEFAULT');
+            btn.classList.add('text-text-muted', 'hover:bg-discord-400');
+        });
 
-// Manter aba ativa ao recarregar
-document.addEventListener('DOMContentLoaded', () => {
-    const activeTab = localStorage.getItem('activeSettingsTab') || 'conta';
-    switchTab(activeTab);
-});
+        const activeBtn = document.getElementById('tab-btn-' + tabId);
+        activeBtn.classList.add('bg-discord-400', 'text-primary-DEFAULT');
+        activeBtn.classList.remove('text-text-muted', 'hover:bg-discord-400');
 
-function openAddModal(entity) {
-    const form = document.getElementById('modalForm');
-    const title = document.getElementById('modalActionTitle');
-    const input = document.getElementById('inputDenominacao');
-    
-    input.value = '';
-    title.innerText = 'Novo ' + getEntityName(entity);
-    form.action = '/settings/' + entity + '/add';
-    
-    document.getElementById('modalCrud').classList.remove('hidden');
-    input.focus();
-}
-
-function openEditModal(entity, id, denominacao) {
-    const form = document.getElementById('modalForm');
-    const title = document.getElementById('modalActionTitle');
-    const input = document.getElementById('inputDenominacao');
-    
-    input.value = denominacao;
-    title.innerText = 'Editar ' + getEntityName(entity);
-    form.action = '/settings/' + entity + '/edit/' + id;
-    
-    document.getElementById('modalCrud').classList.remove('hidden');
-    input.focus();
-}
-
-function closeModal() {
-    document.getElementById('modalCrud').classList.add('hidden');
-}
-
-function getEntityName(entity) {
-    switch(entity) {
-        case 'grupo_tarefa': return 'Grupo';
-        case 'tipo_lista': return 'Categoria';
-        case 'grupo_item': return 'Grupo de Item';
-        default: return '';
+        // Salvar aba ativa no localStorage
+        localStorage.setItem('activeSettingsTab', tabId);
     }
-}
+
+    // Manter aba ativa ao recarregar
+    document.addEventListener('DOMContentLoaded', () => {
+        const activeTab = localStorage.getItem('activeSettingsTab') || 'conta';
+        switchTab(activeTab);
+    });
+
+    function openAddModal(entity) {
+        const form = document.getElementById('modalForm');
+        const title = document.getElementById('modalActionTitle');
+        const input = document.getElementById('inputDenominacao');
+
+        input.value = '';
+        title.innerText = 'Novo ' + getEntityName(entity);
+        form.action = '/settings/' + entity + '/add';
+
+        document.getElementById('modalCrud').classList.remove('hidden');
+        input.focus();
+    }
+
+    function openEditModal(entity, id, denominacao) {
+        const form = document.getElementById('modalForm');
+        const title = document.getElementById('modalActionTitle');
+        const input = document.getElementById('inputDenominacao');
+
+        input.value = denominacao;
+        title.innerText = 'Editar ' + getEntityName(entity);
+        form.action = '/settings/' + entity + '/edit/' + id;
+
+        document.getElementById('modalCrud').classList.remove('hidden');
+        input.focus();
+    }
+
+    function closeModal() {
+        document.getElementById('modalCrud').classList.add('hidden');
+    }
+
+    function getEntityName(entity) {
+        switch (entity) {
+            case 'grupo_tarefa': return 'Grupo';
+            case 'tipo_lista': return 'Categoria';
+            case 'grupo_item': return 'Grupo de Item';
+            default: return '';
+        }
+    }
 </script>
 {% endblock %}
 
@@ -389,7 +451,7 @@ function getEntityName(entity) {
 
     async function processRestore(input) {
         if (!input.files || input.files.length === 0) return;
-        
+
         const file = input.files[0];
         const formData = new FormData();
         formData.append('backup_file', file);

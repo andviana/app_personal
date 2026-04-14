@@ -5,63 +5,75 @@
 {% block content %}
 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
     <div>
-        <h1 class="text-3xl font-extrabold text-text-heading tracking-tight flex items-center gap-3">
-            <i class="ph-bold ph-shopping-bag text-primary-DEFAULT"></i> Listas
+        <h1 class="text-3xl font-extrabold tracking-tight text-text-heading flex items-center gap-3">
+            <i class="ph-bold ph-shopping-bag text-[#ffb000]"></i> Listas
         </h1>
+
         <p class="text-text-muted mt-1 font-medium tracking-wide">Organize suas necessidades por categoria.</p>
     </div>
-    
+
     <div class="flex flex-wrap gap-2 w-full md:w-auto">
-        <button onclick="document.getElementById('modalNovaLista').classList.remove('hidden')" class="w-11 md:w-auto h-11 md:px-5 bg-primary-DEFAULT text-white font-black rounded-xl hover:bg-primary-hover transition-standard flex items-center justify-center shadow-sm active:scale-95" data-tooltip="Nova Lista" data-tooltip-pos="top">
-            <i class="ph-bold ph-plus text-xl"></i> <span class="hidden md:inline ml-2">Nova Lista</span>
+        <button onclick="document.getElementById('modalNovaLista').classList.remove('hidden')"
+            class="w-11 md:w-auto h-11 md:px-5 bg-primary-DEFAULT text-white font-black rounded-xl hover:bg-primary-hover transition-standard flex items-center justify-center shadow-sm active:scale-95"
+            data-tooltip="Nova Lista" data-tooltip-pos="top">
+            <i class="ph-bold ph-plus text-xl"></i> <span class="hidden md:inline ml-2">Lista</span>
         </button>
-        <button onclick="document.getElementById('modalNovoTipoLista').classList.remove('hidden')" class="w-11 md:w-auto h-11 md:px-5 bg-discord-200 text-text-normal font-bold rounded-xl hover:bg-discord-400 transition-standard flex items-center justify-center border border-discord-400 shadow-sm" data-tooltip="Novo Tipo" data-tooltip-pos="top">
-            <i class="ph-bold ph-tag text-primary-DEFAULT text-xl"></i> <span class="hidden md:inline ml-2">Novo Tipo</span>
+        <button onclick="document.getElementById('modalNovoTipoLista').classList.remove('hidden')"
+            class="w-11 md:w-auto h-11 md:px-5 bg-discord-200 text-text-normal font-bold rounded-xl hover:bg-discord-400 transition-standard flex items-center justify-center border border-discord-400 shadow-sm"
+            data-tooltip="Novo Tipo" data-tooltip-pos="top">
+            <i class="ph-bold ph-tag text-primary-DEFAULT text-xl"></i> <span class="hidden md:inline ml-2"> Tipo</span>
         </button>
     </div>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+<div class="grid grid-cols-1 gap-4 mt-8">
     {% for l in listas %}
-    <div class="group bg-discord-200 border border-discord-400 rounded-[16px] p-6 hover:border-text-muted transition-all duration-300 flex flex-col justify-between h-full relative overflow-hidden shadow-sm">
+    <div class="group bg-discord-200 border border-discord-400 rounded-[16px] p-4 hover:border-text-muted transition-all duration-300 flex items-center gap-4 relative overflow-hidden shadow-sm cursor-pointer"
+        onclick="window.location.href='{{ url_for('lists.detail', id=l.id) }}';">
         <!-- Visual Accent -->
-        <div class="absolute top-0 left-0 w-full h-1 bg-primary-DEFAULT opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="absolute top-0 left-0 w-1 h-full bg-[#ffb000] opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
 
-        <div>
-            <div class="flex justify-between items-start mb-4">
-                <div class="p-3 bg-discord-400 text-primary-DEFAULT rounded-[16px] group-hover:bg-primary-DEFAULT group-hover:text-white transition-standard">
-                    <i class="ph-fill ph-notebook text-2xl"></i>
-                </div>
-                <span class="text-[10px] font-black tracking-widest uppercase py-1 px-2.5 bg-discord-400 text-text-muted rounded-full">
+        <!-- Icon -->
+        <div class="flex-shrink-0 p-3 bg-discord-400 text-[#ffb000] rounded-xl group-hover:bg-[#ffb000] group-hover:text-white transition-standard">
+            <i class="ph-fill ph-shopping-bag text-2xl"></i>
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+            <div class="flex flex-col gap-0.5">
+                <span class="text-[9px] font-black tracking-widest uppercase py-0.5 px-2 bg-discord-400 text-text-muted rounded-full w-fit">
                     {{ l.tipo.denominacao if l.tipo else 'Genérica' }}
                 </span>
+                <h3 class="text-base font-black text-text-heading truncate">{{ l.denominacao }}</h3>
             </div>
-            
-            <h3 class="text-xl font-black text-text-heading leading-tight mb-2">
-                <a href="{{ url_for('lists.detail', id=l.id) }}" class="hover:text-primary-DEFAULT transition-standard">{{ l.denominacao }}</a>
-            </h3>
-            
-            <div class="flex items-center gap-3 text-text-muted">
-                <span class="text-xs font-bold flex items-center gap-1.5"><i class="ph-fill ph-stack"></i> {{ l.itens|length }} itens</span>
-                <span class="w-1 h-1 bg-discord-400 rounded-full"></span>
-                <span class="text-xs font-bold flex items-center gap-1.5"><i class="ph-fill ph-calendar"></i> Hoje</span>
+            <div class="flex items-center gap-4 text-text-muted mt-1">
+                <span class="text-[11px] font-bold flex items-center gap-1.5"><i class="ph-bold ph-stack"></i> {{ l.itens|length }} itens</span>
+                <span class="text-[11px] font-bold flex items-center gap-1.5"><i class="ph-bold ph-calendar-blank"></i> Hoje</span>
             </div>
         </div>
-        
-        <div class="mt-8 pt-6 border-t border-discord-400 flex justify-between items-center">
-            <a href="{{ url_for('lists.detail', id=l.id) }}" class="inline-flex items-center gap-2 text-sm font-bold text-primary-DEFAULT hover:text-primary-hover transition-standard group/btn" data-tooltip="Abrir Lista" data-tooltip-pos="top">
-                <i class="ph-bold ph-arrow-square-out text-2xl group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5 transition-standard"></i>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+            <a href="{{ url_for('lists.detail', id=l.id) }}"
+                class="w-10 h-10 flex items-center justify-center text-text-muted hover:text-[#ffb000] transition-standard"
+                data-tooltip="Abrir Lista" data-tooltip-pos="top">
+                <i class="ph-bold ph-arrow-square-out text-xl"></i>
             </a>
-            
-            <form action="{{ url_for('lists.delete', id=l.id) }}" method="POST" onsubmit="return confirm('Apagar esta lista?');" class="flex-shrink-0">
-                <button type="submit" class="p-2 text-text-muted hover:text-danger hover:bg-[#313338] rounded-md transition-standard" data-tooltip="Excluir" data-tooltip-pos="top">
+
+            <form action="{{ url_for('lists.delete', id=l.id) }}" method="POST"
+                onsubmit="return confirm('Apagar esta lista?');" class="flex-shrink-0">
+                <button type="submit"
+                    class="w-10 h-10 flex items-center justify-center text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard"
+                    data-tooltip="Excluir" data-tooltip-pos="top">
                     <i class="ph-bold ph-trash text-lg"></i>
                 </button>
             </form>
         </div>
     </div>
     {% else %}
-    <div class="col-span-full flex flex-col items-center justify-center py-20 bg-discord-200 rounded-[16px] border border-discord-400 border-dashed text-center">
+    <div
+        class="col-span-full flex flex-col items-center justify-center py-20 bg-discord-200 rounded-[16px] border border-discord-400 border-dashed text-center">
         <div class="w-20 h-20 bg-discord-400 rounded-full flex items-center justify-center mb-6 text-text-muted">
             <i class="ph-bold ph-shopping-bag text-4xl"></i>
         </div>
@@ -72,23 +84,32 @@
 </div>
 
 <!-- Modais -->
-<div id="modalNovaLista" class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
+<div id="modalNovaLista"
+    class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
     <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                    <i class="ph-bold ph-notebook text-primary-DEFAULT"></i> Criar Lista
+                    <i class="ph-fill ph-shopping-bag text-primary-DEFAULT"></i> Criar Lista
                 </h2>
-                <button type="button" onclick="document.getElementById('modalNovaLista').classList.add('hidden')" class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
+                <button type="button" onclick="document.getElementById('modalNovaLista').classList.add('hidden')"
+                    class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
+                        class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('lists.add') }}" method="POST" class="space-y-6">
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Nome da Lista</label>
-                    <input type="text" name="denominacao" placeholder="Ex: Mercado Mensal" class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold" required autofocus>
+                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Nome da
+                        Lista</label>
+                    <input type="text" name="denominacao" placeholder="Ex: Mercado Mensal"
+                        class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold"
+                        required autofocus>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Tipo de Lista</label>
-                    <select name="tipo_id" class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold" required>
+                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Tipo de
+                        Lista</label>
+                    <select name="tipo_id"
+                        class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold"
+                        required>
                         <option value="" disabled selected>Escolha um tipo...</option>
                         {% for t in tipos %}
                         <option value="{{ t.id }}">{{ t.denominacao }}</option>
@@ -96,31 +117,42 @@
                     </select>
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="document.getElementById('modalNovaLista').classList.add('hidden')" class="flex-1 h-10 text-white font-bold rounded-md hover:underline transition-standard bg-transparent">Cancelar</button>
-                    <button type="submit" class="flex-1 h-10 bg-primary-DEFAULT text-white font-bold rounded-md shadow-lg transition-standard hover:bg-primary-hover">Criar</button>
+                    <button type="button" onclick="document.getElementById('modalNovaLista').classList.add('hidden')"
+                        class="flex-1 h-10 text-white font-bold rounded-md hover:underline transition-standard bg-transparent">Cancelar</button>
+                    <button type="submit"
+                        class="flex-1 h-10 bg-primary-DEFAULT text-white font-bold rounded-md shadow-lg transition-standard hover:bg-primary-hover">Criar</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<div id="modalNovoTipoLista" class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
+<div id="modalNovoTipoLista"
+    class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
     <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
                     <i class="ph-bold ph-tag text-primary-DEFAULT"></i> Novo Tipo
                 </h2>
-                <button type="button" onclick="document.getElementById('modalNovoTipoLista').classList.add('hidden')" class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
+                <button type="button" onclick="document.getElementById('modalNovoTipoLista').classList.add('hidden')"
+                    class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
+                        class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('lists.add_tipo') }}" method="POST" class="space-y-6">
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Nome do Tipo</label>
-                    <input type="text" name="denominacao" placeholder="Ex: VIAGEM, MERCADO..." class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold" required autofocus>
+                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Nome do
+                        Tipo</label>
+                    <input type="text" name="denominacao" placeholder="Ex: VIAGEM, MERCADO..."
+                        class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold"
+                        required autofocus>
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="document.getElementById('modalNovoTipoLista').classList.add('hidden')" class="flex-1 h-10 text-white font-bold rounded-md hover:underline transition-standard bg-transparent">Cancelar</button>
-                    <button type="submit" class="flex-1 h-10 bg-primary-DEFAULT text-white font-bold rounded-md shadow-lg transition-standard hover:bg-primary-hover">Adicionar</button>
+                    <button type="button"
+                        onclick="document.getElementById('modalNovoTipoLista').classList.add('hidden')"
+                        class="flex-1 h-10 text-white font-bold rounded-md hover:underline transition-standard bg-transparent">Cancelar</button>
+                    <button type="submit"
+                        class="flex-1 h-10 bg-primary-DEFAULT text-white font-bold rounded-md shadow-lg transition-standard hover:bg-primary-hover">Adicionar</button>
                 </div>
             </form>
         </div>

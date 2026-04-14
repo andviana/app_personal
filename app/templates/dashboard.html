@@ -7,29 +7,34 @@
     <h1 class="text-3xl font-extrabold text-text-heading tracking-tight flex items-center gap-3">
         <i class="ph-bold ph-squares-four text-primary-DEFAULT"></i> Dashboard
     </h1>
+
     <p class="text-text-muted mt-2 font-medium">Bem-vindo de volta! Aqui está um resumo da sua produtividade.</p>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
     <!-- Tasks Summary Card -->
-    <div class="group bg-discord-200 rounded-[12px] p-8 border border-discord-400 shadow-sm hover:border-text-muted transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-1 bg-success opacity-0 group-hover:opacity-100 transition-opacity"></div>
+    <div
+        class="group bg-discord-200 rounded-[12px] p-8 border border-discord-400 shadow-sm hover:border-text-muted transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-success opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
         <div class="flex items-start justify-between">
             <div>
                 <span class="text-xs font-bold text-text-muted uppercase tracking-widest">Pendentes</span>
                 <h2 class="mt-2 text-5xl font-black text-text-heading leading-none">{{ tarefas_pendentes }}</h2>
                 <p class="mt-2 text-sm text-text-muted font-medium tracking-wide">Tarefas que precisam de atenção</p>
             </div>
-            <div class="p-4 bg-discord-400 text-success rounded-full group-hover:bg-success group-hover:text-white transition-all duration-300" 
-                 data-tooltip="Ir para Tarefas" data-tooltip-pos="top">
+            <div class="p-4 bg-discord-400 text-success rounded-full group-hover:bg-success group-hover:text-white transition-all duration-300"
+                data-tooltip="Ir para Tarefas" data-tooltip-pos="top">
                 <a href="{{ url_for('tasks.index') }}"><i class="ph-fill ph-list-dashes text-3xl"></i></a>
             </div>
         </div>
     </div>
 
     <!-- Lists Summary Card -->
-    <div class="group bg-discord-200 rounded-[12px] p-8 border border-discord-400 shadow-sm hover:border-text-muted transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-1 bg-[#ffb000] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+    <div
+        class="group bg-discord-200 rounded-[12px] p-8 border border-discord-400 shadow-sm hover:border-text-muted transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-[#ffb000] opacity-0 group-hover:opacity-100 transition-opacity">
+        </div>
         <div class="flex items-start justify-between">
             <div>
                 <span class="text-xs font-bold text-text-muted uppercase tracking-widest">Ativas</span>
@@ -37,10 +42,65 @@
                 <p class="mt-2 text-sm text-text-muted font-medium tracking-wide">Listas de compras e desejos</p>
             </div>
             <div class="p-4 bg-discord-400 text-[#ffb000] rounded-full group-hover:bg-[#ffb000] group-hover:text-white transition-all duration-300"
-                 data-tooltip="Gerenciar Listas" data-tooltip-pos="top">
+                data-tooltip="Gerenciar Listas" data-tooltip-pos="top">
                 <a href="{{ url_for('lists.index') }}"><i class="ph-fill ph-shopping-bag text-3xl"></i></a>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Collection Totals Grid -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-8">
+    <!-- Total Itens -->
+    <div
+        class="bg-discord-200 border border-discord-400 rounded-2xl p-6 hover:bg-discord-100/50 transition-standard group">
+        <div class="flex items-center justify-between mb-4">
+            <div
+                class="w-10 h-10 bg-[#ffb000]/10 text-[#ffb000] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                <i class="ph-fill ph-package"></i>
+            </div>
+            <span class="text-2xl font-black text-text-heading">{{ itens_count }}</span>
+        </div>
+        <p class="text-[10px] font-black text-text-muted uppercase tracking-widest">Itens nas Listas</p>
+    </div>
+
+    <!-- Total Snippets -->
+    <div
+        class="bg-discord-200 border border-discord-400 rounded-2xl p-6 hover:bg-discord-100/50 transition-standard group">
+        <div class="flex items-center justify-between mb-4">
+            <div
+                class="w-10 h-10 bg-[#9a55f3]/10 text-[#9a55f3] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                <i class="ph-fill ph-code"></i>
+            </div>
+            <span class="text-2xl font-black text-text-heading">{{ snippets_count }}</span>
+        </div>
+        <p class="text-[10px] font-black text-text-muted uppercase tracking-widest">Snippets Salvos</p>
+    </div>
+
+    <!-- Total Perfumes -->
+    <div
+        class="bg-discord-200 border border-discord-400 rounded-2xl p-6 hover:bg-discord-100/50 transition-standard group">
+        <div class="flex items-center justify-between mb-4">
+            <div
+                class="w-10 h-10 bg-[#ffb000]/10 text-[#ffb000] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                <i class="ph-fill ph-drop"></i>
+            </div>
+            <span class="text-2xl font-black text-text-heading">{{ perfumes_count }}</span>
+        </div>
+        <p class="text-[10px] font-black text-text-muted uppercase tracking-widest">Perfumes Coleção</p>
+    </div>
+
+    <!-- Total Pessoas -->
+    <div
+        class="bg-discord-200 border border-discord-400 rounded-2xl p-6 hover:bg-discord-100/50 transition-standard group">
+        <div class="flex items-center justify-between mb-4">
+            <div
+                class="w-10 h-10 bg-[#43b581]/10 text-[#43b581] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                <i class="ph-fill ph-users"></i>
+            </div>
+            <span class="text-2xl font-black text-text-heading">{{ pessoas_count }}</span>
+        </div>
+        <p class="text-[10px] font-black text-text-muted uppercase tracking-widest">Pessoas Registradas</p>
     </div>
 </div>
 
@@ -48,25 +108,25 @@
 <div class="mt-12">
     <h3 class="text-xs font-bold text-text-muted uppercase tracking-widest mb-4">Ações Rápidas</h3>
     <div class="flex flex-wrap gap-4">
-        <button class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-success hover:text-white transition-all duration-200" 
-                data-tooltip="Nova Tarefa" data-tooltip-pos="top">
+        <button
+            class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-success hover:text-white transition-all duration-200"
+            data-tooltip="Nova Tarefa" data-tooltip-pos="top">
             <i class="ph-bold ph-check-square-offset text-2xl"></i>
         </button>
-        <button class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#ffb000] hover:text-white transition-all duration-200"
-                data-tooltip="Nova Lista" data-tooltip-pos="top">
+        <button
+            class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#ffb000] hover:text-white transition-all duration-200"
+            data-tooltip="Nova Lista" data-tooltip-pos="top">
             <i class="ph-bold ph-list-plus text-2xl"></i>
         </button>
-        <a href="{{ url_for('pessoas.add') }}" class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#43b581] hover:text-white transition-all duration-200"
-                data-tooltip="Nova Pessoa" data-tooltip-pos="top">
+        <a href="{{ url_for('pessoas.add') }}"
+            class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#43b581] hover:text-white transition-all duration-200"
+            data-tooltip="Nova Pessoa" data-tooltip-pos="top">
             <i class="ph-bold ph-user-plus text-2xl"></i>
         </a>
-        <a href="{{ url_for('snippets.novo') }}" class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#9a55f3] hover:text-white transition-all duration-200"
-                data-tooltip="Novo Snippet" data-tooltip-pos="top">
+        <a href="{{ url_for('snippets.novo') }}"
+            class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#9a55f3] hover:text-white transition-all duration-200"
+            data-tooltip="Novo Snippet" data-tooltip-pos="top">
             <i class="ph-bold ph-code text-2xl"></i>
-        </a>
-        <a href="{{ url_for('settings.index') }}" class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-discord-400 hover:text-white transition-all duration-200"
-                data-tooltip="Configurações" data-tooltip-pos="top">
-            <i class="ph-bold ph-gear-six text-2xl"></i>
         </a>
     </div>
 </div>

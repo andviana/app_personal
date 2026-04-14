@@ -27,7 +27,27 @@
         <h1 class="text-3xl font-extrabold text-text-heading tracking-tight flex items-center gap-3">
             <i class="ph-bold ph-drop text-[#ffb000]"></i> Perfumes
         </h1>
-        <p class="text-text-muted mt-1 font-medium italic">"O perfume é o acessório invisível de qualquer mulher ou homem."</p>
+        <div class="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center gap-x-6 gap-y-3 sm:gap-y-2 mt-4 sm:mt-2">
+            <!-- Total de Perfumes -->
+            <span class="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
+                <i class="ph-fill ph-drop text-sm text-[#ffb000]"></i>
+                <span class="text-text-heading">{{ perfumes|length }}</span> Perfumes
+            </span>
+
+            <!-- Fragrâncias Inspiradas (Correspondentes) -->
+            {% set fragrances_count = perfumes|selectattr('correspondente')|list|length %}
+            <span class="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
+                <i class="ph-fill ph-swatches text-sm text-primary-DEFAULT"></i>
+                <span class="text-text-heading">{{ fragrances_count }}</span> Fragrâncias
+            </span>
+
+            <!-- Marcas Únicas -->
+            {% set marcas_count = perfumes|map(attribute='marca')|select('string')|unique|list|length %}
+            <span class="text-[10px] font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
+                <i class="ph-fill ph-tag text-sm text-success"></i>
+                <span class="text-text-heading">{{ marcas_count }}</span> Marcas
+            </span>
+        </div>
     </div>
     
     <button onclick="openModal('add')" class="w-full md:w-auto h-12 px-6 bg-[#ffb000] text-black font-black rounded-xl hover:bg-[#ffb000]/90 transition-standard flex items-center justify-center gap-2 shadow-lg shadow-[#ffb000]/20 active:scale-95">

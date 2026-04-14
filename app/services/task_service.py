@@ -1,0 +1,82 @@
+from datetime import datetime, timezone
+from app.repositories.base_repository import BaseRepository
+from app.models import Tarefa, GrupoTarefas
+from app.services.log_service import LogService
+from app.services.seed_service import SeedService
+
+class TaskService:
+    @staticmethod
+    def get_tasks_data():
+        SeedService.init_tasks_defaults()
+        repo_grupos = BaseRepository(GrupoTarefas)
+        return repo_grupos.list_all(order_by=GrupoTarefas.denominacao)
+
+    @staticmethod
+    def create_task(descricao, grupo_id, current_user):
+        status_pendente, _, _, grupo_comum = SeedService.init_tasks_defaults()
+        if descricao:
+            repo = BaseRepository(Tarefa)
+            nova_tarefa = Tarefa(
+                descricao=descricao,
+                grupo_id=grupo_id if grupo_id else grupo_comum.id,
+                status_id=status_pendente.id
+            )
+            repo.add(nova_tarefa)
+            repo.commit()
+            LogService.log_action(current_user.username, 'TASK_CREATED', f'ID: {nova_tarefa.id} | DESCRIPTION: {descricao}')
+            return nova_tarefa
+        return None
+
+    @staticmethod
+    def update_task_basic(id, descricao, grupo_id, current_user):
+        repo = BaseRepository(Tarefa)
+        tarefa = repo.get_or_404(id)
+        if descricao:
+            tarefa.descricao = descricao
+        if grupo_id:
+            tarefa.grupo_id = grupo_id
+        repo.commit()
+        LogService.log_action(current_user.username, 'TASK_EDITED', f'ID: {id} | NEW_DESCRIPTION: {descricao}')
+        return tarefa
+
+    @staticmethod
+    def start_task(id, current_user):
+        repo = BaseRepository(Tarefa)
+        tarefa = repo.get_or_404(id)
+        _, status_iniciado, _, _ = SeedService.init_tasks_defaults()
+        tarefa.status_id = status_iniciado.id
+        repo.commit()
+        LogService.log_action(current_user.username, 'TASK_STARTED', f'ID: {id}')
+        return tarefa
+
+    @staticmethod
+    def complete_task(id, current_user):
+        repo = BaseRepository(Tarefa)
+        tarefa = repo.get_or_404(id)
+        _, _, status_finalizado, _ = SeedService.init_tasks_defaults()
+        tarefa.status_id = status_finalizado.id
+        tarefa.data_executado = datetime.now(timezone.utc)
+        repo.commit()
+        LogService.log_action(current_user.username, 'TASK_COMPLETED', f'ID: {id}')
+        return tarefa
+
+    @staticmethod
+    def delete_task(id, current_user):
+        repo = BaseRepository(Tarefa)
+        tarefa = repo.get_or_404(id)
+        desc = tarefa.descricao
+        repo.delete(tarefa)
+        repo.commit()
+        LogService.log_action(current_user.username, 'TASK_DELETED', f'ID: {id} | DESCRIPTION: {desc}')
+        return desc
+
+    @staticmethod
+    def create_group(denominacao, current_user):
+        if denominacao:
+            repo = BaseRepository(GrupoTarefas)
+            novo_grupo = GrupoTarefas(denominacao=denominacao.upper())
+            repo.add(novo_grupo)
+            repo.commit()
+            LogService.log_action(current_user.username, 'TASK_GROUP_CREATED', f'NAME: {denominacao.upper()}')
+            return novo_grupo
+        return None

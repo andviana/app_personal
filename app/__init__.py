@@ -3,10 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from config import Config
+from flask_wtf.csrf import CSRFProtect
 
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
+csrf = CSRFProtect()
 login.login_view = 'auth.login'
 login.login_message = 'Por favor, faça login para acessar esta página.'
 login.login_message_category = 'info'
@@ -18,6 +20,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
+    csrf.init_app(app)
 
     @login.user_loader
     def load_user(id):
@@ -36,31 +39,31 @@ def create_app(config_class=Config):
                'static' != request.endpoint:
                 return login.unauthorized()
 
-    from app.main import bp as main_bp
+    from app.blueprints.main import bp as main_bp
     app.register_blueprint(main_bp)
     
-    from app.auth import bp as auth_bp
+    from app.blueprints.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
 
-    from app.tasks import bp as tasks_bp
+    from app.blueprints.tasks import bp as tasks_bp
     app.register_blueprint(tasks_bp, url_prefix='/tasks')
 
-    from app.lists import bp as lists_bp
+    from app.blueprints.lists import bp as lists_bp
     app.register_blueprint(lists_bp, url_prefix='/lists')
 
-    from app.settings import bp as settings_bp
+    from app.blueprints.settings import bp as settings_bp
     app.register_blueprint(settings_bp, url_prefix='/settings')
 
-    from app.snippets import bp as snippets_bp
+    from app.blueprints.snippets import bp as snippets_bp
     app.register_blueprint(snippets_bp, url_prefix='/snippets')
 
-    from app.perfumes import bp as perfumes_bp
+    from app.blueprints.perfumes import bp as perfumes_bp
     app.register_blueprint(perfumes_bp, url_prefix='/perfumes')
 
-    from app.pessoas import bp as pessoas_bp
+    from app.blueprints.pessoas import bp as pessoas_bp
     app.register_blueprint(pessoas_bp, url_prefix='/pessoas')
 
-    from app.errors import bp as errors_bp
+    from app.blueprints.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
 
     return app

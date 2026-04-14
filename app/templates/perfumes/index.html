@@ -154,6 +154,8 @@
             </div>
             
             <form id="perfumeForm" method="POST" class="p-8 space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <!-- Image Preview Section -->
                 <div id="formImgPreview" class="hidden mb-6">
                     <div class="w-full h-40 bg-discord-100 rounded-2xl overflow-hidden border border-discord-400">
@@ -212,7 +214,10 @@
 </div>
 
 <!-- Form de remoção invisível -->
-<form id="deletePerfumeForm" method="POST" style="display: none;"></form>
+<form id="deletePerfumeForm" method="POST" style="display: none;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+</form>
+
 {% endblock %}
 
 {% block scripts_extra %}

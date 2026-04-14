@@ -52,6 +52,8 @@
                     </a>
                     <form action="{{ url_for('pessoas.delete', id=p.id) }}" method="POST"
                         onsubmit="return confirm('Tem certeza que deseja remover esta pessoa?')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                         <button type="submit"
                             class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-all"
                             data-tooltip="Excluir">

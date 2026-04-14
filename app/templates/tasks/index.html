@@ -124,6 +124,8 @@
 <!-- Cadastro de Nova Tarefa Inline -->
 <div id="taskFormArea" class="bg-discord-200 p-5 border border-discord-400 rounded-[16px] mb-10 shadow-sm">
     <form action="{{ url_for('tasks.add') }}" method="POST" class="flex flex-col lg:flex-row gap-4">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
         <div class="relative flex-grow">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
                 <i class="ph-bold ph-plus-circle text-xl"></i>
@@ -189,6 +191,8 @@
                 <form
                     action="{{ url_for('tasks.concluir' if status_name != 'FINALIZADO' else 'tasks.iniciar', id=t.id) }}"
                     method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                     <button type="submit"
                         class="flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-standard
                         {% if status_name == 'FINALIZADO' %}bg-success border-success text-white
@@ -219,6 +223,8 @@
                 class="flex items-center gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-standard flex-shrink-0">
                 {% if status_name == 'PENDENTE' %}
                 <form action="{{ url_for('tasks.iniciar', id=t.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                     <button type="submit"
                         class="p-2 text-primary-DEFAULT hover:bg-discord-400 rounded-md transition-standard"
                         data-tooltip="Iniciar" data-tooltip-pos="top">
@@ -281,6 +287,8 @@
                         class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('tasks.add_grupo') }}" method="POST" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <div>
                     <label
                         class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Denominação</label>
@@ -312,6 +320,8 @@
                         class="ph-bold ph-x"></i></button>
             </div>
             <form id="formEditTarefa" method="POST" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <div>
                     <label
                         class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Descrição</label>

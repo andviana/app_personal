@@ -17,6 +17,8 @@
 
 <form action="{{ url_for('pessoas.edit', id=pessoa.id) if pessoa else url_for('pessoas.add') }}" method="POST"
     class="space-y-8 pb-10">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
     <!-- Seção 1: Dados Pessoais -->
     <div class="bg-discord-200 border border-discord-400 rounded-3xl p-8">
         <div class="flex items-center gap-3 mb-8 border-b border-discord-300 pb-4">

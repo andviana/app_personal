@@ -174,6 +174,8 @@
                             </button>
                             <form action="{{ url_for('settings.delete_grupo_tarefa', id=g.id) }}" method="POST"
                                 onsubmit="return confirm('Excluir este grupo?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                                 <button type="submit"
                                     class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard">
                                     <i class="ph-bold ph-trash text-lg"></i>
@@ -223,6 +225,8 @@
                             </button>
                             <form action="{{ url_for('settings.delete_tipo_lista', id=t.id) }}" method="POST"
                                 onsubmit="return confirm('Excluir esta categoria?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                                 <button type="submit"
                                     class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard">
                                     <i class="ph-bold ph-trash text-lg"></i>
@@ -273,6 +277,8 @@
                             </button>
                             <form action="{{ url_for('settings.delete_grupo_item', id=g.id) }}" method="POST"
                                 onsubmit="return confirm('Excluir este grupo?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                                 <button type="submit"
                                     class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard">
                                     <i class="ph-bold ph-trash text-lg"></i>
@@ -339,6 +345,8 @@
                 </button>
             </div>
             <form id="modalForm" method="POST" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <div>
                     <label
                         class="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2 ml-1">NOME
@@ -475,8 +483,12 @@
         try {
             const response = await fetch("{{ url_for('settings.backup_import') }}", {
                 method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
                 body: formData
             });
+
 
             const result = await response.json();
 

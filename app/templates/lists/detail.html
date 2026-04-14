@@ -121,6 +121,8 @@
                     <td class="px-3 sm:px-6 py-3 sm:py-4">
                         <div class="flex items-center gap-3 sm:gap-4">
                             <form action="{{ url_for('lists.toggle_item', item_id=it.id) }}" method="POST">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                                 <button type="submit"
                                     class="flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-standard
                                     {% if it.status %}bg-success border-success text-white
@@ -264,6 +266,8 @@
                         class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('lists.add_grupo_item', id=lista.id) }}" method="POST" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <div>
                     <label
                         class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Denominação</label>
@@ -297,6 +301,8 @@
                         class="ph-bold ph-x"></i></button>
             </div>
             <form id="formEditarItem" action="" method="POST" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <div>
                     <label class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">Item</label>
                     <input type="text" id="edit_item_nome" name="item"
@@ -384,6 +390,8 @@
             </div>
 
             <form id="formScrape" action="{{ url_for('lists.scrape_add', list_id=lista.id) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <div class="space-y-6">
                     <div>
                         <label

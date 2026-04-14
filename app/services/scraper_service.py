@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import json
+from app.services.log_service import LogService
+
 
 class ScraperService:
     @staticmethod
@@ -72,8 +74,9 @@ class ScraperService:
             }
             
         except Exception as e:
-            print(f"Scraping error: {str(e)}")
+            LogService.log_action('System', 'SCRAPING_ERROR', f"URL: {url} | ERROR: {str(e)}")
             return {'item': None, 'valor': None, 'success': False, 'is_restricted': False}
+
 
     @staticmethod
     def _is_login_wall(title, url):
@@ -155,8 +158,9 @@ class ScraperService:
                     'valor': float(str(price).replace(',', '.'))
                 }
         except Exception as e:
-            print(f"Error parsing Shein script: {e}")
+            LogService.log_action('System', 'SHEIN_PARSE_ERROR', str(e))
         return None
+
 
     @staticmethod
     def _extract_title(soup, url):
@@ -258,10 +262,11 @@ class ScraperService:
         # Ex: "2x de R$ 95,00" -> 190.00
         installment_match = re.search(r'(\d+)x\s*de\s*R\$\s*(\d{1,3}(\.\d{3})*,\d{2})', raw_html, re.I)
         if installment_match:
-            cuantity = int(installment_match.group(1))
+            quantity = int(installment_match.group(1))
             unit_price = ScraperService._parse_price_string(installment_match.group(2))
             if unit_price:
-                return cuantity * unit_price
+                return quantity * unit_price
+
 
         return None
 

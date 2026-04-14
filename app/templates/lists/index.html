@@ -97,6 +97,8 @@
                         class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('lists.add') }}" method="POST" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <div>
                     <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Nome da
                         Lista</label>
@@ -140,6 +142,8 @@
                         class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('lists.add_tipo') }}" method="POST" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <div>
                     <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Nome do
                         Tipo</label>

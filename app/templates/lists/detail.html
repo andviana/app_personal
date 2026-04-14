@@ -3,6 +3,10 @@
 {% block title %}{{ lista.denominacao }} - AppPessoal{% endblock %}
 
 {% block content %}
+{% set cat_colors = {
+'0': 'blue', '1': 'green', '2': 'purple', '3': 'yellow', '4': 'pink',
+'5': 'indigo', '6': 'orange', '7': 'red', '8': 'cyan', '9': 'teal'
+} %}
 <div class="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
     <div class="flex flex-col gap-2">
         <a href="{{ url_for('lists.index') }}"
@@ -12,8 +16,9 @@
             Voltar
         </a>
         <div class="flex flex-wrap items-center gap-4 mt-2">
-            <h1 class="text-4xl font-extrabold text-text-heading tracking-tight flex items-center gap-3">
-                <i class="ph-bold ph-notebook text-primary-DEFAULT"></i> {{ lista.denominacao }}
+            <h1 class="text-3xl font-semibold flex items-center gap-3">
+                <i class="font-normal text-green-500 ph-light ph-notebook text-primary-DEFAULT"></i> {{
+                lista.denominacao }}
             </h1>
             <span
                 class="bg-discord-400 text-text-muted text-[10px] px-3 py-1 rounded-full font-black tracking-widest uppercase shadow-sm">
@@ -106,15 +111,16 @@
                         Categoria</th>
                     <th class="px-6 py-4 text-right text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
                         Valor Est.</th>
-                    <th class="px-6 py-4 text-center text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
+                    <th
+                        class="px-6 py-4 text-center text-[10px] font-black text-text-muted uppercase tracking-[0.2em] hidden sm:table-cell">
                         Ações</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-discord-400">
                 {% for it in lista.itens %}
                 <tr class="group hover:bg-discord-300 transition-standard {% if it.status %}bg-success/5{% endif %}">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center gap-4">
+                    <td class="px-3 sm:px-6 py-3 sm:py-4">
+                        <div class="flex items-center gap-3 sm:gap-4">
                             <form action="{{ url_for('lists.toggle_item', item_id=it.id) }}" method="POST">
                                 <button type="submit"
                                     class="flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-standard
@@ -123,52 +129,71 @@
                                     <i class="ph-bold ph-check"></i>
                                 </button>
                             </form>
-                            <div class="flex items-center gap-2 group/info">
-                                <span
-                                    class="text-[15px] font-medium {{ 'text-text-muted line-through' if it.status else 'text-text-heading' }}">
-                                    {{ it.item }}
-                                </span>
-                                <button type="button" onclick="openViewItemModal(this)" 
-                                    data-nome="{{ it.item }}" 
-                                    data-grupo="{{ it.grupo.denominacao if it.grupo else 'OUTROS' }}" 
-                                    data-valor="{{ it.valor or '' }}" 
-                                    data-link="{{ it.link or '' }}"
-                                    class="text-blue-400 opacity-0 group-hover:opacity-100 group-hover/info:opacity-100 transition-standard p-1 hover:bg-discord-400 rounded-md"
-                                    data-tooltip="Ver Detalhes" data-tooltip-pos="top">
-                                    <i class="ph-bold ph-info text-lg"></i>
-                                </button>
+                            <div class="flex flex-col min-w-0 flex-1">
+                                <!-- Categoria (Visível apenas no Celular) -->
+                                {% if it.grupo %}
+                                {% set c_name = cat_colors[(it.grupo_id % 10)|string] %}
+                                <div class="sm:hidden mb-1">
+                                    <span
+                                        class="text-[9px] font-black tracking-widest uppercase py-0.5 px-2 bg-{{ c_name }}-500/10 text-{{ c_name }}-400 rounded-md">
+                                        {{ it.grupo.denominacao.upper() }}
+                                    </span>
+                                </div>
+                                {% endif %}
+                                <div class="flex items-center justify-between gap-2 group/info">
+                                    <span
+                                        class="text-[13px] sm:text-[15px] font-normal sm:font-medium leading-tight line-clamp-2 sm:truncate max-w-[200px] sm:max-w-[250px] md:max-w-md lg:max-w-xl {{ 'text-text-muted line-through' if it.status else 'text-text-heading' }}">
+                                        {{ it.item }}
+                                    </span>
+                                    <button type="button" onclick="openViewItemModal(this)" data-id="{{ it.id }}"
+                                        data-nome="{{ it.item }}"
+                                        data-grupo="{{ it.grupo.denominacao if it.grupo else 'OUTROS' }}"
+                                        data-grupo-id="{{ it.grupo_id or '' }}" data-valor="{{ it.valor or '' }}"
+                                        data-link="{{ it.link or '' }}"
+                                        class="text-blue-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-standard p-1 hover:bg-discord-400 rounded-md flex-shrink-0"
+                                        data-tooltip="Ver Detalhes" data-tooltip-pos="top">
+                                        <i class="ph-bold ph-info text-lg"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+                        {% if it.grupo %}
+                        {% set c_name = cat_colors[(it.grupo_id % 10)|string] %}
                         <span
-                            class="text-[10px] font-black tracking-widest uppercase py-0.5 px-2 bg-discord-400 text-text-normal rounded-md">
-                            {{ it.grupo.denominacao if it.grupo else '-' }}
+                            class="text-[10px] font-black tracking-widest uppercase py-1 px-3 bg-{{ c_name }}-500/10 text-{{ c_name }}-400 rounded-md border border-{{ c_name }}-500/20">
+                            {{ it.grupo.denominacao.upper() }}
                         </span>
+                        {% else %}
+                        <span
+                            class="text-[10px] font-black tracking-widest uppercase py-1 px-3 bg-discord-400 text-text-muted rounded-md opacity-50">
+                            OUTROS
+                        </span>
+                        {% endif %}
                     </td>
                     <td
-                        class="px-6 py-4 whitespace-nowrap text-right text-[15px] font-bold {% if it.status %}text-text-muted{% else %}text-text-heading{% endif %}">
+                        class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-[13px] sm:text-[15px] font-normal sm:font-bold {% if it.status %}text-text-muted{% else %}text-text-heading{% endif %}">
                         {% if it.valor %}
                         R$ {{ "%.2f"|format(it.valor) }}
                         {% else %}
                         <span class="text-text-muted">--</span>
                         {% endif %}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center text-right">
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-right hidden sm:table-cell">
                         <div
                             class="flex justify-end items-center gap-1 opacity-0 group-hover:opacity-100 transition-standard">
                             <button type="button" onclick="openEditItemModal(this)" data-id="{{ it.id }}"
                                 data-nome="{{ it.item }}" data-grupo="{{ it.grupo_id or '' }}"
-                                data-valor="{{ it.valor or '' }}"
-                                data-link="{{ it.link or '' }}"
-                                class="p-2 text-text-muted hover:text-text-normal hover:bg-[#313338] rounded-md transition-standard"
+                                data-valor="{{ it.valor or '' }}" data-link="{{ it.link or '' }}"
+                                class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-md transition-standard"
                                 data-tooltip="Editar" data-tooltip-pos="top">
                                 <i class="ph-bold ph-pencil-simple text-lg"></i>
                             </button>
                             <form action="{{ url_for('lists.delete_item', item_id=it.id) }}" method="POST"
                                 onsubmit="return confirm('Remover item?');" class="inline">
                                 <button type="submit"
-                                    class="p-2 text-text-muted hover:text-danger hover:bg-[#313338] rounded-md transition-standard"
+                                    class="p-2 text-text-muted hover:text-danger hover:bg-discord-400 rounded-md transition-standard"
                                     data-tooltip="Excluir" data-tooltip-pos="top">
                                     <i class="ph-bold ph-trash text-lg"></i>
                                 </button>
@@ -305,12 +330,15 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">URL (Referência Externa)</label>
+                    <label class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">URL
+                        (Referência Externa)</label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
                             <i class="ph-bold ph-link text-lg"></i>
                         </div>
-                        <input type="url" id="edit_item_link" name="link" placeholder="https://exemplo.com" class="block w-full h-11 pl-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold">
+                        <input type="url" id="edit_item_link" name="link" placeholder="https://exemplo.com"
+                            class="block w-full h-11 pl-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold">
                     </div>
                 </div>
                 <div class="flex gap-3 pt-2">
@@ -325,8 +353,10 @@
 </div>
 
 <!-- MODAL IMPORTAR VIA URL -->
-<div id="modalImportarURL" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[120] hidden flex items-center justify-center p-4">
-    <div class="bg-discord-300 w-full max-w-lg rounded-3xl shadow-2xl border border-discord-400 overflow-hidden transform transition-all duration-300 scale-95 opacity-0 modal-content">
+<div id="modalImportarURL"
+    class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[120] hidden flex items-center justify-center p-4">
+    <div
+        class="bg-discord-300 w-full max-w-lg rounded-3xl shadow-2xl border border-discord-400 overflow-hidden transform transition-all duration-300 scale-95 opacity-0 modal-content">
         <div class="p-8">
             <div class="flex items-center justify-between mb-8">
                 <div class="flex items-center gap-4">
@@ -338,7 +368,8 @@
                         <p class="text-sm text-text-muted">Extraia dados automaticamente</p>
                     </div>
                 </div>
-                <button onclick="closeScrapeModal()" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-discord-400 transition-standard text-text-muted">
+                <button onclick="closeScrapeModal()"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-discord-400 transition-standard text-text-muted">
                     <i class="ph-bold ph-x text-xl"></i>
                 </button>
             </div>
@@ -347,7 +378,8 @@
                 <div class="flex items-start gap-3">
                     <i class="ph-fill ph-info text-primary-DEFAULT mt-0.5"></i>
                     <p class="text-[13px] text-text-normal leading-relaxed">
-                        Sites suportados: <span class="text-primary-DEFAULT font-bold">Amazon, Shopee, Mercado Livre, AliExpress, Shein, Privalia e Zattini.</span>
+                        Sites suportados: <span class="text-primary-DEFAULT font-bold">Amazon, Shopee, Mercado Livre,
+                            AliExpress, Shein, Privalia e Zattini.</span>
                     </p>
                 </div>
             </div>
@@ -355,9 +387,12 @@
             <form id="formScrape" action="{{ url_for('lists.scrape_add', list_id=lista.id) }}" method="POST">
                 <div class="space-y-6">
                     <div>
-                        <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">URL DO PRODUTO</label>
+                        <label
+                            class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">URL
+                            DO PRODUTO</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
                                 <i class="ph-bold ph-link text-xl"></i>
                             </div>
                             <input type="url" name="url" id="urlInputScrape" required placeholder="https://..."
@@ -370,12 +405,17 @@
                             class="w-full h-14 bg-primary-DEFAULT text-white font-black rounded-2xl hover:bg-primary-hover transition-standard shadow-lg shadow-primary-DEFAULT/20 flex items-center justify-center gap-3 group uppercase tracking-widest">
                             <span id="txtScrapeBtn">IMPORTAR AGORA</span>
                             <div id="loaderScrape" class="hidden">
-                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
                                 </svg>
                             </div>
-                            <i class="ph-bold ph-arrow-right text-xl group-hover:translate-x-1 transition-standard" id="iconScrapeBtn"></i>
+                            <i class="ph-bold ph-arrow-right text-xl group-hover:translate-x-1 transition-standard"
+                                id="iconScrapeBtn"></i>
                         </button>
                     </div>
                 </div>
@@ -385,42 +425,67 @@
 </div>
 
 <!-- Modal Ver Item -->
-<div id="modalVerItem" class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[110] p-4 transition-standard">
+<div id="modalVerItem"
+    class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[110] p-4 transition-standard">
     <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
                     <i class="ph-bold ph-info text-blue-400"></i> Detalhes do Item
                 </h2>
-                <button type="button" onclick="document.getElementById('modalVerItem').classList.add('hidden')" class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
+                <button type="button" onclick="document.getElementById('modalVerItem').classList.add('hidden')"
+                    class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
+                        class="ph-bold ph-x"></i></button>
             </div>
-            
+
             <div class="space-y-4">
                 <div>
-                    <span class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Item</span>
-                    <p id="view_item_nome" class="text-lg font-bold text-text-heading uppercase"></p>
+                    <span
+                        class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Item</span>
+                    <p id="view_item_nome"
+                        class="text-xl font-bold text-text-heading uppercase break-words leading-tight"></p>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <span class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Categoria</span>
+                        <span
+                            class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Categoria</span>
                         <p id="view_item_grupo" class="text-sm font-bold text-text-normal uppercase"></p>
                     </div>
                     <div>
-                        <span class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Valor</span>
+                        <span
+                            class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Valor</span>
                         <p id="view_item_valor" class="text-sm font-black text-white"></p>
                     </div>
                 </div>
                 <div id="view_item_link_container" class="hidden pt-2 border-t border-discord-400">
-                    <span class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-2">Link Externo</span>
-                    <a id="view_item_link" href="#" target="_blank" class="flex items-center gap-2 text-primary-DEFAULT hover:underline font-bold text-[13px] bg-discord-300 p-3 rounded-lg transition-standard">
+                    <span class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-2">Link
+                        Externo</span>
+                    <a id="view_item_link" href="#" target="_blank"
+                        class="flex items-center gap-2 text-primary-DEFAULT hover:underline font-bold text-[13px] bg-discord-300 p-3 rounded-lg transition-standard">
                         <i class="ph-bold ph-arrow-square-out flex-shrink-0"></i>
                         <span id="view_item_link_text" class="truncate"></span>
                     </a>
                 </div>
             </div>
 
-            <div class="mt-8">
-                <button type="button" onclick="document.getElementById('modalVerItem').classList.add('hidden')" class="w-full h-11 bg-discord-400 text-white font-bold rounded-xl transition-standard hover:bg-discord-500">Fechar</button>
+            <div class="mt-8 flex gap-3">
+                <button type="button" id="btnEditFromView"
+                    onclick="document.getElementById('modalVerItem').classList.add('hidden'); openEditItemModal(this)"
+                    class="flex-1 h-11 bg-discord-400 text-text-normal font-bold rounded-xl transition-standard hover:bg-discord-500 flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-pencil-simple"></i> Editar
+                </button>
+                <form id="formDeleteFromView" action="" method="POST" onsubmit="return confirm('Remover item?');"
+                    class="flex-1">
+                    <button type="submit"
+                        class="w-full h-11 bg-danger/10 text-danger font-bold rounded-xl transition-standard hover:bg-danger hover:text-white flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-trash"></i> Excluir
+                    </button>
+                </form>
+            </div>
+
+            <div class="mt-3">
+                <button type="button" onclick="document.getElementById('modalVerItem').classList.add('hidden')"
+                    class="w-full h-11 text-text-muted font-bold rounded-xl transition-standard hover:text-text-normal">Fechar</button>
             </div>
         </div>
     </div>
@@ -463,12 +528,12 @@
         }, 300);
     }
 
-    document.getElementById('formScrape').addEventListener('submit', function(e) {
+    document.getElementById('formScrape').addEventListener('submit', function (e) {
         const btn = document.getElementById('btnScrapeSubmit');
         const txt = document.getElementById('txtScrapeBtn');
         const loader = document.getElementById('loaderScrape');
         const icon = document.getElementById('iconScrapeBtn');
-        
+
         btn.disabled = true;
         btn.classList.add('opacity-80', 'cursor-not-allowed');
         txt.innerText = 'EXTRAINDO DADOS...';
@@ -478,8 +543,9 @@
 
     function openViewItemModal(btn) {
         const modal = document.getElementById('modalVerItem');
-        const content = modal.querySelector('.bg-discord-200'); // Consistent selector
-        
+        const content = modal.querySelector('.bg-discord-200');
+
+        const id = btn.getAttribute('data-id');
         const nome = btn.getAttribute('data-nome').toUpperCase();
         const grupo = btn.getAttribute('data-grupo').toUpperCase();
         const valor = btn.getAttribute('data-valor');
@@ -487,17 +553,17 @@
 
         document.getElementById('view_item_nome').innerText = nome;
         document.getElementById('view_item_grupo').innerText = grupo;
-        
+
         if (valor) {
             document.getElementById('view_item_valor').innerText = parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         } else {
             document.getElementById('view_item_valor').innerText = '--';
         }
-        
+
         const linkContainer = document.getElementById('view_item_link_container');
         const linkElem = document.getElementById('view_item_link');
         const linkText = document.getElementById('view_item_link_text');
-        
+
         if (link && link !== '' && link !== 'None') {
             linkContainer.classList.remove('hidden');
             linkElem.href = link;
@@ -506,10 +572,19 @@
             linkContainer.classList.add('hidden');
         }
 
+        // Configurar botões de Editar/Excluir no Modal
+        const btnEdit = document.getElementById('btnEditFromView');
+        btnEdit.setAttribute('data-id', id);
+        btnEdit.setAttribute('data-nome', btn.getAttribute('data-nome'));
+        btnEdit.setAttribute('data-grupo', btn.getAttribute('data-grupo-id') || '');
+        btnEdit.setAttribute('data-valor', valor);
+        btnEdit.setAttribute('data-link', link);
+
+        document.getElementById('formDeleteFromView').action = '/lists/item/' + id + '/delete';
+
         modal.classList.remove('hidden');
-        // Animation reset
         content.classList.remove('animate-in', 'zoom-in-95');
-        void content.offsetWidth; // trigger reflow
+        void content.offsetWidth;
         content.classList.add('animate-in', 'zoom-in-95');
     }
 </script>

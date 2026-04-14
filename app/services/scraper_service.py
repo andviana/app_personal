@@ -11,9 +11,17 @@ class ScraperService:
         Returns a dict: {'item': str, 'valor': float, 'success': bool, 'is_restricted': bool}
         """
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+            'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+            'Sec-Ch-Ua-Mobile': '?0',
+            'Sec-Ch-Ua-Platform': '"Windows"',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
+            'Upgrade-Insecure-Requests': '1',
         }
         
         try:
@@ -21,21 +29,39 @@ class ScraperService:
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'html.parser')
             
-            # 1. Extrair Título
+            # 1. Verificar Bloqueio Shein
+            if 'shein.com' in url and ('/risk/challenge' in response.url or '/risk/action/limit' in response.url):
+                return {
+                    'item': "SITE BLOQUEOU O ACESSO (SHEIN)",
+                    'valor': None,
+                    'success': False,
+                    'is_restricted': True
+                }
+
+            # 2. Extrair Dados via Script (Shein)
+            if 'shein.com' in url:
+                script_data = ScraperService._extract_shein_script_data(soup)
+                if script_data:
+                    return {
+                        'item': script_data.get('item', '').upper(),
+                        'valor': script_data.get('valor'),
+                        'success': True,
+                        'is_restricted': False
+                    }
+
+            # 3. Extrair Título (Geral)
             title = ScraperService._extract_title(soup, url)
             
             # Verificar se caímos em uma página de login/home genérica
             if ScraperService._is_login_wall(title, url):
-                # Fallback: Tentar pegar nome pela URL
-                url_name = ScraperService._extract_name_from_url(url)
                 return {
-                    'item': url_name.upper() if url_name else "ITEM (SITE RESTRITO)",
+                    'item': "SITE RESTRITO / LOGIN REQUERIDO",
                     'valor': None,
-                    'success': True if url_name else False,
+                    'success': False,
                     'is_restricted': True
                 }
             
-            # 2. Extrair Preço
+            # 4. Extrair Preço (Geral)
             price = ScraperService._extract_price(soup, response.text)
             
             return {
@@ -95,6 +121,41 @@ class ScraperService:
             name = re.sub(r'\.\w+$', '', name) # remove extensão .html etc
             return name.strip()
             
+        return None
+
+    @staticmethod
+    def _extract_shein_script_data(soup):
+        """Tenta extrair dados do JSON embutido na Shein (productIntroData)"""
+        # Procura pelo script productIntroData
+        script = soup.find('script', id='product-intro-data') or soup.find('script', string=re.compile('productIntroData'))
+        if not script: return None
+        
+        try:
+            content = script.string
+            if not content: return None
+            
+            # Alguns sites Shein colocam como atribuição JS: window.productIntroData = {...}
+            if 'productIntroData =' in content:
+                content = content.split('productIntroData =')[1].split(';')[0].strip()
+            
+            data = json.loads(content)
+            # A estrutura pode variar, tentamos os caminhos comuns
+            product = data.get('productIntroData', data)
+            
+            detail = product.get('detail', {})
+            title = detail.get('goods_name')
+            
+            # Preço pode estar em mainPrice ou salePrice
+            main_price = product.get('mainPrice', {})
+            price = main_price.get('amount') or product.get('salePrice', {}).get('amount')
+            
+            if title and price:
+                return {
+                    'item': title,
+                    'valor': float(str(price).replace(',', '.'))
+                }
+        except Exception as e:
+            print(f"Error parsing Shein script: {e}")
         return None
 
     @staticmethod
@@ -175,6 +236,8 @@ class ScraperService:
             '.a-price-whole',    # Amazon
             '[itemprop="price"]', # Genérico
             '.product-price',    # Zattini
+            '.price-item',        # Shein Novo
+            '.product-intro__head-mainprice', # Shein Novo
             '.actual-price',     # Shein
             '.sale-price',
             '.current-price',

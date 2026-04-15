@@ -5,12 +5,15 @@
 {% block content %}
 <div class="min-h-[70vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8 bg-[#313338] p-10 rounded-[2.5rem] shadow-xl border border-discord-400">
-        <div>
+        <div class="flex flex-col items-center gap-1">
             <div
-                class="mx-auto h-16 w-16 bg-primary-DEFAULT rounded-3xl flex items-center justify-center shadow-lg shadow-primary-DEFAULT/20">
+                class="mx-auto h-16 w-16 bg-primary-DEFAULT rounded-3xl flex items-center justify-center shadow-lg shadow-primary-DEFAULT/20 mb-2">
                 <i class="ph-fill ph-lock-key text-white text-3xl"></i>
             </div>
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-text-heading tracking-tight">DayLog</h2>
+            <h2 class="text-center text-3xl font-black text-text-heading tracking-tight">DayLog</h2>
+            <p class="text-[11px] font-bold text-text-muted/50 uppercase tracking-[0.2em]">
+                Acesse sua conta pessoal
+            </p>
         </div>
 
         <form class="mt-8 space-y-6" action="{{ url_for('auth.login', next=request.args.get('next')) }}" method="POST">

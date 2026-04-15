@@ -2704,6 +2704,10 @@ body {
   color: rgb(255 255 255 / 0.4);
 }
 
+.text-text-muted\/40 {
+  color: rgb(148 155 164 / 0.4);
+}
+
 .line-through {
   text-decoration-line: line-through;
 }

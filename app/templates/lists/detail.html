@@ -8,21 +8,26 @@
 '5': 'indigo', '6': 'orange', '7': 'red', '8': 'cyan', '9': 'teal'
 } %}
 <div class="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-4">
         <a href="{{ url_for('lists.index') }}"
-            class="btn-ghost btn-sm group !p-0 !text-text-muted hover:!text-primary-DEFAULT">
+            class="btn-ghost btn-sm group !p-0 !text-text-muted hover:!text-primary-DEFAULT w-fit">
             <i class="ph-bold ph-arrow-left group-hover:-translate-x-1 transition-standard border border-text-muted group-hover:border-primary-DEFAULT rounded-md p-1"></i>
             Voltar
         </a>
 
-        <div class="flex flex-wrap items-center gap-4 mt-2">
-            <h1 class="text-3xl font-extrabold tracking-tight text-text-heading flex items-center gap-3">
-                <i class="ph-bold ph-shopping-bag text-[#ffb000]"></i> {{ lista.denominacao }}
-            </h1>
-            <span
-                class="bg-discord-400 text-text-muted text-[10px] px-3 py-1 rounded-full font-black tracking-widest uppercase shadow-sm">
-                {{ lista.tipo.denominacao if lista.tipo else 'Genérica' }}
-            </span>
+        <div class="flex flex-col gap-1">
+            <div class="flex flex-wrap items-center gap-4">
+                <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
+                    <i class="ph-bold ph-shopping-bag text-[#ffb000]"></i> {{ lista.denominacao }}
+                </h1>
+                <span
+                    class="bg-discord-400 text-text-muted text-[10px] px-3 py-1 rounded-full font-black tracking-widest uppercase shadow-sm">
+                    {{ lista.tipo.denominacao if lista.tipo else 'Genérica' }}
+                </span>
+            </div>
+            <p class="text-[11px] font-bold text-text-muted/50 uppercase tracking-[0.2em]">
+                Gestão de itens e categorias
+            </p>
         </div>
     </div>
 
@@ -266,9 +271,14 @@
     <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                    <i class="ph-bold ph-folder-plus text-primary-DEFAULT"></i> Categoria
-                </h2>
+                <div class="flex flex-col gap-1">
+                    <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-folder-plus text-primary-DEFAULT"></i> Nova Categoria
+                    </h2>
+                    <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">
+                        Organize seus itens por grupo
+                    </p>
+                </div>
                 <button type="button" onclick="document.getElementById('modalNovoGrupoItem').classList.add('hidden')"
                     class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
                         class="ph-bold ph-x"></i></button>
@@ -302,9 +312,14 @@
     <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                    <i class="ph-bold ph-pencil-simple text-primary-DEFAULT"></i> Editar Item
-                </h2>
+                <div class="flex flex-col gap-1">
+                    <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-pencil-simple text-primary-DEFAULT"></i> Editar Item
+                    </h2>
+                    <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">
+                        Atualizar detalhes do produto
+                    </p>
+                </div>
                 <button type="button" onclick="document.getElementById('modalEditarItem').classList.add('hidden')"
                     class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
                         class="ph-bold ph-x"></i></button>
@@ -374,14 +389,11 @@
         class="bg-discord-300 w-full max-w-lg rounded-3xl shadow-2xl border border-discord-400 overflow-hidden transform transition-all duration-300 scale-95 opacity-0 modal-content">
         <div class="p-8">
             <div class="flex items-center justify-between mb-8">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-primary-DEFAULT/10 rounded-2xl flex items-center justify-center">
-                        <i class="ph-bold ph-planet text-2xl text-primary-DEFAULT"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-black text-text-heading tracking-tight uppercase">Importar via Link</h3>
-                        <p class="text-sm text-text-muted">Extraia dados automaticamente</p>
-                    </div>
+                <div class="flex flex-col gap-1">
+                    <h3 class="text-xl font-black text-text-heading tracking-tight flex items-center gap-2">
+                        <i class="ph-bold ph-planet text-primary-DEFAULT"></i> Importar Link
+                    </h3>
+                    <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">Extraia dados automaticamente</p>
                 </div>
                 <button onclick="closeScrapeModal()"
                     class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-discord-400 transition-standard text-text-muted">
@@ -448,9 +460,14 @@
     <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                    <i class="ph-bold ph-info text-blue-400"></i> Detalhes do Item
-                </h2>
+                <div class="flex flex-col gap-1">
+                    <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-eye text-primary-DEFAULT"></i> Ver Detalhes
+                    </h2>
+                    <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">
+                        Informações completas do item
+                    </p>
+                </div>
                 <button type="button" onclick="document.getElementById('modalVerItem').classList.add('hidden')"
                     class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
                         class="ph-bold ph-x"></i></button>

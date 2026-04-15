@@ -7,12 +7,16 @@
 '0': 'blue', '1': 'green', '2': 'purple', '3': 'yellow', '4': 'pink',
 '5': 'indigo', '6': 'orange', '7': 'red', '8': 'cyan', '9': 'teal'
 } %}
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
     <div>
-
-        <h1 class="text-3xl font-extrabold tracking-tight text-text-heading flex items-center gap-3">
-            <i class="ph-bold ph-list-checks text-success"></i> Tarefas
-        </h1>
+        <div class="flex flex-col gap-1">
+            <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
+                <i class="ph-bold ph-list-checks text-success"></i> Tarefas
+            </h1>
+            <p class="text-[11px] font-bold text-text-muted/50 uppercase tracking-[0.2em]">
+                Gestão de atividades diárias
+            </p>
+        </div>
 
         {% set stats = namespace(total=0, completed=0, started=0, pending=0) %}
         {% for g in grupos %}
@@ -279,9 +283,14 @@
     <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                    <i class="ph-bold ph-folder-plus text-primary-DEFAULT"></i> Novo Grupo
-                </h2>
+                <div class="flex flex-col gap-1">
+                    <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-folder-plus text-primary-DEFAULT"></i> Nova Categoria
+                    </h2>
+                    <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">
+                        Organize suas tarefas
+                    </p>
+                </div>
                 <button type="button" onclick="document.getElementById('modalNovoGrupo').classList.add('hidden')"
                     class="p-2 text-text-muted hover:bg-discord-400 hover:text-text-normal rounded-full transition-standard"><i
                         class="ph-bold ph-x"></i></button>
@@ -312,9 +321,14 @@
     <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-md border border-discord-400 animate-in zoom-in-95">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                    <i class="ph-bold ph-pencil-simple text-primary-DEFAULT"></i> Editar Tarefa
-                </h2>
+                <div class="flex flex-col gap-1">
+                    <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-pencil-simple text-primary-DEFAULT"></i> Editar Tarefa
+                    </h2>
+                    <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">
+                        Atualizar detalhes da atividade
+                    </p>
+                </div>
                 <button type="button" onclick="document.getElementById('modalEditTarefa').classList.add('hidden')"
                     class="p-2 text-text-muted hover:bg-discord-400 hover:text-text-normal rounded-full transition-standard"><i
                         class="ph-bold ph-x"></i></button>

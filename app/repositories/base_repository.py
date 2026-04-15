@@ -18,6 +18,17 @@ class BaseRepository(Generic[T]):
             abort(404)
         return entity
 
+    def find_one_by(self, **kwargs) -> Optional[T]:
+        return db.session.query(self.model).filter_by(**kwargs).first()
+
+    def find_one_or_404(self, **kwargs) -> T:
+        entity = self.find_one_by(**kwargs)
+        if entity is None:
+            from flask import abort
+            abort(404)
+        return entity
+
+
     def list_all(self, order_by: Any = None, options: List[Any] = None) -> List[T]:
         """
         List all records with optional ordering and eager loading options.

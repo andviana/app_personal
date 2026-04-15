@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{{ snippet.titulo }} - Compartilhado - AppPessoal{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/snippets.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto flex flex-col gap-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="flex items-center gap-4">
+            {# Removido botão de voltar para modo público #}
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-text-heading">{{ snippet.titulo }}</h1>
+                {% if snippet.descricao %}
+                <p class="text-text-muted font-medium">{{ snippet.descricao }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+             <button data-raw="{{ snippet.conteudo }}" onclick="copyRawContent(this.dataset.raw)" class="w-11 h-11 flex items-center justify-center bg-[#313338] text-text-muted hover:text-text-normal rounded-xl transition-standard shadow-sm border border-discord-400" data-tooltip="Copiar Markdown" data-tooltip-pos="top">
+                <i class="ph-bold ph-copy text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-3xl p-8 md:p-10 shadow-sm min-h-[500px]">
+        <div class="markdown-body text-slate-800">
+            {{ snippet_html | safe }}
+        </div>
+    </div>
+
+    <div class="flex justify-between items-center text-[10px] font-bold text-text-muted uppercase tracking-widest px-6 pb-12">
+        <span>Criado em: {{ snippet.data_criacao.strftime('%d/%m/%Y às %H:%M') if snippet.data_criacao else 'Recém criado' }}</span>
+        {# Removido link de ver todos os snippets #}
+        <span class="text-primary-DEFAULT italic">Snippet compartilhado</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='js/snippets.js') }}" defer></script>
+{% endblock %}

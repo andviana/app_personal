@@ -36,8 +36,10 @@ def create_app(config_class=Config):
         if not current_user.is_authenticated:
             if request.endpoint and \
                'auth.' not in request.endpoint and \
+               'snippets.shared' not in request.endpoint and \
                'static' != request.endpoint:
                 return login.unauthorized()
+
 
     from app.blueprints.main import bp as main_bp
     app.register_blueprint(main_bp)

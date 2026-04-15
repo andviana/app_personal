@@ -32,9 +32,10 @@ function copySnippetUrl(url) {
     });
 }
 
-function copySnippetLink() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-        if (typeof showToast !== 'undefined') showToast('Link copiado com sucesso!');
+function copySnippetLink(url) {
+    const target = url || window.location.href;
+    navigator.clipboard.writeText(target).then(() => {
+        if (typeof showToast !== 'undefined') showToast('Link público copiado!');
     });
 }
 
@@ -86,6 +87,12 @@ function loadSnippet(id, element) {
         document.getElementById('detail-delete').setAttribute('data-id', data.id);
         document.getElementById('detail-delete').setAttribute('data-titulo', data.titulo);
         
+        // Update share button
+        const shareBtn = document.getElementById('detail-share');
+        if (shareBtn) {
+            shareBtn.onclick = () => copySnippetLink(data.share_url);
+        }
+
         // Set raw content for copy button
         const copyBtn = document.getElementById('copy-content-btn');
         if (copyBtn) {
@@ -96,6 +103,7 @@ function loadSnippet(id, element) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
+
 
 // Search logic with Debounce
 document.addEventListener('DOMContentLoaded', () => {

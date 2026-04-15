@@ -9,6 +9,13 @@ class SnippetService:
         return repo.get_or_404(id)
 
     @staticmethod
+    def get_snippet_by_uuid(uuid_str):
+        repo = BaseRepository(Snippet)
+        return repo.find_one_or_404(uuid=uuid_str)
+
+
+
+    @staticmethod
     def get_all_snippets(search=None):
 
         repo = BaseRepository(Snippet)

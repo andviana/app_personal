@@ -25,11 +25,22 @@ def view(id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
             'id': snippet.id,
+            'uuid': snippet.uuid,
             'titulo': snippet.titulo,
             'conteudo': snippet.conteudo,
-            'html': render_markdown(snippet.conteudo)
+            'html': render_markdown(snippet.conteudo),
+            'share_url': url_for('snippets.shared', uuid=snippet.uuid, _external=True)
         })
+
     return render_template('snippets/view.html', snippet=snippet, snippet_html=render_markdown(snippet.conteudo))
+
+@bp.route('/shared/<string:uuid>')
+def shared(uuid):
+    snippet = SnippetService.get_snippet_by_uuid(uuid)
+    return render_template('snippets/public_view.html', 
+                          snippet=snippet, 
+                          snippet_html=render_markdown(snippet.conteudo))
+
 
 @bp.route('/editar/<int:id>')
 def editar(id):

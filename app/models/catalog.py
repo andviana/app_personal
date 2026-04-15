@@ -1,13 +1,16 @@
+import uuid
 from app import db
 from datetime import datetime, timezone
 
 class Snippet(db.Model):
     """Armazenamento de pequenos trechos de texto ou código."""
     id = db.mapped_column(db.Integer, primary_key=True)
+    uuid = db.mapped_column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     titulo = db.mapped_column(db.String(100), nullable=False)
     descricao = db.mapped_column(db.String(200), nullable=True)
     conteudo = db.mapped_column(db.Text, nullable=False)
     data_criacao = db.mapped_column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
 
     def __repr__(self):
         return f'<Snippet {self.titulo}>'

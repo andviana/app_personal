@@ -13,3 +13,10 @@ class Config:
     SQLALCHEMY_DATABASE_URI = db_url or \
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Security Headers & Cookies
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    # Only use Secure cookies in production (when DATABASE_URL is present or in Render)
+    SESSION_COOKIE_SECURE = True if os.environ.get('DATABASE_URL') else False
+

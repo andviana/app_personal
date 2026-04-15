@@ -55,41 +55,38 @@ function closeModal() {
 
 function getEntityName(entity) {
     switch (entity) {
-        case 'grupo_tarefa': return 'Grupo';
-        case 'tipo_lista': return 'Categoria';
+        case 'grupo_tarefa': return 'Grupo de Tarefa';
+        case 'tipo_lista': return 'Categoria de Lista';
         case 'grupo_item': return 'Grupo de Item';
         default: return '';
     }
 }
 
-function handleRestore() {
-    if (typeof Swal === 'undefined') {
-        document.getElementById('backup_file').click();
-        return;
-    }
+function confirmDeleteEntity(event, form, entityType) {
+    event.preventDefault();
+    const entityName = getEntityName(entityType);
+    AppUI.confirmAction({
+        title: 'Remover ' + entityName + '?',
+        text: 'Essa ação não pode ser desfeita e pode afetar registros vinculados.',
+        confirmText: 'Sim, excluir',
+        onConfirm: () => {
+            form.submit();
+        }
+    });
+}
 
-    Swal.fire({
+
+function handleRestore() {
+    AppUI.confirmAction({
         title: 'Atenção!',
         text: "A restauração irá APAGAR todos os dados atuais do aplicativo. Tem certeza que deseja continuar?",
-        icon: 'warning',
-        background: '#313338',
-        color: '#dbdee1',
-        confirmButtonColor: '#da373c',
-        cancelButtonColor: '#4e5058',
-        confirmButtonText: 'Sim, Restaurar!',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-            popup: 'rounded-[1.5rem]',
-            title: 'text-text-heading font-black',
-            confirmButton: 'rounded-xl px-6 py-2 font-bold uppercase tracking-widest text-xs',
-            cancelButton: 'rounded-xl px-6 py-2 font-bold uppercase tracking-widest text-xs'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
+        confirmText: 'Sim, Restaurar!',
+        onConfirm: () => {
             document.getElementById('backup_file').click();
         }
     });
 }
+
 
 async function processRestore(input, importUrl) {
     if (!input.files || input.files.length === 0) return;
@@ -130,47 +127,18 @@ async function processRestore(input, importUrl) {
         const result = await response.json();
 
         if (result.success) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: 'Sucesso!',
-                    text: result.message,
-                    icon: 'success',
-                    background: '#313338',
-                    color: '#dbdee1',
-                    confirmButtonColor: '#5865f2',
-                    customClass: {
-                        popup: 'rounded-[1.5rem]',
-                        confirmButton: 'rounded-xl px-6 py-2 font-bold uppercase tracking-widest text-xs'
-                    }
-                }).then(() => {
-                    window.location.reload();
-                });
-            } else {
-                alert(result.message);
+            AppUI.toast(result.message, 'success');
+            setTimeout(() => {
                 window.location.reload();
-            }
+            }, 1000);
         } else {
             throw new Error(result.message);
         }
     } catch (error) {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: 'Erro!',
-                text: error.message || 'Ocorreu um erro inesperado durante a restauração.',
-                icon: 'error',
-                background: '#313338',
-                color: '#dbdee1',
-                confirmButtonColor: '#5865f2',
-                customClass: {
-                    popup: 'rounded-[1.5rem]',
-                    confirmButton: 'rounded-xl px-6 py-2 font-bold uppercase tracking-widest text-xs'
-                }
-            });
-        } else {
-            alert('Erro: ' + (error.message || 'Erro inesperado'));
-        }
+        AppUI.toast(error.message || 'Ocorreu um erro inesperado durante a restauração.', 'error');
     }
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // Retore active tab
@@ -184,3 +152,4 @@ window.openEditModal = openEditModal;
 window.closeModal = closeModal;
 window.handleRestore = handleRestore;
 window.processRestore = processRestore;
+window.confirmDeleteEntity = confirmDeleteEntity;

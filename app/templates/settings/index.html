@@ -172,8 +172,8 @@
                                 class="p-2 text-text-muted hover:text-primary-DEFAULT hover:bg-discord-400 rounded-lg transition-standard">
                                 <i class="ph-bold ph-pencil-simple text-lg"></i>
                             </button>
-                            <form action="{{ url_for('settings.delete_grupo_tarefa', id=g.id) }}" method="POST"
-                                onsubmit="return confirm('Excluir este grupo?');">
+                            <form action="{{ url_for('settings.delete_entity', entity_type='grupo_tarefa', id=g.id) }}" method="POST"
+                                onsubmit="confirmDeleteEntity(event, this, 'grupo_tarefa')">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                                 <button type="submit"
@@ -223,8 +223,8 @@
                                 class="p-2 text-text-muted hover:text-primary-DEFAULT hover:bg-discord-400 rounded-lg transition-standard">
                                 <i class="ph-bold ph-pencil-simple text-lg"></i>
                             </button>
-                            <form action="{{ url_for('settings.delete_tipo_lista', id=t.id) }}" method="POST"
-                                onsubmit="return confirm('Excluir esta categoria?');">
+                            <form action="{{ url_for('settings.delete_entity', entity_type='tipo_lista', id=t.id) }}" method="POST"
+                                onsubmit="confirmDeleteEntity(event, this, 'tipo_lista')">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                                 <button type="submit"
@@ -275,8 +275,8 @@
                                 class="p-2 text-text-muted hover:text-primary-DEFAULT hover:bg-discord-400 rounded-lg transition-standard">
                                 <i class="ph-bold ph-pencil-simple text-lg"></i>
                             </button>
-                            <form action="{{ url_for('settings.delete_grupo_item', id=g.id) }}" method="POST"
-                                onsubmit="return confirm('Excluir este grupo?');">
+                            <form action="{{ url_for('settings.delete_entity', entity_type='grupo_item', id=g.id) }}" method="POST"
+                                onsubmit="confirmDeleteEntity(event, this, 'grupo_item')">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                                 <button type="submit"

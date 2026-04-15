@@ -6,42 +6,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <!-- SEO & Social Media Meta Tags -->
+    <meta name="description" content="DayLog - Organize suas tarefas, listas e snippets com uma interface moderna estilo Discord.">
+    <meta name="keywords" content="tarefas, listas de compras, snippets, organização pessoal, daylog">
+    <meta name="author" content="DayLog Team">
+
+    <!-- Open Graph / Facebook / Instagram / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:title" content="DayLog - Gestão Pessoal Estilo Discord">
+    <meta property="og:description" content="Organize sua vida com simplicidade. Tarefas, compras e código em um só lugar.">
+    <meta property="og:image" content="{{ url_for('static', filename='img/social-share.png', _external=True) }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:site_name" content="DayLog App">
+
+    <!-- Twitter / X -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.url }}">
+    <meta property="twitter:title" content="DayLog - Gestão Pessoal Estilo Discord">
+    <meta property="twitter:description" content="Organize sua vida com simplicidade. Tarefas, compras e código em um só lugar.">
+    <meta property="twitter:image" content="{{ url_for('static', filename='img/social-share.png', _external=True) }}">
+
     <title>{% block title %}DayLog{% endblock %}</title>
 
-    <!-- Tailwind CSS (Play CDN) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            DEFAULT: '#5865F2',
-                            hover: '#4752C4',
-                            active: '#3C45A5'
-                        },
-                        discord: {
-                            100: '#1e1f22', // Server sidebar / darkest
-                            200: '#2b2d31', // Channels sidebar / deeper
-                            300: '#313338', // Main chat / background
-                            400: '#383a40', // Hover states / light cards
-                            modal: '#313338',
-                        },
-                        text: {
-                            normal: '#dbdee1',
-                            muted: '#949ba4',
-                            heading: '#f2f3f5',
-                        },
-                        success: '#23a559',
-                        danger: '#da373c',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+
+    <!-- Tailwind CSS (Production Built) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
 
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -51,17 +45,6 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-        body {
-            -webkit-tap-highlight-color: transparent;
-            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-            background-color: #313338;
-            color: #dbdee1;
-        }
-
-        .transition-standard {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
 
         /* Tooltip Nativo em CSS (Discord-like) */
         [data-tooltip] {
@@ -406,8 +389,15 @@
             {% for category, message in messages %}
             // Skip login errors here as they are handled locally in login.html
             {% if request.endpoint != 'auth.login' %}
-            if (window.showToast) {
-                window.showToast({{ message|tojson|safe }}, '{{ "success" if category == "success" else "error" if category == "danger" else "info" }}');
+            if (window.AppUI && window.AppUI.toast) {
+                const iconMap = {
+                    'success': 'success',
+                    'danger': 'error',
+                    'warning': 'warning',
+                    'info': 'info'
+                };
+                const icon = iconMap['{{ category }}'] || 'info';
+                AppUI.toast({{ message|tojson|safe }}, icon);
             }
             {% endif %}
             {% endfor %}

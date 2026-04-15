@@ -4,29 +4,20 @@
  */
 
 function confirmDelete(id, titulo, deleteUrl) {
-    Swal.fire({
+    AppUI.confirmAction({
         title: 'Tem certeza?',
         text: `Deseja realmente remover o snippet "${titulo}"? Esta ação não pode ser desfeita.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#da373c',
-        cancelButtonColor: '#4e5058',
-        confirmButtonText: 'Sim, remover!',
-        cancelButtonText: 'Cancelar',
-        reverseButtons: true,
-        customClass: {
-            popup: 'discord-theme rounded-[2rem]',
-            confirmButton: 'rounded-xl px-6 py-3 font-bold',
-            cancelButton: 'rounded-xl px-6 py-3 font-bold'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
+        confirmText: 'Sim, remover!',
+        onConfirm: () => {
             const form = document.getElementById('delete-form');
-            form.action = deleteUrl.replace('0', id);
-            form.submit();
+            if (form) {
+                form.action = deleteUrl.replace('0', id);
+                form.submit();
+            }
         }
     });
 }
+
 
 function copyRawContent(content) {
     navigator.clipboard.writeText(content).then(() => {

@@ -36,43 +36,22 @@ function openEditModal(id, descricao, grupo_id, status) {
     if (statusInput) statusInput.value = status;
     if (form) form.action = "/tasks/edit/" + id;
 
-    const modal = document.getElementById('modalEditTarefa');
-    if (modal) modal.classList.remove('hidden');
+    AppUI.toggleModal('modalEditTarefa', true);
 }
 
 function confirmDeleteTask(id, descricao) {
-    if (typeof Swal === 'undefined') {
-        if (confirm(`Deseja realmente remover a tarefa "${descricao}"?`)) {
-            const form = document.getElementById('delete-task-form');
-            form.action = "/tasks/delete/" + id;
-            form.submit();
-        }
-        return;
-    }
-
-    Swal.fire({
+    AppUI.confirmAction({
         title: 'Excluir Tarefa?',
         text: `Deseja realmente remover a tarefa "${descricao}"?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#da373c',
-        cancelButtonColor: '#4e5058',
-        confirmButtonText: 'Sim, excluir!',
-        cancelButtonText: 'Cancelar',
-        reverseButtons: true,
-        customClass: {
-            popup: 'discord-theme',
-            confirmButton: 'rounded-xl px-6 py-3 font-bold',
-            cancelButton: 'rounded-xl px-6 py-3 font-bold'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
+        confirmText: 'Sim, excluir!',
+        onConfirm: () => {
             const form = document.getElementById('delete-task-form');
             form.action = "/tasks/delete/" + id;
             form.submit();
         }
     });
 }
+
 
 function filterTasks() {
     const filterDescElem = document.getElementById('filterDesc');

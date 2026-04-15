@@ -126,24 +126,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function confirmDelete(event, form) {
+function confirmDelete(event, form, itemName = 'este item') {
     event.preventDefault();
-    Swal.fire({
+    AppUI.confirmAction({
         title: 'Remover item?',
-        text: "Essa ação não pode ser desfeita!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sim, excluir',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-            popup: 'discord-theme',
-            confirmButton: 'bg-danger text-white px-4 py-2 rounded-md hover:bg-danger/80 border-none ml-2',
-            cancelButton: 'bg-discord-400 text-text-normal px-4 py-2 rounded-md hover:bg-discord-500 border-none'
-        },
-        buttonsStyling: false
-    }).then((result) => {
-        if (result.isConfirmed) {
+        text: `Deseja realmente remover "${itemName}"? Essa ação não pode ser desfeita!`,
+        confirmText: 'Sim, excluir',
+        onConfirm: () => {
             form.submit();
         }
     });
 }
+

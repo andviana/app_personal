@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    -webkit-tap-highlight-color: transparent;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+@layer components {
+  .transition-standard {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .calendar-square {
+    @apply rounded-[2px] transition-all duration-300;
+  }
+
+  .calendar-square.level-0 { @apply bg-discord-400/50 hover:bg-discord-400; }
+  .calendar-square.level-1 { @apply bg-[#0e4429] hover:brightness-125; }
+  .calendar-square.level-2 { @apply bg-[#006d32] hover:brightness-125; }
+  .calendar-square.level-3 { @apply bg-[#26a641] hover:brightness-125; }
+  .calendar-square.level-4 { @apply bg-[#39d353] hover:brightness-125; }
+}

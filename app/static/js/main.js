@@ -45,25 +45,87 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Toast Helper
-const showToast = (message, icon = 'success') => {
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        customClass: {
-            popup: 'discord-theme'
-        },
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
+/**
+ * Global UI Utilities
+ */
+const AppUI = {
+    /**
+     * Shows a toast notification style Discord
+     */
+    toast: (message, icon = 'success') => {
+        if (typeof Swal === 'undefined') {
+            alert(message);
+            return;
         }
-    });
 
-    Toast.fire({
-        icon: icon,
-        title: message
-    });
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true,
+            customClass: {
+                popup: 'discord-theme rounded-xl border border-white/5 shadow-2xl'
+            },
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        Toast.fire({
+            icon: icon,
+            title: message
+        });
+    },
+
+    /**
+     * Shows a Discord-styled confirmation dialog using SweetAlert2
+     */
+    confirmAction: ({ title, text, icon = 'warning', confirmText = 'Sim, confirmar', onConfirm }) => {
+        if (typeof Swal === 'undefined') {
+            if (confirm(text)) onConfirm();
+            return;
+        }
+
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: icon,
+            showCancelButton: true,
+            confirmButtonColor: '#da373c',
+            cancelButtonColor: '#4e5058',
+            confirmButtonText: confirmText,
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true,
+            customClass: {
+                popup: 'discord-theme',
+                confirmButton: 'rounded-xl px-6 py-3 font-bold',
+                cancelButton: 'rounded-xl px-6 py-3 font-bold'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                onConfirm();
+            }
+        });
+    },
+
+    /**
+     * Toggle visibility of a modal
+     */
+    toggleModal: (modalId, show = true) => {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+        
+        if (show) {
+            modal.classList.remove('hidden');
+        } else {
+            modal.classList.add('hidden');
+        }
+    }
 };
+
+// Global Exposure
+window.showToast = AppUI.toast;
+window.AppUI = AppUI;
+

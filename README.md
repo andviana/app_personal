@@ -14,6 +14,11 @@ Sistema de gerenciamento pessoal para tarefas, listas, pessoas, perfumes e snipp
 
 ---
 
+## 🛠️ Requisitos
+
+- **Python 3.8+**
+- **Node.js 18+ & npm** (para processamento do CSS)
+
 ## 💻 Instalação Local
 
 1. **Clone o repositório**:
@@ -29,7 +34,13 @@ Sistema de gerenciamento pessoal para tarefas, listas, pessoas, perfumes e snipp
    pip install -r requirements.txt
    ```
 
-3. **Configure as variáveis de ambiente**:
+3. **Instale e compile o frontend (Tailwind CSS)**:
+   ```bash
+   npm install
+   npm run build:css
+   ```
+
+4. **Configure as variáveis de ambiente**:
    Crie um arquivo `.env` baseado no arquivo `.env.example`.
 
 4. **Inicie o banco de dados**:
@@ -41,6 +52,23 @@ Sistema de gerenciamento pessoal para tarefas, listas, pessoas, perfumes e snipp
    ```bash
    python run.py
    ```
+
+---
+
+## 🎨 Desenvolvimento de Frontend
+
+A aplicação utiliza **Tailwind CSS** com um processo de build local.
+
+- **Compilação em Tempo Real (Watch)**: Use durante o desenvolvimento para que o CSS seja atualizado automaticamente ao salvar arquivos HTML.
+  ```bash
+  npm run watch:css
+  ```
+- **Build de Produção**: Gera um arquivo CSS minificado e otimizado.
+  ```bash
+  npm run build:css
+  ```
+
+Os arquivos fonte ficam em `app/static/css/input.css` e o resultado compilado em `app/static/css/output.css`.
 
 ---
 
@@ -71,7 +99,8 @@ Siga estes passos para colocar sua aplicação online usando o **Render** e o **
 
 ### 3. Considerações Importantes
 
-- O arquivo `render-build.sh` executa automaticamente as migrações (`flask db upgrade`).
+- O arquivo `render-build.sh` executa automaticamente a instalação das dependências (Python e npm), o build do CSS e as migrações do banco de dados (`flask db upgrade`).
+- O Render detecta automaticamente o arquivo `package.json` e configura o ambiente Node.js necessário.
 - Se preferir usar SQLite (não recomendado para o plano gratuito do Render), você precisará configurar um **Persistent Disk**.
 
 ---

@@ -88,9 +88,10 @@
                         </div>
                     </div>
                     <a href="{{ url_for('settings.alterar_senha') }}"
-                        class="w-full sm:w-auto px-8 py-3 bg-primary-DEFAULT text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary-DEFAULT/20 text-center">
+                        class="btn-primary btn-md w-full sm:w-auto">
                         Alterar Senha
                     </a>
+
                 </div>
             </div>
         </div>
@@ -119,9 +120,10 @@
                         <p class="text-xs text-text-muted leading-relaxed">Gera um arquivo JSON contendo todas as suas
                             tarefas, listas e configurações atuais.</p>
                         <a href="{{ url_for('settings.backup_export') }}" download
-                            class="mt-2 w-full py-3 bg-discord-100 text-text-normal rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-discord-400 transition-standard text-center border border-discord-400">
+                            class="btn-secondary btn-sm mt-2 w-full uppercase font-black" style="font-size: 10px; letter-spacing: 0.1em;">
                             Fazer Download
                         </a>
+
                     </div>
 
                     <div class="p-6 bg-discord-300 rounded-3xl border border-discord-400 flex flex-col gap-4">
@@ -132,9 +134,10 @@
                         <p class="text-xs text-text-muted leading-relaxed italic">Atenção: A restauração substituirá
                             todos os dados atuais permanentemente.</p>
                         <button onclick="handleRestore()"
-                            class="mt-2 w-full py-3 bg-danger/10 text-danger rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-danger hover:text-white transition-standard border border-danger/30">
+                            class="btn-danger btn-sm mt-2 w-full uppercase font-black !bg-danger/10 hover:!bg-danger !text-danger hover:!text-white border border-danger/30" style="font-size: 10px; letter-spacing: 0.1em;">
                             Carregar Arquivo
                         </button>
+
                         <input type="file" id="backup_file" class="hidden" accept=".json"
                             onchange="processRestore(this, '{{ url_for('settings.backup_import') }}')">
                     </div>
@@ -149,10 +152,10 @@
                 <div class="p-6 border-b border-discord-400 flex justify-between items-center bg-discord-300">
                     <h2 class="font-black text-text-heading uppercase tracking-widest text-sm">Grupos de Tarefas</h2>
                     <button onclick="openAddModal('grupo_tarefa')"
-                        class="h-10 px-4 bg-primary-DEFAULT text-white flex items-center gap-2 rounded-xl hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary-DEFAULT/10">
-                        <i class="ph-bold ph-plus"></i> <span
-                            class="text-[10px] font-black uppercase tracking-widest">Novo</span>
+                        class="btn-primary btn-sm">
+                        <i class="ph-bold ph-plus"></i> <span class="uppercase tracking-widest" style="font-size: 10px;">Novo</span>
                     </button>
+
                 </div>
                 <div class="divide-y divide-discord-400">
                     {% for g in grupos_tarefas %}
@@ -169,7 +172,7 @@
                         <div
                             class="flex items-center gap-1 opacity-10 md:opacity-100 group-hover:opacity-100 transition-opacity">
                             <button onclick='openEditModal("grupo_tarefa", "{{ g.id }}", "{{ g.denominacao }}")'
-                                class="p-2 text-text-muted hover:text-primary-DEFAULT hover:bg-discord-400 rounded-lg transition-standard">
+                                class="btn-icon-sm !bg-transparent !border-none">
                                 <i class="ph-bold ph-pencil-simple text-lg"></i>
                             </button>
                             <form action="{{ url_for('settings.delete_entity', entity_type='grupo_tarefa', id=g.id) }}" method="POST"
@@ -177,10 +180,11 @@
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                                 <button type="submit"
-                                    class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard">
+                                    class="btn-icon-sm !bg-transparent !border-none hover:!text-danger">
                                     <i class="ph-bold ph-trash text-lg"></i>
                                 </button>
                             </form>
+
                         </div>
                     </div>
                     {% else %}
@@ -200,10 +204,10 @@
                 <div class="p-6 border-b border-discord-400 flex justify-between items-center bg-discord-300">
                     <h2 class="font-black text-text-heading uppercase tracking-widest text-sm">Categorias de Listas</h2>
                     <button onclick="openAddModal('tipo_lista')"
-                        class="h-10 px-4 bg-primary-DEFAULT text-white flex items-center gap-2 rounded-xl hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary-DEFAULT/10">
-                        <i class="ph-bold ph-plus"></i> <span
-                            class="text-[10px] font-black uppercase tracking-widest">Nova</span>
+                        class="btn-primary btn-sm">
+                        <i class="ph-bold ph-plus"></i> <span class="uppercase tracking-widest" style="font-size: 10px;">Nova</span>
                     </button>
+
                 </div>
                 <div class="divide-y divide-discord-400">
                     {% for t in tipos_listas %}
@@ -220,7 +224,7 @@
                         <div
                             class="flex items-center gap-1 opacity-10 md:opacity-100 group-hover:opacity-100 transition-opacity">
                             <button onclick='openEditModal("tipo_lista", "{{ t.id }}", "{{ t.denominacao }}")'
-                                class="p-2 text-text-muted hover:text-primary-DEFAULT hover:bg-discord-400 rounded-lg transition-standard">
+                                class="btn-icon-sm !bg-transparent !border-none">
                                 <i class="ph-bold ph-pencil-simple text-lg"></i>
                             </button>
                             <form action="{{ url_for('settings.delete_entity', entity_type='tipo_lista', id=t.id) }}" method="POST"
@@ -228,10 +232,11 @@
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                                 <button type="submit"
-                                    class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard">
+                                    class="btn-icon-sm !bg-transparent !border-none hover:!text-danger">
                                     <i class="ph-bold ph-trash text-lg"></i>
                                 </button>
                             </form>
+
                         </div>
                     </div>
                     {% else %}
@@ -252,10 +257,10 @@
                     <h2 class="font-black text-text-heading uppercase tracking-widest text-sm">Grupos de Itens (Listas)
                     </h2>
                     <button onclick="openAddModal('grupo_item')"
-                        class="h-10 px-4 bg-primary-DEFAULT text-white flex items-center gap-2 rounded-xl hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary-DEFAULT/10">
-                        <i class="ph-bold ph-plus"></i> <span
-                            class="text-[10px] font-black uppercase tracking-widest">Novo</span>
+                        class="btn-primary btn-sm">
+                        <i class="ph-bold ph-plus"></i> <span class="uppercase tracking-widest" style="font-size: 10px;">Novo</span>
                     </button>
+
                 </div>
                 <div class="divide-y divide-discord-400">
                     {% for g in grupos_itens %}
@@ -272,7 +277,7 @@
                         <div
                             class="flex items-center gap-1 opacity-10 md:opacity-100 group-hover:opacity-100 transition-opacity">
                             <button onclick='openEditModal("grupo_item", "{{ g.id }}", "{{ g.denominacao }}")'
-                                class="p-2 text-text-muted hover:text-primary-DEFAULT hover:bg-discord-400 rounded-lg transition-standard">
+                                class="btn-icon-sm !bg-transparent !border-none">
                                 <i class="ph-bold ph-pencil-simple text-lg"></i>
                             </button>
                             <form action="{{ url_for('settings.delete_entity', entity_type='grupo_item', id=g.id) }}" method="POST"
@@ -280,10 +285,11 @@
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                                 <button type="submit"
-                                    class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-standard">
+                                    class="btn-icon-sm !bg-transparent !border-none hover:!text-danger">
                                     <i class="ph-bold ph-trash text-lg"></i>
                                 </button>
                             </form>
+
                         </div>
                     </div>
                     {% else %}
@@ -319,9 +325,10 @@
                     </div>
                     <div class="pt-4 border-t border-discord-400">
                         <a href="{{ url_for('settings.download_logs') }}"
-                            class="flex items-center justify-center gap-2 w-full py-4 bg-discord-300 text-text-normal font-black rounded-xl text-xs uppercase tracking-widest hover:bg-discord-400 transition-all border border-discord-400 shadow-sm active:scale-[0.98]">
+                            class="btn-secondary btn-lg w-full">
                             <i class="ph-bold ph-file-arrow-down text-lg"></i> Baixar Arquivo App.log
                         </a>
+
                     </div>
                 </div>
             </div>
@@ -357,10 +364,11 @@
                 </div>
                 <div class="flex gap-3 pt-4">
                     <button type="button" onclick="closeModal()"
-                        class="flex-1 h-12 text-text-muted font-black rounded-xl hover:bg-discord-400 transition-all uppercase text-[10px] tracking-widest">Cancelar</button>
+                        class="btn-secondary btn-md flex-1">Cancelar</button>
                     <button type="submit" id="submitBtn"
-                        class="flex-1 h-12 bg-primary-DEFAULT text-white font-black rounded-xl hover:bg-primary-hover shadow-lg shadow-primary-DEFAULT/20 transition-all uppercase text-[10px] tracking-widest active:scale-95">Salvar</button>
+                        class="btn-primary btn-md flex-1">Salvar</button>
                 </div>
+
             </form>
         </div>
     </div>

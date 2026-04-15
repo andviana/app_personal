@@ -11,10 +11,10 @@
 
         <p class=" text-text-muted font-medium">Gestão de contatos e documentos vinculados.</p>
     </div>
-    <a href="{{ url_for('pessoas.add') }}"
-        class="h-12 px-6 bg-[#43b581] text-white flex items-center gap-2 rounded-xl hover:bg-[#43b581]/90 transition-all shadow-lg shadow-[#43b581]/20 font-black uppercase text-xs tracking-widest">
+    <a href="{{ url_for('pessoas.add') }}" class="btn-success btn-md">
         <i class="ph-bold ph-user-plus text-xl"></i>
     </a>
+
 </div>
 
 <!-- Search Bar -->
@@ -46,7 +46,7 @@
                 </div>
                 <div class="flex gap-1">
                     <a href="{{ url_for('pessoas.edit', id=p.id) }}"
-                        class="p-2 text-text-muted hover:text-[#43b581] hover:bg-discord-300 rounded-lg transition-all"
+                        class="btn-icon-sm !bg-transparent !border-none"
                         data-tooltip="Editar">
                         <i class="ph-bold ph-pencil-simple text-lg"></i>
                     </a>
@@ -54,11 +54,12 @@
                         data-id="{{ p.id }}" 
                         data-nome="{{ p.nome_completo }}"
                         onclick="confirmDelete(this.dataset.id, this.dataset.nome, '{{ url_for('pessoas.delete', id=0) }}')"
-                        class="p-2 text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-all"
+                        class="btn-icon-sm !bg-transparent !border-none hover:!text-danger"
                         data-tooltip="Excluir">
                         <i class="ph-bold ph-trash text-lg"></i>
                     </button>
                 </div>
+
             </div>
 
             <h3 class="text-lg font-black text-text-heading uppercase tracking-tight mb-1">{{ p.nome_completo }}</h3>
@@ -113,9 +114,10 @@
                 Desde {{ p.data_cadastro.strftime('%d/%m/%Y') }}
             </span>
             <button onclick="toggleModal('modal-pessoa-{{ p.id }}')"
-                class="text-[10px] font-black text-[#43b581] uppercase tracking-widest hover:underline">
+                class="btn-ghost btn-sm !text-[#43b581] !bg-transparent p-0">
                 Mostrar ficha <i class="ph-bold ph-caret-right ml-1"></i>
             </button>
+
         </div>
     </div>
 
@@ -156,9 +158,10 @@
                             <div class="flex flex-col group/item">
                                 <span class="text-[9px] font-black text-text-muted/50 uppercase flex items-center gap-2">
                                     CPF
-                                    <button onclick="copyToClipboard('{{ p.cpf }}', 'numbers', 'CPF')" class="opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all text-text-muted hover:text-[#43b581]" title="Copiar apenas números">
+                                    <button onclick="copyToClipboard('{{ p.cpf }}', 'numbers', 'CPF')" class="btn-icon-sm opacity-100 md:opacity-0 md:group-hover/item:opacity-100 !bg-transparent !border-none !p-1" title="Copiar apenas números">
                                         <i class="ph-bold ph-copy text-[10px]"></i>
                                     </button>
+
                                 </span>
                                 <span class="text-sm font-bold text-text-normal">{{ p.cpf }}</span>
                             </div>
@@ -167,9 +170,10 @@
                             <div class="flex flex-col group/item">
                                 <span class="text-[9px] font-black text-text-muted/50 uppercase flex items-center gap-2">
                                     Nascimento / Idade
-                                    <button onclick="copyToClipboard('{{ p.data_nascimento.strftime('%d/%m/%Y') }}', 'date', 'Nascimento')" class="opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all text-text-muted hover:text-[#43b581]" title="Copiar em formato AAAA-MM-DD">
+                                    <button onclick="copyToClipboard('{{ p.data_nascimento.strftime('%d/%m/%Y') }}', 'date', 'Nascimento')" class="btn-icon-sm opacity-100 md:opacity-0 md:group-hover/item:opacity-100 !bg-transparent !border-none !p-1" title="Copiar em formato AAAA-MM-DD">
                                         <i class="ph-bold ph-copy text-[10px]"></i>
                                     </button>
+
                                 </span>
                                 <div class="flex items-center gap-2">
                                     <span class="text-sm font-bold text-text-normal">{{ p.data_nascimento.strftime('%d/%m/%Y') }}</span>
@@ -183,9 +187,10 @@
                             <div class="flex flex-col group/item">
                                 <span class="text-[9px] font-black text-text-muted/50 uppercase flex items-center gap-2">
                                     RG / Expedição
-                                    <button onclick="copyToClipboard('{{ p.rg_numero }}', 'numbers', 'RG')" class="opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all text-text-muted hover:text-[#43b581]" title="Copiar apenas números">
+                                    <button onclick="copyToClipboard('{{ p.rg_numero }}', 'numbers', 'RG')" class="btn-icon-sm opacity-100 md:opacity-0 md:group-hover/item:opacity-100 !bg-transparent !border-none !p-1" title="Copiar apenas números">
                                         <i class="ph-bold ph-copy text-[10px]"></i>
                                     </button>
+
                                 </span>
                                 <span class="text-sm font-bold text-text-normal">
                                     {{ p.rg_numero }} {{ p.rg_orgao or '' }}
@@ -199,9 +204,10 @@
                             <div class="flex flex-col group/item">
                                 <span class="text-[9px] font-black text-text-muted/50 uppercase flex items-center gap-2">
                                     PIS
-                                    <button onclick="copyToClipboard('{{ p.pis }}', 'numbers', 'PIS')" class="opacity-100 md:opacity-0 md:group-hover/item:opacity-100 transition-all text-text-muted hover:text-[#43b581]" title="Copiar apenas números">
+                                    <button onclick="copyToClipboard('{{ p.pis }}', 'numbers', 'PIS')" class="btn-icon-sm opacity-100 md:opacity-0 md:group-hover/item:opacity-100 !bg-transparent !border-none !p-1" title="Copiar apenas números">
                                         <i class="ph-bold ph-copy text-[10px]"></i>
                                     </button>
+
                                 </span>
                                 <span class="text-sm font-bold text-text-normal">{{ p.pis }}</span>
                             </div>
@@ -221,9 +227,10 @@
                                 <div class="flex items-center gap-2">
                                     <i class="ph-fill ph-phone-call text-[#43b581]"></i> {{ t.numero }}
                                 </div>
-                                <button onclick="copyToClipboard('{{ t.numero }}', 'numbers', 'Telefone')" class="text-text-muted hover:text-[#43b581] transition-all" title="Copiar apenas números">
+                                <button onclick="copyToClipboard('{{ t.numero }}', 'numbers', 'Telefone')" class="btn-icon-sm !bg-transparent !border-none !p-1" title="Copiar apenas números">
                                     <i class="ph-bold ph-copy text-sm"></i>
                                 </button>
+
                             </div>
                             {% endfor %}
                         </div>
@@ -240,9 +247,10 @@
                             {% for e in p.enderecos %}
                             <div class="flex items-center justify-between p-3 bg-discord-300 rounded-xl border border-discord-400 group/addr transition-all">
                                 <span class="text-xs font-semibold text-text-normal leading-relaxed pr-4">{{ e.descricao }}</span>
-                                <button onclick="copyToClipboard('{{ e.descricao }}')" class="w-8 h-8 flex items-center justify-center bg-discord-400 text-text-muted hover:text-[#43b581] rounded-lg transition-all flex-shrink-0" data-tooltip="Copiar Endereço">
+                                <button onclick="copyToClipboard('{{ e.descricao }}')" class="btn-icon-sm !bg-discord-400 !bg-opacity-100" data-tooltip="Copiar Endereço">
                                     <i class="ph-bold ph-copy text-lg"></i>
                                 </button>
+
                             </div>
                             {% endfor %}
                         </div>
@@ -260,12 +268,13 @@
                             <div class="flex items-center justify-between p-3 bg-discord-300 rounded-xl border border-discord-400 group/doc transition-all">
                                 <span class="text-xs font-bold text-text-normal truncate pr-2">{{ f.titulo }}</span>
                                 <div class="flex items-center gap-1">
-                                    <a href="{{ f.url }}" target="_blank" class="w-8 h-8 flex items-center justify-center bg-discord-400 text-text-muted hover:text-[#43b581] rounded-lg transition-all" data-tooltip="Abrir em Nova Aba">
+                                    <a href="{{ f.url }}" target="_blank" class="btn-icon-sm !bg-discord-400 !bg-opacity-100" data-tooltip="Abrir em Nova Aba">
                                         <i class="ph-bold ph-arrow-square-out text-lg"></i>
                                     </a>
-                                    <button onclick="copyToClipboard('{{ f.url }}')" class="w-8 h-8 flex items-center justify-center bg-discord-400 text-text-muted hover:text-[#43b581] rounded-lg transition-all" data-tooltip="Copiar URL">
+                                    <button onclick="copyToClipboard('{{ f.url }}')" class="btn-icon-sm !bg-discord-400 !bg-opacity-100" data-tooltip="Copiar URL">
                                         <i class="ph-bold ph-copy text-lg"></i>
                                     </button>
+
                                 </div>
                             </div>
                             {% endfor %}
@@ -277,9 +286,10 @@
 
             <!-- Footer -->
             <div class="p-6 bg-discord-300 border-t border-discord-400 flex justify-end gap-3 flex-shrink-0">
-                <button onclick="toggleModal('modal-pessoa-{{ p.id }}')" class="px-6 py-2 text-xs font-black uppercase tracking-widest text-text-muted hover:text-white transition-all">Fechar</button>
-                <a href="{{ url_for('pessoas.edit', id=p.id) }}" class="px-6 py-2 bg-[#43b581] text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-[#43b581]/90 shadow-lg shadow-[#43b581]/20 transition-all">Editar Dados</a>
+                <button onclick="toggleModal('modal-pessoa-{{ p.id }}')" class="btn-secondary btn-md">Fechar</button>
+                <a href="{{ url_for('pessoas.edit', id=p.id) }}" class="btn-success btn-md">Editar Dados</a>
             </div>
+
         </div>
     </div>
     {% else %}

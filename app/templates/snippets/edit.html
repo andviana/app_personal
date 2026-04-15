@@ -49,13 +49,14 @@
 
         <!-- Actions -->
         <div class="flex flex-col md:flex-row gap-3 pt-4">
-            <a href="{{ url_for('snippets.index') }}" class="h-12 flex-1 md:flex-none md:w-40 flex items-center justify-center text-text-normal hover:bg-[#313338] rounded-xl transition-standard font-bold text-sm bg-transparent">
+            <a href="{{ url_for('snippets.index') }}" class="btn-secondary btn-lg flex-1 md:flex-none md:w-40">
                 Cancelar
             </a>
-            <button type="submit" class="h-12 flex-1 bg-primary-DEFAULT text-white rounded-xl font-bold tracking-wide text-sm hover:bg-primary-hover active:scale-95 transition-standard flex items-center justify-center gap-2">
+            <button type="submit" class="btn-primary btn-lg flex-1">
                 <i class="ph-bold ph-check"></i> Salvar Alterações
             </button>
         </div>
+
     </form>
 </div>
 {% endblock %}

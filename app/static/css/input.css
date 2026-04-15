@@ -10,9 +10,41 @@
 }
 
 @layer components {
+  .btn-base {
+    @apply inline-flex items-center justify-center gap-2 font-bold transition-standard active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-primary {
+    @apply btn-base bg-primary text-white hover:bg-primary-hover shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply btn-base bg-discord-400 text-text-normal hover:brightness-125;
+  }
+
+  .btn-danger {
+    @apply btn-base bg-danger text-white hover:brightness-90;
+  }
+
+  .btn-success {
+    @apply btn-base bg-success text-white hover:brightness-90;
+  }
+
+  .btn-ghost {
+    @apply btn-base text-text-muted hover:text-text-normal hover:bg-discord-300;
+  }
+
+  /* Sizing Variants */
+  .btn-md { @apply h-11 px-5 rounded-xl text-sm; }
+  .btn-lg { @apply h-12 px-6 rounded-xl text-base; }
+  .btn-sm { @apply h-8 px-3 rounded-lg text-xs tracking-wide; }
+  .btn-icon-md { @apply btn-base w-11 h-11 rounded-xl bg-discord-300 text-text-muted hover:text-text-normal border border-discord-400; }
+  .btn-icon-sm { @apply btn-base w-8 h-8 rounded-lg bg-discord-300 text-text-muted hover:text-text-normal border border-discord-400; }
+
   .transition-standard {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
 
   .calendar-square {
     @apply rounded-[2px] transition-all duration-300;

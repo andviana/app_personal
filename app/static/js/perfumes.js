@@ -21,6 +21,18 @@ function filterPerfumes() {
     });
 }
 
+function openPerfumeModal(btn) {
+    const id = btn.dataset.id;
+    const nome = btn.dataset.nome;
+    const marca = btn.dataset.marca;
+    const corr = btn.dataset.correspondente;
+    const valor = btn.dataset.valor;
+    const url = btn.dataset.url;
+    const url_imagem = btn.dataset.url_imagem;
+    
+    openModal('edit', id, nome, marca, corr, valor, url, url_imagem);
+}
+
 function openModal(mode, id = '', nome = '', marca = '', corr = '', valor = '', url = '', url_imagem = '') {
     const modal = document.getElementById('modalPerfume');
     const form = document.getElementById('perfumeForm');

@@ -9,13 +9,13 @@ function switchTab(tabId) {
     if (targetTab) targetTab.classList.remove('hidden');
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-discord-400', 'text-primary-DEFAULT');
+        btn.classList.remove('bg-discord-400', 'text-[#747f8d]');
         btn.classList.add('text-text-muted', 'hover:bg-discord-400');
     });
 
     const activeBtn = document.getElementById('tab-btn-' + tabId);
     if (activeBtn) {
-        activeBtn.classList.add('bg-discord-400', 'text-primary-DEFAULT');
+        activeBtn.classList.add('bg-discord-400', 'text-[#747f8d]');
         activeBtn.classList.remove('text-text-muted', 'hover:bg-discord-400');
     }
 

@@ -6,7 +6,7 @@
 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
     <div class="flex flex-col gap-1">
         <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
-            <i class="ph-bold ph-shopping-bag text-[#ffb000]"></i> Listas
+            <i class="ph-bold ph-shopping-bag text-[#ff4700]"></i> Listas
         </h1>
         <p class="text-[11px] font-bold text-text-muted/50 uppercase tracking-[0.2em]">
             Organizadores de compras e itens
@@ -15,15 +15,17 @@
 
     <div class="flex flex-wrap gap-2 w-full md:w-auto">
         <button onclick="document.getElementById('modalNovaLista').classList.remove('hidden')"
-            class="btn-primary btn-md w-11 md:w-auto"
+            class="btn-primary btn-md w-full md:w-auto group !bg-[#ff4700] !text-white !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2"
             data-tooltip="Nova Lista" data-tooltip-pos="top">
-            <i class="ph-bold ph-plus text-xl"></i> <span class="hidden md:inline ml-2">Lista</span>
+            ADICIONAR
+            <i class="ph-bold ph-plus text-xl transition-transform duration-300 group-hover:rotate-90"></i>
         </button>
 
         <button onclick="document.getElementById('modalNovoTipoLista').classList.remove('hidden')"
-            class="btn-secondary btn-md w-11 md:w-auto"
+            class="btn-secondary btn-md w-11 md:w-auto group hover:!border-[#ff4700]/50 !bg-gray-300 !text-black shadow-sm"
             data-tooltip="Novo Tipo" data-tooltip-pos="top">
-            <i class="ph-bold ph-tag text-primary-DEFAULT text-xl"></i> <span class="hidden md:inline ml-2"> Tipo</span>
+            <i class="ph-bold ph-tag text-[#ff4700] text-xl"></i> <span
+                class="hidden md:inline ml-2 font-black uppercase tracking-widest text-[10px]">Tipo</span>
         </button>
 
     </div>
@@ -34,32 +36,36 @@
     <div class="group bg-discord-200 border border-discord-400 rounded-[16px] p-4 hover:border-text-muted transition-all duration-300 flex items-center gap-4 relative overflow-hidden shadow-sm cursor-pointer"
         onclick="window.location.href='{{ url_for('lists.detail', id=l.id) }}';">
         <!-- Visual Accent -->
-        <div class="absolute top-0 left-0 w-1 h-full bg-[#ffb000] opacity-0 group-hover:opacity-100 transition-opacity">
+        <div class="absolute top-0 left-0 w-1 h-full bg-[#ff4700] opacity-0 group-hover:opacity-100 transition-opacity">
         </div>
 
         <!-- Icon -->
-        <div class="flex-shrink-0 p-3 bg-discord-400 text-[#ffb000] rounded-xl group-hover:bg-[#ffb000] group-hover:text-white transition-standard">
+        <div
+            class="bg-gray-200 flex-shrink-0 p-3 bg-discord-400 text-[#ff4700] rounded-xl group-hover:bg-[#ff4700] group-hover:text-white transition-standard">
             <i class="ph-fill ph-shopping-bag text-2xl"></i>
         </div>
 
         <!-- Info -->
         <div class="flex-1 min-w-0">
             <div class="flex flex-col gap-0.5">
-                <span class="text-[9px] font-black tracking-widest uppercase py-0.5 px-2 bg-discord-400 text-text-muted rounded-full w-fit">
+                <span
+                    class="text-[9px] font-black tracking-widest uppercase py-0.5 px-2 bg-discord-400 text-text-muted rounded-full w-fit">
                     {{ l.tipo.denominacao if l.tipo else 'Genérica' }}
                 </span>
                 <h3 class="text-base font-black text-text-heading truncate">{{ l.denominacao }}</h3>
             </div>
             <div class="flex items-center gap-4 text-text-muted mt-1">
-                <span class="text-[11px] font-bold flex items-center gap-1.5"><i class="ph-bold ph-stack"></i> {{ l.itens|length }} itens</span>
-                <span class="text-[11px] font-bold flex items-center gap-1.5"><i class="ph-bold ph-calendar-blank"></i> Hoje</span>
+                <span class="text-[11px] font-bold flex items-center gap-1.5"><i class="ph-bold ph-stack"></i> {{
+                    l.itens|length }} itens</span>
+                <span class="text-[11px] font-bold flex items-center gap-1.5"><i class="ph-bold ph-calendar-blank"></i>
+                    Hoje</span>
             </div>
         </div>
 
         <!-- Actions -->
         <div class="flex items-center gap-2" onclick="event.stopPropagation()">
             <a href="{{ url_for('lists.detail', id=l.id) }}"
-                class="w-10 h-10 flex items-center justify-center text-text-muted hover:text-[#ffb000] transition-standard"
+                class="w-10 h-10 flex items-center justify-center text-text-muted hover:text-[#ff4700] transition-standard"
                 data-tooltip="Abrir Lista" data-tooltip-pos="top">
                 <i class="ph-bold ph-arrow-square-out text-xl"></i>
             </a>
@@ -67,8 +73,7 @@
             <form action="{{ url_for('lists.delete', id=l.id) }}" method="POST"
                 onsubmit="confirmListDelete(event, this)" class="flex-shrink-0">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit"
-                    class="btn-icon-sm !bg-transparent !border-none hover:!text-danger"
+                <button type="submit" class="btn-icon-sm !bg-transparent !border-none hover:!text-danger"
                     data-tooltip="Excluir" data-tooltip-pos="top">
                     <i class="ph-bold ph-trash text-lg"></i>
                 </button>
@@ -96,7 +101,7 @@
             <div class="flex items-center justify-between mb-6">
                 <div class="flex flex-col gap-1">
                     <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                        <i class="ph-bold ph-plus text-primary-DEFAULT"></i> Criar Lista
+                        <i class="ph-bold ph-plus text-[#ff4700]"></i> Criar Lista
                     </h2>
                     <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">
                         Nova organização de itens
@@ -113,14 +118,14 @@
                     <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Nome da
                         Lista</label>
                     <input type="text" name="denominacao" placeholder="Ex: Mercado Mensal"
-                        class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold"
+                        class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-semibold"
                         required autofocus>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Tipo de
                         Lista</label>
                     <select name="tipo_id"
-                        class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold"
+                        class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-semibold"
                         required>
                         <option value="" disabled selected>Escolha um tipo...</option>
                         {% for t in tipos %}
@@ -132,7 +137,7 @@
                     <button type="button" onclick="document.getElementById('modalNovaLista').classList.add('hidden')"
                         class="btn-secondary btn-md flex-1">Cancelar</button>
                     <button type="submit"
-                        class="btn-primary btn-md flex-1">Criar</button>
+                        class="btn-primary btn-md flex-1 !bg-[#ff4700] !text-black !shadow-[#ff4700]/20">Criar</button>
                 </div>
 
             </form>
@@ -146,7 +151,7 @@
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                    <i class="ph-bold ph-tag text-primary-DEFAULT"></i> Novo Tipo
+                    <i class="ph-bold ph-tag text-[#ff4700]"></i> Novo Tipo
                 </h2>
                 <button type="button" onclick="document.getElementById('modalNovoTipoLista').classList.add('hidden')"
                     class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
@@ -159,7 +164,7 @@
                     <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Nome do
                         Tipo</label>
                     <input type="text" name="denominacao" placeholder="Ex: VIAGEM, MERCADO..."
-                        class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold"
+                        class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-semibold"
                         required autofocus>
                 </div>
                 <div class="flex gap-3 pt-2">
@@ -167,7 +172,7 @@
                         onclick="document.getElementById('modalNovoTipoLista').classList.add('hidden')"
                         class="btn-secondary btn-md flex-1">Cancelar</button>
                     <button type="submit"
-                        class="btn-primary btn-md flex-1">Adicionar</button>
+                        class="btn-primary btn-md flex-1 !bg-[#ff4700] !text-white !shadow-[#ff4700]/20">Adicionar</button>
                 </div>
 
             </form>
@@ -178,34 +183,34 @@
 
 {% block scripts_extra %}
 <script>
-function confirmListDelete(event, form) {
-    event.preventDefault();
-    Swal.fire({
-        title: 'Apagar esta lista?',
-        text: "Todos os itens dentro dela também serão removidos permanentemente!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sim, apagar',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-            popup: 'discord-theme',
-            confirmButton: 'bg-danger text-white px-4 py-2 rounded-md hover:bg-danger/80 border-none ml-2',
-            cancelButton: 'bg-discord-400 text-text-normal px-4 py-2 rounded-md hover:bg-discord-500 border-none'
-        },
-        buttonsStyling: false
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.submit();
+    function confirmListDelete(event, form) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Apagar esta lista?',
+            text: "Todos os itens dentro dela também serão removidos permanentemente!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sim, apagar',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                popup: 'discord-theme',
+                confirmButton: 'bg-danger text-white px-4 py-2 rounded-md hover:bg-danger/80 border-none ml-2',
+                cancelButton: 'bg-discord-400 text-text-normal px-4 py-2 rounded-md hover:bg-discord-500 border-none'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'new') {
+            const modal = document.getElementById('modalNovaLista');
+            if (modal) modal.classList.remove('hidden');
         }
     });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('action') === 'new') {
-        const modal = document.getElementById('modalNovaLista');
-        if (modal) modal.classList.remove('hidden');
-    }
-});
 </script>
 {% endblock %}

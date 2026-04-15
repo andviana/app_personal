@@ -7,11 +7,12 @@
 <style>
     .snippet-list-item.active {
         background-color: #2b2d31;
-        border-color: #5865F2;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        border-color: #9a55f3;
+        box-shadow: 0 4px 6px -1px rgb(154 85 243 / 0.1), 0 2px 4px -2px rgb(154 85 243 / 0.1);
     }
+
     .snippet-list-item.active h3 {
-        color: #5865F2;
+        color: #9a55f3;
     }
 </style>
 {% endblock %}
@@ -28,8 +29,10 @@
                 Repositório de códigos úteis
             </p>
         </div>
-        <a href="{{ url_for('snippets.novo') }}" class="btn-primary btn-md w-full md:w-auto">
-            <i class="ph-bold ph-plus text-xl"></i> Novo Snippet
+        <a href="{{ url_for('snippets.novo') }}"
+            class="btn-primary btn-md w-full md:w-auto group !bg-[#9a55f3] !text-white !shadow-[#9a55f3]/20 font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2">
+            ADICIONAR
+            <i class="ph-bold ph-plus text-xl transition-transform duration-300 group-hover:rotate-90"></i>
         </a>
 
     </div>
@@ -39,17 +42,18 @@
         <!-- Search and List (4 columns on LG) -->
         <div class="lg:col-span-4 flex flex-col gap-4">
             <div class="relative">
-                <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-xl"></i>
-                <input type="text" id="snippet-search" placeholder="Buscar por título ou descrição..." 
-                       class="w-full h-12 pl-12 pr-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-primary-DEFAULT text-text-normal text-sm font-semibold placeholder:text-text-muted transition-standard shadow-sm"
-                       value="{{ query or '' }}">
+                <i
+                    class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-xl"></i>
+                <input type="text" id="snippet-search" placeholder="Buscar por título ou descrição..."
+                    class="w-full h-12 pl-12 pr-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#9a55f3] text-text-normal text-sm font-semibold placeholder:text-text-muted transition-standard shadow-sm"
+                    value="{{ query or '' }}">
             </div>
 
             <!-- List Desktop -->
             <div id="desktop-list" class="hidden lg:flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
                 {% for s in snippets %}
-                <button data-id="{{ s.id }}" onclick="loadSnippet(this.dataset.id, this)" 
-                        class="snippet-list-item text-left p-4 bg-discord-200 border border-discord-400 rounded-[16px] hover:border-text-muted transition-standard group">
+                <button data-id="{{ s.id }}" onclick="loadSnippet(this.dataset.id, this)"
+                    class="snippet-list-item text-left p-4 bg-discord-200 border border-discord-400 rounded-[16px] hover:border-text-muted transition-standard group">
                     <h3 class="font-bold text-text-heading transition-standard">{{ s.titulo }}</h3>
                     {% if s.descricao %}
                     <p class="text-xs text-text-muted font-medium line-clamp-1 mt-1">{{ s.descricao }}</p>
@@ -66,40 +70,53 @@
             <!-- List Mobile (Accordion) -->
             <div id="mobile-list" class="lg:hidden flex flex-col gap-4">
                 {% for s in snippets %}
-                <div class="mobile-snippet-item bg-discord-200 border border-discord-400 rounded-[16px] overflow-hidden shadow-sm">
-                    <button data-id="{{ s.id }}" onclick="toggleAccordion('snippet-' + this.dataset.id)" class="w-full flex justify-between items-center p-5 text-left hover:bg-discord-300 transition-standard">
+                <div
+                    class="mobile-snippet-item bg-discord-200 border border-discord-400 rounded-[16px] overflow-hidden shadow-sm">
+                    <button data-id="{{ s.id }}" onclick="toggleAccordion('snippet-' + this.dataset.id)"
+                        class="w-full flex justify-between items-center p-5 text-left hover:bg-discord-300 transition-standard">
                         <div>
                             <h3 class="font-bold text-text-heading">{{ s.titulo }}</h3>
                             {% if s.descricao %}
-                            <p class="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-1">{{ s.descricao }}</p>
+                            <p class="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-1">{{
+                                s.descricao }}</p>
                             {% endif %}
                         </div>
                         <div class="w-8 h-8 rounded-full bg-[#1e1f22] flex items-center justify-center">
-                            <i id="icon-snippet-{{ s.id }}" class="ph-bold ph-caret-down text-text-muted transition-transform"></i>
+                            <i id="icon-snippet-{{ s.id }}"
+                                class="ph-bold ph-caret-down text-text-muted transition-transform"></i>
                         </div>
                     </button>
-                    <div id="content-snippet-{{ s.id }}" class="hidden px-5 pb-6 border-t border-discord-400 bg-discord-200">
+                    <div id="content-snippet-{{ s.id }}"
+                        class="hidden px-5 pb-6 border-t border-discord-400 bg-discord-200">
                         <div class="markdown-body py-6 text-text-normal">
                             {{ s.html | safe }}
                         </div>
-                        <div class="mt-4 pt-4 border-t border-discord-400 flex flex-wrap gap-2 justify-between items-center">
+                        <div
+                            class="mt-4 pt-4 border-t border-discord-400 flex flex-wrap gap-2 justify-between items-center">
                             <div class="flex gap-1">
-                                <a href="{{ url_for('snippets.editar', id=s.id) }}" class="btn-icon-sm" data-tooltip="Editar" data-tooltip-pos="top">
+                                <a href="{{ url_for('snippets.editar', id=s.id) }}" class="btn-icon-sm"
+                                    data-tooltip="Editar" data-tooltip-pos="top">
                                     <i class="ph-bold ph-pencil-simple text-sm"></i>
                                 </a>
-                                <button data-id="{{ s.id }}" data-titulo="{{ s.titulo }}" onclick="confirmDelete(this.dataset.id, this.dataset.titulo, '{{ url_for('snippets.delete', id=0) }}')" class="btn-icon-sm hover:!text-danger" data-tooltip="Excluir" data-tooltip-pos="top">
+                                <button data-id="{{ s.id }}" data-titulo="{{ s.titulo }}"
+                                    onclick="confirmDelete(this.dataset.id, this.dataset.titulo, '{{ url_for('snippets.delete', id=0) }}')"
+                                    class="btn-icon-sm hover:!text-danger" data-tooltip="Excluir"
+                                    data-tooltip-pos="top">
                                     <i class="ph-bold ph-trash text-sm"></i>
                                 </button>
 
                             </div>
                             <div class="flex flex-wrap gap-2">
-                                <button data-id="{{ s.id }}" data-raw="{{ s.conteudo }}" onclick="copyRawContent(this.dataset.raw)" class="btn-secondary btn-sm">
+                                <button data-id="{{ s.id }}" data-raw="{{ s.conteudo }}"
+                                    onclick="copyRawContent(this.dataset.raw)" class="btn-secondary btn-sm">
                                     <i class="ph-bold ph-copy text-sm"></i> Código
                                 </button>
-                                <button data-url="{{ url_for('snippets.view', id=s.id, _external=True) }}" onclick="copySnippetUrl(this.dataset.url)" class="btn-secondary btn-sm">
+                                <button data-url="{{ url_for('snippets.view', id=s.id, _external=True) }}"
+                                    onclick="copySnippetUrl(this.dataset.url)" class="btn-secondary btn-sm">
                                     <i class="ph-bold ph-link text-sm"></i> Link
                                 </button>
-                                <a href="{{ url_for('snippets.view', id=s.id) }}" class="btn-primary btn-sm">
+                                <a href="{{ url_for('snippets.view', id=s.id) }}"
+                                    class="btn-primary btn-sm !bg-[#9a55f3] !text-white !shadow-[#9a55f3]/20">
                                     <i class="ph-bold ph-arrow-square-out text-sm"></i> Abrir
                                 </a>
 
@@ -108,7 +125,8 @@
                     </div>
                 </div>
                 {% else %}
-                <div class="text-center py-10 text-text-muted bg-discord-200 rounded-[16px] border border-discord-400 border-dashed">
+                <div
+                    class="text-center py-10 text-text-muted bg-discord-200 rounded-[16px] border border-discord-400 border-dashed">
                     <i class="ph-bold ph-ghost text-4xl mb-2"></i>
                     <p>Nenhum snippet cadastrado.</p>
                 </div>
@@ -118,15 +136,18 @@
 
         <!-- Detail Desktop (8 columns on LG) -->
         <div id="snippet-detail-panel" class="hidden lg:block lg:col-span-8 h-full">
-            <div id="empty-state" class="h-full min-h-[600px] flex flex-col items-center justify-center bg-discord-200/50 border border-dashed border-discord-400 rounded-[2.5rem] text-text-muted p-12 text-center">
+            <div id="empty-state"
+                class="h-full min-h-[600px] flex flex-col items-center justify-center bg-discord-200/50 border border-dashed border-discord-400 rounded-[2.5rem] text-text-muted p-12 text-center">
                 <div class="w-20 h-20 bg-discord-300 rounded-[16px] shadow-sm flex items-center justify-center mb-6">
                     <i class="ph-bold ph-code text-4xl text-text-muted"></i>
                 </div>
                 <p class="text-xl font-bold text-text-heading tracking-tight">Selecione um snippet</p>
-                <p class="text-sm font-medium mt-2 max-w-xs">Clique em um dos itens da lista ao lado para visualizar o conteúdo formado.</p>
+                <p class="text-sm font-medium mt-2 max-w-xs">Clique em um dos itens da lista ao lado para visualizar o
+                    conteúdo formado.</p>
             </div>
 
-            <div id="snippet-content" class="hidden bg-white border border-slate-200 rounded-[2.5rem] p-10 shadow-sm min-h-[600px] sticky top-24">
+            <div id="snippet-content"
+                class="hidden bg-white border border-slate-200 rounded-[2.5rem] p-10 shadow-sm min-h-[600px] sticky top-24">
                 <div class="flex justify-between items-start mb-10 border-b border-slate-100 pb-8">
                     <div>
                         <h2 id="detail-title" class="text-3xl font-extrabold text-slate-900 tracking-tight"></h2>
@@ -136,10 +157,13 @@
                         <a id="detail-edit" href="#" class="btn-icon-md" data-tooltip="Editar" data-tooltip-pos="top">
                             <i class="ph-bold ph-pencil-simple text-xl"></i>
                         </a>
-                        <button id="detail-delete" onclick="confirmDelete(this.getAttribute('data-id'), this.getAttribute('data-titulo'), '{{ url_for('snippets.delete', id=0) }}')" class="btn-icon-md hover:!text-danger" data-tooltip="Remover" data-tooltip-pos="top">
+                        <button id="detail-delete"
+                            onclick="confirmDelete(this.getAttribute('data-id'), this.getAttribute('data-titulo'), '{{ url_for('snippets.delete', id=0) }}')"
+                            class="btn-icon-md hover:!text-danger" data-tooltip="Remover" data-tooltip-pos="top">
                             <i class="ph-bold ph-trash text-xl"></i>
                         </button>
-                        <a id="detail-link" href="#" target="_blank" class="btn-icon-md" data-tooltip="Abrir em aba" data-tooltip-pos="top">
+                        <a id="detail-link" href="#" target="_blank" class="btn-icon-md" data-tooltip="Abrir em aba"
+                            data-tooltip-pos="top">
                             <i class="ph-bold ph-arrow-square-out text-xl"></i>
                         </a>
 
@@ -151,10 +175,13 @@
                 </div>
 
                 <div class="mt-12 pt-8 border-t border-slate-100 flex gap-4">
-                    <button id="copy-content-btn" onclick="copyRawContent(this.getAttribute('data-raw'))" class="btn-primary btn-lg">
+                    <button id="copy-content-btn" onclick="copyRawContent(this.getAttribute('data-raw'))"
+                        class="btn-primary btn-lg !bg-[#9a55f3] !text-white !shadow-[#9a55f3]/20">
                         <i class="ph-bold ph-copy text-lg"></i> Copiar Código
                     </button>
-                    <button onclick="copySnippetUrl(window.location.protocol + '//' + window.location.host + document.getElementById('detail-link').getAttribute('href'))" class="btn-secondary btn-lg">
+                    <button
+                        onclick="copySnippetUrl(window.location.protocol + '//' + window.location.host + document.getElementById('detail-link').getAttribute('href'))"
+                        class="btn-secondary btn-lg">
                         <i class="ph-bold ph-link text-lg"></i> Copiar Link
                     </button>
 

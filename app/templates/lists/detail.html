@@ -10,15 +10,15 @@
 <div class="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
     <div class="flex flex-col gap-4">
         <a href="{{ url_for('lists.index') }}"
-            class="btn-ghost btn-sm group !p-0 !text-text-muted hover:!text-primary-DEFAULT w-fit">
-            <i class="ph-bold ph-arrow-left group-hover:-translate-x-1 transition-standard border border-text-muted group-hover:border-primary-DEFAULT rounded-md p-1"></i>
+            class="btn-ghost btn-sm group !p-0 !text-text-muted hover:!text-[#ff4700] w-fit">
+            <i class="ph-bold ph-arrow-left group-hover:-translate-x-1 transition-standard border border-text-muted group-hover:border-[#ff4700] rounded-md p-1"></i>
             Voltar
         </a>
 
         <div class="flex flex-col gap-1">
             <div class="flex flex-wrap items-center gap-4">
                 <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
-                    <i class="ph-bold ph-shopping-bag text-[#ffb000]"></i> {{ lista.denominacao }}
+                    <i class="ph-bold ph-shopping-bag text-[#ff4700]"></i> {{ lista.denominacao }}
                 </h1>
                 <span
                     class="bg-discord-400 text-text-muted text-[10px] px-3 py-1 rounded-full font-black tracking-widest uppercase shadow-sm">
@@ -33,14 +33,14 @@
 
     <div class="flex gap-2 w-full md:w-auto">
         <button onclick="document.getElementById('modalNovoGrupoItem').classList.remove('hidden')"
-            class="btn-secondary btn-md flex-1 md:flex-none !px-5"
+            class="btn-secondary btn-md flex-1 md:flex-none !px-5 !bg-gray-300 !text-black shadow-sm"
             data-tooltip="Nova Categoria" data-tooltip-pos="top">
-            <i class="ph-bold ph-folder-plus text-primary-DEFAULT text-xl"></i>
+            <i class="ph-bold ph-folder-plus text-[#ff4700] text-xl"></i>
         </button>
         <button onclick="openScrapeModal()"
-            class="btn-secondary btn-md flex-1 md:flex-none !px-5"
+            class="btn-secondary btn-md flex-1 md:flex-none !px-5 !bg-gray-300 !text-black shadow-sm"
             data-tooltip="Importar via Link" data-tooltip-pos="top">
-            <i class="ph-bold ph-link text-primary-DEFAULT text-xl"></i>
+            <i class="ph-bold ph-link text-[#ff4700] text-xl"></i>
         </button>
         <a href="{{ url_for('lists.export_pdf', id=lista.id) }}"
             class="btn-success btn-md flex-1 md:flex-none !px-5"
@@ -61,7 +61,7 @@
                 <i class="ph-bold ph-plus-circle text-xl"></i>
             </div>
             <input type="text" name="item" placeholder="O QUE ADICIONAR À LISTA?"
-                class="block w-full h-12 pl-12 border-none rounded-xl bg-[#1e1f22] text-text-heading focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold placeholder:text-text-muted transition-standard uppercase"
+                class="block w-full h-12 pl-12 border-none rounded-xl bg-[#1e1f22] text-text-heading focus:ring-2 focus:ring-[#ff4700] text-sm font-bold placeholder:text-text-muted transition-standard uppercase"
                 required autofocus autocomplete="off">
         </div>
 
@@ -72,17 +72,17 @@
                     <span class="text-xs font-black leading-none uppercase">R$</span>
                 </div>
                 <input type="number" step="0.01" name="valor" placeholder="0.00"
-                    class="block w-full h-12 pl-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold placeholder:text-text-muted">
+                    class="block w-full h-12 pl-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-bold placeholder:text-text-muted">
             </div>
 
             <!-- Categoria -->
             <div class="relative w-full sm:w-56 group">
                 <div
-                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted group-focus-within:text-primary-DEFAULT transition-colors">
+                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted group-focus-within:text-[#ff4700] transition-colors">
                     <i class="ph-bold ph-tag text-lg"></i>
                 </div>
                 <select name="grupo_id"
-                    class="appearance-none block w-full h-12 pl-11 pr-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold transition-standard cursor-pointer uppercase">
+                    class="appearance-none block w-full h-12 pl-11 pr-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-bold transition-standard cursor-pointer uppercase">
                     <option value="" selected>OUTROS (PADRÃO)</option>
                     {% for g in grupos %}
                     {% if g.denominacao.upper() != 'OUTROS' %}
@@ -97,7 +97,7 @@
 
             <!-- Botão Adicionar -->
             <button type="submit"
-                class="btn-primary btn-md w-full lg:w-auto lg:px-10 group">
+                class="btn-primary btn-md w-full lg:w-auto lg:px-10 group !bg-[#ff4700] !text-black !shadow-[#ff4700]/20">
                 <span class="tracking-widest uppercase text-xs">Adicionar</span>
                 <i class="ph-bold ph-plus text-lg group-hover:rotate-90 transition-transform duration-300"></i>
             </button>
@@ -298,7 +298,7 @@
                         onclick="document.getElementById('modalNovoGrupoItem').classList.add('hidden')"
                         class="btn-secondary btn-md flex-1">Cancelar</button>
                     <button type="submit"
-                        class="btn-primary btn-md flex-1">Adicionar</button>
+                        class="btn-primary btn-md flex-1 !bg-[#ff4700] !text-black !shadow-[#ff4700]/20">Adicionar</button>
                 </div>
 
             </form>
@@ -314,7 +314,7 @@
             <div class="flex items-center justify-between mb-6">
                 <div class="flex flex-col gap-1">
                     <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                        <i class="ph-bold ph-pencil-simple text-primary-DEFAULT"></i> Editar Item
+                        <i class="ph-bold ph-pencil-simple text-[#ff4700]"></i> Editar Item
                     </h2>
                     <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">
                         Atualizar detalhes do produto
@@ -330,14 +330,14 @@
                 <div>
                     <label class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">Item</label>
                     <input type="text" id="edit_item_nome" name="item"
-                        class="block w-full h-11 px-4 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold uppercase"
+                        class="block w-full h-11 px-4 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-bold uppercase"
                         required>
                 </div>
                 <div>
                     <label
                         class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">Categoria</label>
                     <select id="edit_item_grupo" name="grupo_id"
-                        class="block w-full h-11 px-4 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold uppercase">
+                        class="block w-full h-11 px-4 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-bold uppercase">
                         <option value="">OUTROS (PADRÃO)</option>
                         {% for g in grupos %}
                         {% if g.denominacao.upper() != 'OUTROS' %}
@@ -355,7 +355,7 @@
                             <span class="text-xs font-bold leading-none">R$</span>
                         </div>
                         <input type="number" step="0.01" id="edit_item_valor" name="valor"
-                            class="block w-full h-10 pl-8 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-bold">
+                            class="block w-full h-10 pl-8 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-bold">
                     </div>
                 </div>
                 <div>
@@ -367,14 +367,14 @@
                             <i class="ph-bold ph-link text-lg"></i>
                         </div>
                         <input type="url" id="edit_item_link" name="link" placeholder="https://exemplo.com"
-                            class="block w-full h-11 pl-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold">
+                            class="block w-full h-11 pl-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-semibold">
                     </div>
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button" onclick="document.getElementById('modalEditarItem').classList.add('hidden')"
                         class="btn-secondary btn-md flex-1">Cancelar</button>
                     <button type="submit"
-                        class="btn-primary btn-md flex-1">Salvar</button>
+                        class="btn-primary btn-md flex-1 !bg-[#ff4700] !text-black !shadow-[#ff4700]/20">Salvar</button>
                 </div>
 
             </form>
@@ -391,7 +391,7 @@
             <div class="flex items-center justify-between mb-8">
                 <div class="flex flex-col gap-1">
                     <h3 class="text-xl font-black text-text-heading tracking-tight flex items-center gap-2">
-                        <i class="ph-bold ph-planet text-primary-DEFAULT"></i> Importar Link
+                        <i class="ph-bold ph-planet text-[#ff4700]"></i> Importar Link
                     </h3>
                     <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">Extraia dados automaticamente</p>
                 </div>
@@ -403,9 +403,9 @@
 
             <div class="mb-6 bg-discord-400 p-4 rounded-2xl border border-discord-400">
                 <div class="flex items-start gap-3">
-                    <i class="ph-fill ph-info text-primary-DEFAULT mt-0.5"></i>
+                    <i class="ph-fill ph-info text-[#ff4700] mt-0.5"></i>
                     <p class="text-[13px] text-text-normal leading-relaxed">
-                        Sites suportados: <span class="text-primary-DEFAULT font-bold">Amazon, Shopee, Mercado Livre,
+                        Sites suportados: <span class="text-[#ff4700] font-bold">Amazon, Shopee, Mercado Livre,
                             AliExpress, Shein, Privalia e Zattini.</span>
                     </p>
                 </div>
@@ -425,13 +425,13 @@
                                 <i class="ph-bold ph-link text-xl"></i>
                             </div>
                             <input type="url" name="url" id="urlInputScrape" required placeholder="https://..."
-                                class="block w-full h-14 pl-12 border-none rounded-2xl bg-[#1e1f22] text-text-heading focus:ring-2 focus:ring-primary-DEFAULT text-sm font-medium placeholder:text-text-muted transition-standard">
+                                class="block w-full h-14 pl-12 border-none rounded-2xl bg-[#1e1f22] text-text-heading focus:ring-2 focus:ring-[#ff4700] text-sm font-medium placeholder:text-text-muted transition-standard">
                         </div>
                     </div>
 
                     <div class="pt-2">
                         <button type="submit" id="btnScrapeSubmit"
-                            class="btn-primary btn-lg w-full group">
+                            class="btn-primary btn-lg w-full group !bg-[#ff4700] !text-black !shadow-[#ff4700]/20">
                             <span id="txtScrapeBtn">IMPORTAR AGORA</span>
                             <div id="loaderScrape" class="hidden">
                                 <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
@@ -462,7 +462,7 @@
             <div class="flex items-center justify-between mb-6">
                 <div class="flex flex-col gap-1">
                     <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                        <i class="ph-bold ph-eye text-primary-DEFAULT"></i> Ver Detalhes
+                        <i class="ph-bold ph-eye text-[#ff4700]"></i> Ver Detalhes
                     </h2>
                     <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">
                         Informações completas do item
@@ -496,7 +496,7 @@
                     <span class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-2">Link
                         Externo</span>
                     <a id="view_item_link" href="#" target="_blank"
-                        class="flex items-center gap-2 text-primary-DEFAULT hover:underline font-bold text-[13px] bg-discord-300 p-3 rounded-lg transition-standard">
+                        class="flex items-center gap-2 text-[#ff4700] hover:underline font-bold text-[13px] bg-discord-300 p-3 rounded-lg transition-standard">
                         <i class="ph-bold ph-arrow-square-out flex-shrink-0"></i>
                         <span id="view_item_link_text" class="truncate"></span>
                     </a>

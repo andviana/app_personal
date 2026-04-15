@@ -48,12 +48,7 @@
     </div>
 
     <div class="flex flex-row gap-2 w-full md:w-auto">
-        <button onclick="document.querySelector('input[name=\'descricao\']').focus()"
-            class="btn-primary btn-md w-full md:w-auto group !bg-[#23a55a] !text-black !shadow-[#23a55a]/20 font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2"
-            data-tooltip="Nova Tarefa" data-tooltip-pos="top">
-            ADICIONAR
-            <i class="ph-bold ph-plus text-xl transition-transform duration-300 group-hover:rotate-90"></i>
-        </button>
+
 
         <button id="toggleModeBtn" onclick="togglePanel()" class="btn-secondary btn-md flex-1 md:flex-initial"
             data-tooltip="Pesquisar/Filtrar" data-tooltip-pos="top">
@@ -61,9 +56,9 @@
         </button>
 
         <button onclick="document.getElementById('modalNovoGrupo').classList.remove('hidden')"
-            class="btn-secondary btn-md flex-1 md:flex-initial group hover:!border-[#23a55a]/50" data-tooltip="Novo Grupo" data-tooltip-pos="top">
-            <i class="ph-bold ph-folder-plus text-lg text-[#23a55a]"></i> <span
-                class="hidden md:inline">Grupo</span>
+            class="btn-secondary btn-md flex-1 md:flex-initial group hover:!border-[#23a55a]/50"
+            data-tooltip="Novo Grupo" data-tooltip-pos="top">
+            <i class="ph-bold ph-folder-plus text-lg text-[#23a55a]"></i> <span class="hidden md:inline">Grupo</span>
         </button>
 
         <a href="{{ url_for('tasks.export_pdf') }}" class="btn-success btn-md flex-1 md:flex-initial"
@@ -165,7 +160,8 @@
             </div>
 
             <!-- Botão Adicionar -->
-            <button type="submit" class="btn-primary btn-lg w-full lg:w-auto lg:px-10 group !bg-[#23a55a] !text-black !shadow-[#23a55a]/20">
+            <button type="submit"
+                class="btn-primary btn-lg w-full lg:w-auto lg:px-10 group !bg-[#23a55a] !text-black !shadow-[#23a55a]/20">
                 <span class="tracking-widest uppercase text-xs">Adicionar</span>
                 <i class="ph-bold ph-plus text-lg group-hover:rotate-90 transition-transform duration-300"></i>
             </button>
@@ -237,8 +233,7 @@
                 <form action="{{ url_for('tasks.iniciar', id=t.id) }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-                    <button type="submit"
-                        class="p-2 text-[#23a55a] hover:bg-discord-400 rounded-md transition-standard"
+                    <button type="submit" class="p-2 text-[#23a55a] hover:bg-discord-400 rounded-md transition-standard"
                         data-tooltip="Iniciar" data-tooltip-pos="top">
                         <i class="ph-bold ph-play"></i>
                     </button>
@@ -315,7 +310,8 @@
                 <div class="flex gap-3 pt-2">
                     <button type="button" onclick="document.getElementById('modalNovoGrupo').classList.add('hidden')"
                         class="btn-secondary btn-md flex-1">Cancelar</button>
-                    <button type="submit" class="btn-primary btn-md flex-1 !bg-[#23a55a] !text-black !shadow-[#23a55a]/20">Criar</button>
+                    <button type="submit"
+                        class="btn-primary btn-md flex-1 !bg-[#23a55a] !text-black !shadow-[#23a55a]/20">Criar</button>
                 </div>
 
             </form>
@@ -393,7 +389,8 @@
                 <div class="flex gap-3 pt-2">
                     <button type="button" onclick="document.getElementById('modalEditTarefa').classList.add('hidden')"
                         class="btn-secondary btn-md flex-1">Cancelar</button>
-                    <button type="submit" class="btn-primary btn-md flex-1 !bg-[#23a55a] !text-black !shadow-[#23a55a]/20">Salvar</button>
+                    <button type="submit"
+                        class="btn-primary btn-md flex-1 !bg-[#23a55a] !text-black !shadow-[#23a55a]/20">Salvar</button>
                 </div>
 
             </form>

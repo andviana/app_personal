@@ -38,7 +38,14 @@ def create_app(config_class=Config):
                'auth.' not in request.endpoint and \
                'snippets.shared' not in request.endpoint and \
                'static' != request.endpoint:
+                
+                # Se for a home page, redireciona silenciosamente sem mensagem de erro
+                if request.endpoint == 'main.index':
+                    from flask import redirect, url_for
+                    return redirect(url_for('auth.login'))
+                    
                 return login.unauthorized()
+
 
 
     from app.blueprints.main import bp as main_bp

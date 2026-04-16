@@ -1,10 +1,12 @@
 import json
 import sqlalchemy
-from datetime import datetime
+from datetime import datetime, date
 from app import db
 from app.models import (
     User, GrupoTarefas, StatusTarefas, Tarefa,
-    TipoLista, GrupoItem, Lista, ItemLista, Snippet
+    TipoLista, GrupoItem, Lista, ItemLista, 
+    Snippet, Perfume, Pessoa, Endereco, 
+    Telefone, PessoaArquivo
 )
 
 # Ordem de restauração (respeitando chaves estrangeiras)
@@ -15,9 +17,14 @@ MODELS_ORDER = [
     TipoLista,
     GrupoItem,
     Snippet,
+    Perfume,
+    Pessoa,
     Tarefa,
     Lista,
-    ItemLista
+    ItemLista,
+    Endereco,
+    Telefone,
+    PessoaArquivo
 ]
 
 def export_data():
@@ -35,8 +42,8 @@ def export_data():
             for column in record.__table__.columns:
                 value = getattr(record, column.name)
                 
-                # Trata campos de data
-                if isinstance(value, datetime):
+                # Trata campos de data e data/hora
+                if isinstance(value, (datetime, date)):
                     value = value.isoformat()
                 
                 record_dict[column.name] = value
@@ -63,7 +70,7 @@ def import_data(json_data):
                         
                         # Verifica de forma robusta se a coluna é do tipo datetime/date
                         is_datetime = False
-                        if hasattr(column.type, 'python_type') and column.type.python_type == datetime:
+                        if hasattr(column.type, 'python_type') and column.type.python_type in (datetime, date):
                             is_datetime = True
                         elif type(column.type).__name__.upper() in ('DATETIME', 'DATE'):
                             is_datetime = True
@@ -71,7 +78,15 @@ def import_data(json_data):
                         if col_name in row and row[col_name] and is_datetime:
                             try:
                                 # Tenta analisar o formato ISO
-                                row[col_name] = datetime.fromisoformat(str(row[col_name]).replace('Z', '+00:00'))
+                                dt_val = datetime.fromisoformat(str(row[col_name]).replace('Z', '+00:00'))
+                                
+                                # Se a coluna for apenas Date, converte o datetime para date
+                                if hasattr(column.type, 'python_type') and column.type.python_type == date:
+                                    row[col_name] = dt_val.date()
+                                elif 'DATE' in type(column.type).__name__.upper() and 'DATETIME' not in type(column.type).__name__.upper():
+                                    row[col_name] = dt_val.date()
+                                else:
+                                    row[col_name] = dt_val
                             except (ValueError, TypeError):
                                 pass
                     

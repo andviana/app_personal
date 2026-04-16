@@ -23,7 +23,7 @@ class TaskService:
         if descricao:
             repo = BaseRepository(Tarefa)
             nova_tarefa = Tarefa(
-                descricao=descricao,
+                descricao=descricao.upper(),
                 grupo_id=grupo_id if grupo_id else grupo_comum.id,
                 status_id=status_pendente.id
             )
@@ -39,7 +39,7 @@ class TaskService:
         tarefa = repo.get_or_404(id)
         
         if descricao:
-            tarefa.descricao = descricao
+            tarefa.descricao = descricao.upper()
         if grupo_id:
             tarefa.grupo_id = grupo_id
             

@@ -13,7 +13,7 @@ class ListService:
     def create_list(denominacao, tipo_id, current_user):
         if denominacao:
             repo = BaseRepository(Lista)
-            nova_lista = Lista(denominacao=denominacao, tipo_id=tipo_id)
+            nova_lista = Lista(denominacao=denominacao.upper(), tipo_id=tipo_id)
             repo.add(nova_lista)
             repo.commit()
             LogService.log_action(current_user.username, 'LIST_CREATED', f'ID: {nova_lista.id} | TITLE: {denominacao}')
@@ -54,7 +54,7 @@ class ListService:
             
             novo_item = ItemLista(
                 lista_id=lista_id,
-                item=item_text,
+                item=item_text.upper(),
                 grupo_id=grupo_id,
                 valor=valor,
                 link=link
@@ -70,7 +70,7 @@ class ListService:
         repo = BaseRepository(ItemLista)
         item = repo.get_or_404(item_id)
         if item_text:
-            item.item = item_text
+            item.item = item_text.upper()
             item.grupo_id = grupo_id if grupo_id else None
             item.valor = valor if valor else None
             item.link = link if link else None
@@ -106,7 +106,7 @@ class ListService:
     def create_list_type(denominacao, current_user):
         if denominacao:
             repo = BaseRepository(TipoLista)
-            novo_tipo = TipoLista(denominacao=denominacao)
+            novo_tipo = TipoLista(denominacao=denominacao.upper())
             repo.add(novo_tipo)
             repo.commit()
             LogService.log_action(current_user.username, 'LIST_TYPE_CREATED', f'NAME: {denominacao}')
@@ -117,7 +117,7 @@ class ListService:
     def create_item_group(denominacao, current_user):
         if denominacao:
             repo = BaseRepository(GrupoItem)
-            novo_grupo = GrupoItem(denominacao=denominacao)
+            novo_grupo = GrupoItem(denominacao=denominacao.upper())
             repo.add(novo_grupo)
             repo.commit()
             LogService.log_action(current_user.username, 'ITEM_GROUP_CREATED', f'NAME: {denominacao}')

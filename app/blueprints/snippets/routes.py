@@ -28,11 +28,44 @@ def view(id):
             'uuid': snippet.uuid,
             'titulo': snippet.titulo,
             'conteudo': snippet.conteudo,
+            'descricao': snippet.descricao,
             'html': render_markdown(snippet.conteudo),
+            'tags': [{'id': t.id, 'denominacao': t.denominacao, 'cor': t.cor} for t in snippet.tags],
             'share_url': url_for('snippets.shared', uuid=snippet.uuid, _external=True)
         })
 
     return render_template('snippets/view.html', snippet=snippet, snippet_html=render_markdown(snippet.conteudo))
+
+@bp.route('/tags/list')
+def list_tags():
+    tags = SnippetService.get_all_tags()
+    return jsonify([{'id': t.id, 'denominacao': t.denominacao, 'cor': t.cor} for t in tags])
+
+@bp.route('/tags/add', methods=['POST'])
+def add_tag():
+    denominacao = request.form.get('denominacao')
+    cor = request.form.get('cor')
+    tag = SnippetService.create_tag(denominacao, cor, current_user)
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({'success': True, 'tag': {'id': tag.id, 'denominacao': tag.denominacao, 'cor': tag.cor}})
+        
+    return redirect(url_for('snippets.index'))
+
+@bp.route('/tags/delete/<int:id>', methods=['POST'])
+def delete_tag(id):
+    SnippetService.delete_tag(id, current_user)
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({'success': True})
+        
+    return redirect(url_for('snippets.index'))
+
+@bp.route('/<int:snippet_id>/tags/toggle', methods=['POST'])
+def toggle_tag(snippet_id):
+    tag_id = request.form.get('tag_id')
+    SnippetService.toggle_snippet_tag(snippet_id, tag_id, current_user)
+    return jsonify({'success': True})
 
 @bp.route('/shared/<string:uuid>')
 def shared(uuid):

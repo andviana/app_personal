@@ -29,12 +29,18 @@
                 Repositório de códigos úteis
             </p>
         </div>
-        <a href="{{ url_for('snippets.novo') }}"
-            class="btn-primary btn-md w-full md:w-auto group !bg-[#9a55f3] !text-white !shadow-[#9a55f3]/20 font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2">
-            ADICIONAR
-            <i class="ph-bold ph-plus text-xl transition-transform duration-300 group-hover:rotate-90"></i>
-        </a>
-
+        <div class="flex gap-2 w-full md:w-auto">
+            <button onclick="openManageTagsModal()"
+                class="btn-secondary btn-md w-full md:w-auto group font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2">
+                TAGS
+                <i class="ph-bold ph-tag text-xl transition-transform duration-300 group-hover:scale-110"></i>
+            </button>
+            <a href="{{ url_for('snippets.novo') }}"
+                class="btn-primary btn-md w-full md:w-auto group !bg-[#9a55f3] !text-white !shadow-[#9a55f3]/20 font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2">
+                ADICIONAR
+                <i class="ph-bold ph-plus text-xl transition-transform duration-300 group-hover:rotate-90"></i>
+            </a>
+        </div>
     </div>
 
     <!-- Main Layout -->
@@ -44,16 +50,23 @@
             <div class="relative">
                 <i
                     class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-xl"></i>
-                <input type="text" id="snippet-search" placeholder="Buscar por título ou descrição..."
+                <input type="text" id="snippet-search" placeholder="Título, descrição ou #TAG..."
                     class="w-full h-12 pl-12 pr-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#9a55f3] text-text-normal text-sm font-semibold placeholder:text-text-muted transition-standard shadow-sm"
                     value="{{ query or '' }}">
             </div>
 
             <!-- List Desktop -->
-            <div id="desktop-list" class="hidden lg:flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-300px)] pr-2">
+            <div id="desktop-list" class="hidden lg:flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-320px)] pr-2">
                 {% for s in snippets %}
                 <button data-id="{{ s.id }}" onclick="loadSnippet(this.dataset.id, this)"
                     class="snippet-list-item text-left p-4 bg-discord-200 border border-discord-400 rounded-[16px] hover:border-text-muted transition-standard group">
+                    <div class="flex flex-wrap gap-1.5 mb-2">
+                        {% for t in s.tags %}
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase text-white shadow-sm" style="background-color: {{ t.cor }}">
+                            {{ t.denominacao }}
+                        </span>
+                        {% endfor %}
+                    </div>
                     <h3 class="font-bold text-text-heading transition-standard">{{ s.titulo }}</h3>
                     {% if s.descricao %}
                     <p class="text-xs text-text-muted font-medium line-clamp-1 mt-1">{{ s.descricao }}</p>
@@ -75,6 +88,13 @@
                     <button data-id="{{ s.id }}" onclick="toggleAccordion('snippet-' + this.dataset.id)"
                         class="w-full flex justify-between items-center p-5 text-left hover:bg-discord-300 transition-standard">
                         <div>
+                            <div class="flex flex-wrap gap-1 mb-2">
+                                {% for t in s.tags %}
+                                <span class="px-2 py-0.5 rounded-full text-[8px] font-black tracking-wider uppercase text-white shadow-sm" style="background-color: {{ t.cor }}">
+                                    {{ t.denominacao }}
+                                </span>
+                                {% endfor %}
+                            </div>
                             <h3 class="font-bold text-text-heading">{{ s.titulo }}</h3>
                             {% if s.descricao %}
                             <p class="text-[10px] text-text-muted font-bold uppercase tracking-widest mt-1">{{
@@ -98,6 +118,10 @@
                                     data-tooltip="Editar" data-tooltip-pos="top">
                                     <i class="ph-bold ph-pencil-simple text-sm"></i>
                                 </a>
+                                <button data-id="{{ s.id }}" onclick="openSnippetTagsModal(this.dataset.id)" class="btn-icon-sm"
+                                    data-tooltip="Tags" data-tooltip-pos="top">
+                                    <i class="ph-bold ph-tag text-sm"></i>
+                                </button>
                                 <button data-id="{{ s.id }}" data-titulo="{{ s.titulo }}"
                                     onclick="confirmDelete(this.dataset.id, this.dataset.titulo, '{{ url_for('snippets.delete', id=0) }}')"
                                     class="btn-icon-sm hover:!text-danger" data-tooltip="Excluir"
@@ -150,10 +174,16 @@
                 class="hidden bg-white border border-slate-200 rounded-[2.5rem] p-10 shadow-sm min-h-[600px] sticky top-24">
                 <div class="flex justify-between items-start mb-10 border-b border-slate-100 pb-8">
                     <div>
+                        <div id="detail-tags" class="flex flex-wrap gap-2 mb-4">
+                            <!-- Tags will be injected here -->
+                        </div>
                         <h2 id="detail-title" class="text-3xl font-extrabold text-slate-900 tracking-tight"></h2>
                         <p id="detail-desc" class="text-sm text-slate-500 font-medium mt-2"></p>
                     </div>
                     <div class="flex gap-2">
+                        <button id="detail-tags-btn" onclick="openSnippetTagsModal(this.dataset.id)" class="btn-icon-md" data-tooltip="Gerenciar Tags" data-tooltip-pos="top">
+                            <i class="ph-bold ph-tag text-xl"></i>
+                        </button>
                         <a id="detail-edit" href="#" class="btn-icon-md" data-tooltip="Editar" data-tooltip-pos="top">
                             <i class="ph-bold ph-pencil-simple text-xl"></i>
                         </a>
@@ -191,8 +221,92 @@
     </div>
 </div>
 
+<!-- Modal: Gerenciar Tags Globais -->
+<div id="modal-manage-tags" class="modal-overlay hidden">
+    <div class="modal-content !max-w-2xl bg-[#1e1f22] border border-discord-400">
+        <div class="p-8">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-2xl font-black text-text-heading tracking-tight">Gerenciar Tags</h2>
+                    <p class="text-[10px] font-bold text-text-muted/50 uppercase tracking-[0.2em] mt-1">Crie e organize suas categorias</p>
+                </div>
+                <button onclick="closeManageTagsModal()" class="text-text-muted hover:text-white transition-colors">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+
+            <!-- Formulário Nova Tag -->
+            <form id="form-add-tag" data-ajax="true" class="bg-discord-200 p-6 rounded-2xl mb-8 border border-discord-400">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="flex flex-col gap-4">
+                    <div class="flex-1">
+                        <label class="block text-[11px] font-black text-text-muted uppercase tracking-widest mb-2">Nome da Tag</label>
+                        <input type="text" name="denominacao" placeholder="EX: PYTHON, DICAS, FRONTEND" required
+                            class="w-full h-11 bg-discord-300 border-none rounded-xl text-text-normal text-sm font-bold px-4 focus:ring-2 focus:ring-[#9a55f3] uppercase"
+                            oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-black text-text-muted uppercase tracking-widest mb-2">Selecione uma Cor Premium</label>
+                        <div class="grid grid-cols-6 gap-3">
+                            {% set premium_colors = ['#5865F2', '#57F287', '#FEE75C', '#EB459E', '#ED4245', '#5462D4', '#9A55F3', '#00D1B2', '#FFDD57', '#FF3860', '#209CEE', '#7148FC'] %}
+                            {% for color in premium_colors %}
+                            <label class="cursor-pointer group relative">
+                                <input type="radio" name="cor" value="{{ color }}" {% if loop.first %}checked{% endif %} class="hidden peer">
+                                <div class="w-full h-10 rounded-lg border-2 border-transparent peer-checked:border-white/50 peer-checked:scale-110 transition-all shadow-sm" style="background-color: {{ color }}"></div>
+                                <div class="absolute inset-0 flex items-center justify-center opacity-0 peer-checked:opacity-100 transition-opacity">
+                                    <i class="ph-bold ph-check text-white text-xs"></i>
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary w-full mt-6 !bg-[#9a55f3] !text-white h-11 font-black tracking-widest text-[11px]">
+                    CRIAR TAG
+                </button>
+            </form>
+
+            <div class="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                <div id="tags-list-container" class="flex flex-col gap-3">
+                    <!-- Tags will be loaded here via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Adicionar Tag ao Snippet -->
+<div id="modal-snippet-tags" class="modal-overlay hidden">
+    <div class="modal-content !max-w-md bg-[#1e1f22] border border-discord-400">
+        <div class="p-8">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-xl font-black text-text-heading tracking-tight">Tags do Snippet</h2>
+                    <p id="snippet-tags-title" class="text-[10px] font-bold text-text-muted/50 uppercase tracking-[0.2em] mt-1"></p>
+                </div>
+                <button onclick="closeSnippetTagsModal()" class="text-text-muted hover:text-white transition-colors">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+
+            <div id="snippet-tags-selection" class="flex flex-col gap-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                <!-- Tag checkboxes will be loaded here -->
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-discord-400">
+                <button onclick="closeSnippetTagsModal()" class="btn-primary w-full !bg-[#9a55f3] h-11 font-black tracking-widest text-[11px]">
+                    CONCLUÍDO
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Forms for hidden actions -->
 <form id="delete-form" method="POST" style="display: none;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+</form>
+<form id="tag-delete-form" method="POST" style="display: none;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 </form>
 {% endblock %}

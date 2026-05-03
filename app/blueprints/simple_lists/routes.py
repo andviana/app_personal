@@ -56,6 +56,17 @@ def add_item(lista_id):
     flash(message, 'success' if success else 'danger')
     return redirect(url_for('simple_lists.detail', id=lista_id))
 
+@bp.route('/<int:lista_id>/item/batch', methods=['POST'])
+def add_batch(lista_id):
+    batch_text = request.form.get('batch_text')
+    if not batch_text:
+        flash('Nenhum texto informado para o lote.', 'danger')
+        return redirect(url_for('simple_lists.detail', id=lista_id))
+    
+    success, message = SimpleListService.create_items_batch(lista_id, batch_text)
+    flash(message, 'success' if success else 'danger')
+    return redirect(url_for('simple_lists.detail', id=lista_id))
+
 @bp.route('/item/edit/<int:item_id>', methods=['POST'])
 def edit_item(item_id):
     nome = request.form.get('nome')

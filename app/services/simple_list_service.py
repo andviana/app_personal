@@ -103,3 +103,29 @@ class SimpleListService:
         except Exception:
             db.session.rollback()
             return False, None
+    @staticmethod
+    def create_items_batch(lista_id, text):
+        try:
+            import re
+            # Divide por enter, ponto e vírgula ou vírgula
+            raw_items = re.split(r'[\n;,]', text)
+            
+            # Limpa espaços e remove itens vazios
+            items = [i.strip().upper() for i in raw_items if i.strip()]
+            
+            if not items:
+                return False, "Nenhum item válido encontrado."
+            
+            for item_name in items:
+                novo_item = ItemLista(
+                    lista_id=lista_id,
+                    item=item_name,
+                    status=False
+                )
+                db.session.add(novo_item)
+            
+            db.session.commit()
+            return True, f"{len(items)} itens adicionados com sucesso!"
+        except Exception as e:
+            db.session.rollback()
+            return False, f"Erro ao processar lote: {str(e)}"

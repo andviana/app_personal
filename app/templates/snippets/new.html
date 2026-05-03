@@ -2,6 +2,63 @@
 
 {% block title %}Novo Snippet - AppPessoal{% endblock %}
 
+{% block head_extra %}
+<link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+<style>
+    /* Custom EasyMDE Dark Theme */
+    .EasyMDEContainer .editor-toolbar {
+        background: #2b2d31 !important;
+        border: 1px solid #1e1f22 !important;
+        border-top-left-radius: 12px !important;
+        border-top-right-radius: 12px !important;
+        opacity: 1 !important;
+        padding: 8px !important;
+    }
+    .EasyMDEContainer .editor-toolbar button {
+        color: #b5bac1 !important;
+        border-radius: 6px !important;
+        transition: all 0.2s ease !important;
+    }
+    .EasyMDEContainer .editor-toolbar button:hover, 
+    .EasyMDEContainer .editor-toolbar button.active {
+        background: #35373c !important;
+        color: #fff !important;
+    }
+    .EasyMDEContainer .editor-toolbar i.separator {
+        border-left: 1px solid #1e1f22 !important;
+        border-right: none !important;
+    }
+    .EasyMDEContainer .CodeMirror {
+        background: #1e1f22 !important;
+        color: #dbdee1 !important;
+        border: 1px solid #1e1f22 !important;
+        border-bottom-left-radius: 12px !important;
+        border-bottom-right-radius: 12px !important;
+        font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+        font-size: 14px !important;
+        padding: 12px !important;
+    }
+    .EasyMDEContainer .CodeMirror-cursor {
+        border-left: 1px solid #9a55f3 !important;
+    }
+    .EasyMDEContainer .editor-preview-side,
+    .EasyMDEContainer .editor-preview {
+        background: #313338 !important;
+        color: #dbdee1 !important;
+        border: 1px solid #1e1f22 !important;
+    }
+    /* Markdown Preview Styles */
+    .editor-preview h1, .editor-preview h2, .editor-preview h3 { color: #f2f3f5; font-weight: 800; margin-top: 1em; margin-bottom: 0.5em; }
+    .editor-preview h1 { font-size: 1.5em; border-bottom: 1px solid #3f4147; padding-bottom: 0.3em; }
+    .editor-preview h2 { font-size: 1.3em; }
+    .editor-preview code { background: #1e1f22; padding: 2px 4px; border-radius: 4px; color: #9a55f3; font-family: monospace; }
+    .editor-preview pre { background: #1e1f22; padding: 16px; border-radius: 8px; border: 1px solid #3f4147; overflow-x: auto; }
+    .editor-preview blockquote { border-left: 4px solid #4e5058; padding-left: 16px; color: #b5bac1; font-style: italic; }
+    .editor-preview a { color: #00a8fc; text-decoration: none; }
+    .editor-preview a:hover { text-decoration: underline; }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="max-w-4xl mx-auto flex flex-col gap-8">
     <div class="flex items-center gap-4">
@@ -46,7 +103,7 @@
                     </span>
                 </div>
             </div>
-            <textarea id="conteudo" name="conteudo" required rows="12"
+            <textarea id="conteudo" name="conteudo" rows="12"
                       class="w-full p-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#9a55f3] text-text-normal font-mono text-sm leading-relaxed placeholder:text-text-muted transition-standard"
                       placeholder="# Exemplo\n\n```python\nprint('Olá Mundo')\n```"></textarea>
         </div>
@@ -81,4 +138,49 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const easyMDE = new EasyMDE({
+            element: document.getElementById('conteudo'),
+            forceSync: true,
+            spellChecker: false,
+            autosave: {
+                enabled: true,
+                uniqueId: "snippet_new_content",
+                delay: 1000,
+            },
+            toolbar: [
+                "bold", "italic", "heading", "|", 
+                "quote", "unordered-list", "ordered-list", "|", 
+                "link", "image", "table", "|", 
+                "code", 
+                {
+                    name: "code-block",
+                    action: function(editor) {
+                        const cm = editor.codemirror;
+                        const selection = cm.getSelection();
+                        const text = selection || "seu_codigo_aqui";
+                        cm.replaceSelection("```\n" + text + "\n```");
+                    },
+                    className: "fa fa-file-code-o",
+                    title: "Bloco de Código",
+                },
+                "|",
+                "preview", "side-by-side", "fullscreen", "|", 
+                "guide"
+            ],
+            placeholder: "Digite seu markdown aqui...",
+            status: ["lines", "words", "cursor"],
+            minHeight: "300px",
+            renderingConfig: {
+                singleLineBreaks: false,
+                codeSyntaxHighlighting: true,
+            },
+        });
+    });
+</script>
 {% endblock %}

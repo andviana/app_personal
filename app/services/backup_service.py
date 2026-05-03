@@ -59,7 +59,10 @@ def import_data(json_data):
     try:
         # 1. Limpa os dados em ordem inversa para evitar erros de FK
         for model in reversed(MODELS_ORDER):
-            model.query.delete()
+            db.session.query(model).delete()
+        
+        # Garante que as deleções sejam processadas antes de novas inserções
+        db.session.flush()
         
         # 2. Insere os dados na ordem correta
         for model in MODELS_ORDER:
@@ -94,9 +97,49 @@ def import_data(json_data):
                     
                     obj = model(**row)
                     db.session.add(obj)
+                
+                # IMPORTANTE: Flush após cada tipo de modelo para garantir que 
+                # as chaves estrangeiras existam antes de serem referenciadas
+                db.session.flush()
         
         db.session.commit()
+
+        # 3. Sincroniza as sequências do Postgres (se aplicável)
+        try:
+            reset_postgres_sequences()
+        except Exception as seq_err:
+            print(f"Aviso ao sincronizar sequências: {seq_err}")
+            # Não falha a importação por causa das sequências, mas avisa no log
+            
         return True, "Restauração concluída com sucesso!"
     except Exception as e:
         db.session.rollback()
         return False, f"Erro na restauração: {str(e)}"
+
+def reset_postgres_sequences():
+    """Sincroniza os contadores (SERIAL/IDENTITY) do Postgres com os IDs importados."""
+    # Verifica se estamos usando Postgres
+    if 'postgresql' not in str(db.engine.url):
+        return
+
+    for model in MODELS_ORDER:
+        table_name = model.__tablename__
+        # Apenas para tabelas que possuem coluna 'id'
+        if hasattr(model, 'id'):
+            # SQL para resetar a sequência do ID para o valor máximo atual
+            # SELECT setval(pg_get_serial_sequence('table', 'id'), coalesce(max(id), 1), max(id) IS NOT null) FROM table;
+            sql = sqlalchemy.text(f"""
+                SELECT setval(
+                    pg_get_serial_sequence('{table_name}', 'id'), 
+                    COALESCE(MAX(id), 1), 
+                    MAX(id) IS NOT NULL
+                ) FROM "{table_name}"
+            """)
+            try:
+                db.session.execute(sql)
+            except Exception:
+                # Algumas tabelas podem não ter sequências ou ter nomes diferentes
+                db.session.rollback()
+                continue
+    
+    db.session.commit()

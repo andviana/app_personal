@@ -237,11 +237,22 @@
         <!-- Listas -->
         <a href="{{ url_for('lists.index') }}"
             class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
-                {% if request.endpoint and 'lists' in request.endpoint %}bg-[#ff4700] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#ff4700] hover:text-white{% endif %}"
-            data-tooltip="Listas" data-tooltip-pos="right">
+                {% if request.endpoint and 'lists.' in request.endpoint and 'simple_lists' not in request.endpoint %}bg-[#ff4700] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#ff4700] hover:text-white{% endif %}"
+            data-tooltip="Listas Compras" data-tooltip-pos="right">
             <i class="ph-fill ph-shopping-bag text-2xl"></i>
             <div
-                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'lists' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
+                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'lists.' in request.endpoint and 'simple_lists' not in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
+            </div>
+        </a>
+
+        <!-- Listas Simples -->
+        <a href="{{ url_for('simple_lists.index') }}"
+            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
+                {% if request.endpoint and 'simple_lists' in request.endpoint %}bg-[#00d1ff] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#00d1ff] hover:text-white{% endif %}"
+            data-tooltip="Listas Simples" data-tooltip-pos="right">
+            <i class="ph-fill ph-list-bullets text-2xl"></i>
+            <div
+                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'simple_lists' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
             </div>
         </a>
 

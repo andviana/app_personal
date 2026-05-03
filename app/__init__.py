@@ -66,6 +66,9 @@ def create_app(config_class=Config):
     from app.blueprints.snippets import bp as snippets_bp
     app.register_blueprint(snippets_bp, url_prefix='/snippets')
 
+    from app.blueprints.simple_lists import bp as simple_lists_bp
+    app.register_blueprint(simple_lists_bp, url_prefix='/simple_lists')
+
     from app.blueprints.perfumes import bp as perfumes_bp
     app.register_blueprint(perfumes_bp, url_prefix='/perfumes')
 

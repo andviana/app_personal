@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Listas Simples - DayLog{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <div class="flex flex-col gap-1">
+        <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
+            <i class="ph-bold ph-list-bullets text-[#00d1ff]"></i> Listas Simples
+        </h1>
+        <p class="text-[11px] font-bold text-text-muted/50 uppercase tracking-[0.2em]">
+            Gerencie suas listas personalizadas
+        </p>
+    </div>
+
+    <button onclick="openModal('modalNovaLista')"
+        class="btn-primary btn-md w-full md:w-auto group !bg-[#00d1ff] !text-black !shadow-[#00d1ff]/20 font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2">
+        ADICIONAR LISTA
+        <i class="ph-bold ph-plus text-xl transition-transform duration-300 group-hover:rotate-90"></i>
+    </button>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+    {% for lista in listas %}
+    <div class="group bg-discord-200 border border-discord-400 rounded-2xl p-5 hover:border-[#00d1ff]/50 transition-all duration-300 relative overflow-hidden shadow-sm flex flex-col justify-between h-48 cursor-pointer"
+        onclick="window.location.href='{{ url_for('simple_lists.detail', id=lista.id) }}'">
+        
+        <div class="absolute top-0 left-0 w-1 h-full bg-[#00d1ff] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        
+        <div>
+            <div class="flex justify-between items-start mb-4">
+                <div class="p-3 bg-discord-400 text-[#00d1ff] rounded-xl group-hover:bg-[#00d1ff] group-hover:text-black transition-all">
+                    <i class="ph-fill ph-list-bullets text-2xl"></i>
+                </div>
+                <div class="flex gap-1" onclick="event.stopPropagation()">
+                    <button onclick="openEditModal('{{ lista.id }}', '{{ lista.denominacao }}')" 
+                        class="p-2 text-text-muted hover:text-[#00d1ff] transition-colors">
+                        <i class="ph-bold ph-pencil-simple text-lg"></i>
+                    </button>
+                    <form action="{{ url_for('simple_lists.delete', id=lista.id) }}" method="POST" onsubmit="return confirm('Deseja realmente excluir esta lista?')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="p-2 text-text-muted hover:text-danger transition-colors">
+                            <i class="ph-bold ph-trash text-lg"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <h3 class="text-xl font-black text-text-heading group-hover:text-white transition-colors truncate uppercase">{{ lista.denominacao }}</h3>
+            <p class="text-text-muted text-xs font-bold mt-1 uppercase tracking-wider">{{ lista.itens|length }} ITENS</p>
+        </div>
+
+        <div class="flex items-center gap-2 mt-4">
+            <div class="flex-1 h-1.5 bg-discord-400 rounded-full overflow-hidden">
+                {% set total = lista.itens|length %}
+                {% set concluidos = lista.itens|selectattr('status', 'equalto', True)|list|length %}
+                {% set percent = (concluidos / total * 100) if total > 0 else 0 %}
+                <div class="h-full bg-[#00d1ff] transition-all duration-500" style="width: {{ percent }}%"></div>
+            </div>
+            <span class="text-[10px] font-black text-text-muted">{{ percent|round|int }}%</span>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-span-full flex flex-col items-center justify-center py-20 bg-discord-200 rounded-3xl border-2 border-discord-400 border-dashed text-center">
+        <div class="w-20 h-20 bg-discord-400 rounded-full flex items-center justify-center mb-6 text-text-muted">
+            <i class="ph-bold ph-list-bullets text-4xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-text-heading tracking-tight">Nenhuma lista encontrada</h3>
+        <p class="text-text-muted mt-2 font-medium">Crie sua primeira lista para começar a organizar.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Modal Nova Lista -->
+<div id="modalNovaLista" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div class="bg-discord-200 w-full max-w-md rounded-2xl shadow-2xl border border-discord-400 overflow-hidden animate-in zoom-in-95 duration-200">
+        <div class="p-8">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-xl font-black text-text-heading flex items-center gap-2 uppercase tracking-tight">
+                    <i class="ph-bold ph-plus text-[#00d1ff]"></i> Nova Lista
+                </h3>
+                <button onclick="closeModal('modalNovaLista')" class="text-text-muted hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
+            </div>
+            <form action="{{ url_for('simple_lists.add') }}" method="POST" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div>
+                    <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">NOME DA LISTA</label>
+                    <input type="text" name="nome" required placeholder="EX: MINHAS METAS, FILMES PARA VER..."
+                        class="block w-full h-12 px-4 border-none rounded-xl bg-discord-400 text-text-heading focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase transition-all">
+                </div>
+                <div class="flex gap-4 pt-4">
+                    <button type="button" onclick="closeModal('modalNovaLista')" class="flex-1 h-12 bg-discord-400 hover:bg-discord-500 text-text-normal font-black uppercase tracking-widest text-[11px] rounded-xl transition-all">CANCELAR</button>
+                    <button type="submit" class="flex-1 h-12 bg-[#00d1ff] hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-xl shadow-lg shadow-[#00d1ff]/20 transition-all">CRIAR AGORA</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Lista -->
+<div id="modalEditarLista" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div class="bg-discord-200 w-full max-w-md rounded-2xl shadow-2xl border border-discord-400 overflow-hidden animate-in zoom-in-95 duration-200">
+        <div class="p-8">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-xl font-black text-text-heading flex items-center gap-2 uppercase tracking-tight">
+                    <i class="ph-bold ph-pencil-simple text-[#00d1ff]"></i> Editar Lista
+                </h3>
+                <button onclick="closeModal('modalEditarLista')" class="text-text-muted hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
+            </div>
+            <form id="formEditarLista" action="" method="POST" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div>
+                    <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">NOME DA LISTA</label>
+                    <input type="text" id="edit_nome" name="nome" required
+                        class="block w-full h-12 px-4 border-none rounded-xl bg-discord-400 text-text-heading focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase transition-all">
+                </div>
+                <div class="flex gap-4 pt-4">
+                    <button type="button" onclick="closeModal('modalEditarLista')" class="flex-1 h-12 bg-discord-400 hover:bg-discord-500 text-text-normal font-black uppercase tracking-widest text-[11px] rounded-xl transition-all">CANCELAR</button>
+                    <button type="submit" class="flex-1 h-12 bg-[#00d1ff] hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-xl shadow-lg shadow-[#00d1ff]/20 transition-all">SALVAR ALTERAÇÕES</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(id) {
+        document.getElementById(id).classList.remove('hidden');
+        document.getElementById(id).classList.add('flex');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+        document.getElementById(id).classList.remove('flex');
+    }
+
+    function openEditModal(id, nome) {
+        const form = document.getElementById('formEditarLista');
+        form.action = "{{ url_for('simple_lists.edit', id=0) }}".replace('0', id);
+        document.getElementById('edit_nome').value = nome;
+        openModal('modalEditarLista');
+    }
+</script>
+{% endblock %}

@@ -16,7 +16,7 @@ class Lista(db.Model):
     """Entidade representativa de uma lista de itens."""
     id = db.mapped_column(db.Integer, primary_key=True)
     denominacao = db.mapped_column(db.String(100), nullable=False)
-    tipo_id = db.mapped_column(db.Integer, db.ForeignKey('tipo_lista.id'), nullable=False)
+    tipo_id = db.mapped_column(db.Integer, db.ForeignKey('tipo_lista.id'), nullable=True)
     itens = db.relationship('ItemLista', backref='lista', lazy=True, cascade="all, delete-orphan")
 
 class ItemLista(db.Model):

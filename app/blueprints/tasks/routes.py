@@ -7,8 +7,19 @@ from flask_login import current_user
 
 @bp.route('/')
 def index():
-    grupos = TaskService.get_tasks_data()
-    return render_template('tasks/index.html', grupos=grupos)
+    view = request.args.get('view')
+    grupo_id = request.args.get('grupo_id', type=int)
+    
+    if view == 'all':
+        grupos = TaskService.get_tasks_data()
+        return render_template('tasks/index.html', grupos=grupos, view='all')
+    elif grupo_id:
+        grupo = TaskService.get_group_detail(grupo_id)
+        grupos = TaskService.get_all_groups()
+        return render_template('tasks/index.html', grupos=grupos, grupo_selecionado=grupo, view='detail')
+    else:
+        grupos = TaskService.get_all_groups()
+        return render_template('tasks/index.html', grupos=grupos, view='groups')
 
 @bp.route('/add', methods=['POST'])
 def add():

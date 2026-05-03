@@ -18,6 +18,19 @@ class TaskService:
         )
 
     @staticmethod
+    def get_all_groups() -> List[GrupoTarefas]:
+        """Fetches all groups with task counts."""
+        SeedService.init_tasks_defaults()
+        repo_grupos = BaseRepository(GrupoTarefas)
+        return repo_grupos.list_all(order_by=GrupoTarefas.denominacao)
+
+    @staticmethod
+    def get_group_detail(grupo_id: int) -> GrupoTarefas:
+        """Fetches a specific group with its tasks."""
+        repo_grupos = BaseRepository(GrupoTarefas)
+        return repo_grupos.get_or_404(grupo_id)
+
+    @staticmethod
     def create_task(descricao: str, grupo_id: Optional[int], current_user: Any) -> Optional[Tarefa]:
         status_pendente, _, _, grupo_comum = SeedService.init_tasks_defaults()
         if descricao:

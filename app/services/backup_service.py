@@ -6,7 +6,8 @@ from app.models import (
     User, GrupoTarefas, StatusTarefas, Tarefa,
     TipoLista, GrupoItem, Lista, ItemLista, 
     Snippet, Perfume, Pessoa, Endereco, 
-    Telefone, PessoaArquivo, Tag, SnippetTag
+    Telefone, PessoaArquivo, Tag, SnippetTag,
+    Bookmark, BookmarkCategory, BookmarkAssociation
 )
 
 # Ordem de restauração (respeitando chaves estrangeiras)
@@ -26,7 +27,10 @@ MODELS_ORDER = [
     Endereco,
     Telefone,
     PessoaArquivo,
-    SnippetTag
+    SnippetTag,
+    BookmarkCategory,
+    Bookmark,
+    BookmarkAssociation
 ]
 
 def export_data():

@@ -13,7 +13,10 @@ class ListService:
     def create_list(denominacao, tipo_id, current_user):
         if denominacao:
             repo = BaseRepository(Lista)
-            nova_lista = Lista(denominacao=denominacao.upper(), tipo_id=tipo_id)
+            nova_lista = Lista(
+                denominacao=denominacao.upper(), 
+                tipo_id=tipo_id if tipo_id else None
+            )
             repo.add(nova_lista)
             repo.commit()
             LogService.log_action(current_user.username, 'LIST_CREATED', f'ID: {nova_lista.id} | TITLE: {denominacao}')
@@ -55,9 +58,9 @@ class ListService:
             novo_item = ItemLista(
                 lista_id=lista_id,
                 item=item_text.upper(),
-                grupo_id=grupo_id,
-                valor=valor,
-                link=link
+                grupo_id=grupo_id if grupo_id else None,
+                valor=valor if valor else None,
+                link=link if link else None
             )
             repo.add(novo_item)
             repo.commit()

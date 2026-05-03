@@ -55,7 +55,7 @@ class SimpleListService:
             novo_item = ItemLista(
                 lista_id=lista_id,
                 item=nome.upper(),
-                link=link
+                link=link if link else None
             )
             db.session.add(novo_item)
             db.session.commit()
@@ -71,7 +71,7 @@ class SimpleListService:
             if not item:
                 return False, "Item não encontrado."
             item.item = nome.upper()
-            item.link = link
+            item.link = link if link else None
             db.session.commit()
             return True, "Item atualizado com sucesso!"
         except Exception as e:

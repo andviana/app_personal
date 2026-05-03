@@ -48,6 +48,19 @@ def delete(id):
     flash(message, 'success' if success else 'danger')
     return redirect(url_for('bookmarks.index'))
 
+@bp.route('/batch', methods=['POST'])
+def batch_add():
+    batch_text = request.form.get('batch_text')
+    category_ids = request.form.getlist('category_ids')
+    
+    if not batch_text:
+        flash('Nenhum texto informado para o lote.', 'danger')
+        return redirect(url_for('bookmarks.index'))
+    
+    success, message = BookmarkService.create_batch_bookmarks(batch_text, category_ids)
+    flash(message, 'success' if success else 'danger')
+    return redirect(url_for('bookmarks.index'))
+
 @bp.route('/category/add', methods=['POST'])
 def category_add():
     nome = request.form.get('nome')

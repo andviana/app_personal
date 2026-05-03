@@ -157,3 +157,48 @@ class BookmarkService:
         except Exception as e:
             db.session.rollback()
             return False, str(e)
+
+    @staticmethod
+    def create_batch_bookmarks(batch_text, category_ids=None):
+        """Cria bookmarks em lote a partir de um texto com múltiplas URLs."""
+        try:
+            import re
+            # Extrai URLs usando regex simples
+            urls = re.findall(r'https?://[^\s,;]+', batch_text)
+            
+            if not urls:
+                return False, "Nenhuma URL válida encontrada."
+
+            count = 0
+            for url in urls:
+                # Tenta fazer o scraping básico
+                data = BookmarkService.scrape_url(url)
+                
+                if data['success']:
+                    titulo = data['title'] or url
+                    descricao = data['description']
+                    image_url = data['image_url']
+                else:
+                    titulo = url
+                    descricao = ""
+                    image_url = ""
+
+                bookmark = Bookmark(
+                    titulo=titulo,
+                    url=url,
+                    descricao=descricao,
+                    image_url=image_url
+                )
+                
+                if category_ids:
+                    categories = BookmarkCategory.query.filter(BookmarkCategory.id.in_(category_ids)).all()
+                    bookmark.categories = categories
+                
+                db.session.add(bookmark)
+                count += 1
+            
+            db.session.commit()
+            return True, f"{count} favoritos adicionados com sucesso!"
+        except Exception as e:
+            db.session.rollback()
+            return False, f"Erro ao processar lote: {str(e)}"

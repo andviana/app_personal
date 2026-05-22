@@ -25,5 +25,5 @@ requests==2.32.3
 beautifulsoup4==4.12.3
 Flask-WTF==1.2.1
 bleach==6.1.0
-Flask-Compress==1.24
+Flask-Compress==1.15
 brotli==1.2.0

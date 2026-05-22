@@ -17,10 +17,10 @@
 {% endblock %}
 
 {% block content %}
-<div class="mb-10">
+<div class="mb-8">
     <div class="flex flex-col gap-1">
-        <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
-            <i class="ph-bold ph-squares-four text-[#5865f2]"></i> DayLog
+        <h1 class="text-2xl md:text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
+            <i class="ph-bold ph-squares-four text-primary"></i> DayLog
         </h1>
         <p class="text-[11px] font-bold text-text-muted/50 uppercase tracking-[0.2em]">
             Resumo da sua produtividade
@@ -31,51 +31,49 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
     <!-- Tasks Summary Card -->
     <div
-        class="group bg-discord-200 rounded-[12px] p-8 border border-discord-400 shadow-sm hover:border-text-muted transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-1 bg-[#23a55a] opacity-0 group-hover:opacity-100 transition-opacity">
+        class="group bg-discord-200 rounded-xl p-6 md:p-8 border border-discord-100/10 shadow-md hover:bg-discord-400/30 transition-all duration-200 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-success opacity-0 group-hover:opacity-100 transition-opacity">
         </div>
         <div class="flex items-start justify-between">
             <div>
-                <span class="text-xs font-bold text-text-muted uppercase tracking-widest">Pendentes</span>
+                <span class="form-label !mb-0">Pendentes</span>
                 <h2 class="mt-2 text-5xl font-black text-text-heading leading-none">{{ tarefas_pendentes }}</h2>
-                <p class="mt-2 text-sm text-text-muted font-medium tracking-wide">Tarefas que precisam de atenção</p>
+                <p class="mt-3 text-sm text-text-muted font-medium tracking-wide">Tarefas que precisam de atenção</p>
             </div>
-            <div class="p-4 bg-discord-400 text-[#23a55a] rounded-full group-hover:bg-[#23a55a] group-hover:text-white transition-standard"
+            <div class="p-4 bg-discord-400 text-success rounded-full group-hover:bg-success group-hover:text-white transition-all duration-200"
                 data-tooltip="Ir para Tarefas" data-tooltip-pos="top">
                 <a href="{{ url_for('tasks.index') }}"><i class="ph-fill ph-list-dashes text-3xl"></i></a>
             </div>
-
         </div>
     </div>
 
     <!-- Lists Summary Card -->
     <div
-        class="group bg-discord-200 rounded-[12px] p-8 border border-discord-400 shadow-sm hover:border-text-muted transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-1 bg-[#ff4700] opacity-0 group-hover:opacity-100 transition-opacity">
+        class="group bg-discord-200 rounded-xl p-6 md:p-8 border border-discord-100/10 shadow-md hover:bg-discord-400/30 transition-all duration-200 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-[#ffb000] opacity-0 group-hover:opacity-100 transition-opacity">
         </div>
         <div class="flex items-start justify-between">
             <div>
-                <span class="text-xs font-bold text-text-muted uppercase tracking-widest">Ativas</span>
+                <span class="form-label !mb-0">Ativas</span>
                 <h2 class="mt-2 text-5xl font-black text-text-heading leading-none">{{ listas_ativas }}</h2>
-                <p class="mt-2 text-sm text-text-muted font-medium tracking-wide">Listas de compras e desejos</p>
+                <p class="mt-3 text-sm text-text-muted font-medium tracking-wide">Listas de compras e desejos</p>
             </div>
-            <div class="p-4 bg-discord-400 text-[#ff4700] rounded-full group-hover:bg-[#ff4700] group-hover:text-white transition-standard"
+            <div class="p-4 bg-discord-400 text-[#ffb000] rounded-full group-hover:bg-[#ffb000] group-hover:text-white transition-all duration-200"
                 data-tooltip="Gerenciar Listas" data-tooltip-pos="top">
                 <a href="{{ url_for('lists.index') }}"><i class="ph-fill ph-shopping-bag text-3xl"></i></a>
             </div>
-
         </div>
     </div>
 
     <!-- Shopping Finance Summary Card -->
     <div
-        class="group bg-discord-200 rounded-[12px] p-8 border border-discord-400 shadow-sm hover:border-text-muted transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
+        class="group bg-discord-200 rounded-xl p-6 md:p-8 border border-discord-100/10 shadow-md hover:bg-discord-400/30 transition-all duration-200 flex flex-col justify-between relative overflow-hidden">
         <div
-            class="absolute top-0 left-0 w-full h-1 bg-primary-DEFAULT opacity-0 group-hover:opacity-100 transition-opacity">
+            class="absolute top-0 left-0 w-full h-1 bg-primary opacity-0 group-hover:opacity-100 transition-opacity">
         </div>
         <div class="flex items-start justify-between">
             <div>
-                <span class="text-xs font-bold text-text-muted uppercase tracking-widest">Resumo de Valores</span>
+                <span class="form-label !mb-0">Resumo de Valores</span>
                 <div class="mt-2 space-y-1">
                     <div class="flex items-baseline gap-2">
                         <span class="text-xs text-text-muted">Estimado:</span>
@@ -90,20 +88,19 @@
                 </div>
             </div>
             <div
-                class="p-4 bg-discord-400 text-primary-DEFAULT rounded-full group-hover:bg-primary-DEFAULT group-hover:text-white transition-standard">
+                class="p-4 bg-discord-400 text-primary rounded-full group-hover:bg-primary group-hover:text-white transition-all duration-200">
                 <i class="ph-fill ph-package text-3xl"></i>
             </div>
-
         </div>
     </div>
 </div>
 
 <!-- Contribution Calendar Panel -->
 <div
-    class="mt-8 bg-discord-200 border border-discord-400 rounded-2xl p-6 md:p-8 flex flex-col lg:flex-row lg:items-start lg:gap-10">
+    class="mt-8 bg-discord-200 border border-discord-100/10 rounded-xl p-6 md:p-8 flex flex-col lg:flex-row lg:items-start lg:gap-10 shadow-md">
     <div class="flex flex-col gap-4 mb-8 lg:mb-0 lg:w-60 lg:shrink-0">
         <div>
-            <span class="text-xs font-bold text-text-muted uppercase tracking-widest">Contribuições</span>
+            <span class="form-label !mb-0">Contribuições</span>
             <h3 class="text-lg font-bold text-text-heading">Atividade no último ano</h3>
         </div>
         <!-- Legend -->
@@ -174,85 +171,84 @@
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-8">
     <!-- Total Itens -->
     <div
-        class="bg-discord-200 border border-discord-400 rounded-2xl p-6 hover:bg-discord-100/50 transition-standard group">
-        <div class="flex items-center justify-between mb-4">
+        class="card-container hover:bg-discord-400/30 transition-all duration-200 group flex flex-col justify-between h-32">
+        <div class="flex items-center justify-between mb-2">
             <div
-                class="w-10 h-10 bg-[#ffb000]/10 text-[#ffb000] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                class="w-10 h-10 bg-[#ffb000]/10 text-[#ffb000] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
                 <i class="ph-fill ph-package"></i>
             </div>
             <span class="text-2xl font-black text-text-heading">{{ itens_count }}</span>
         </div>
-        <p class="text-[10px] font-black text-text-muted uppercase tracking-widest">Itens nas Listas</p>
+        <p class="form-label !mb-0">Itens nas Listas</p>
     </div>
 
     <!-- Total Snippets -->
     <div
-        class="bg-discord-200 border border-discord-400 rounded-2xl p-6 hover:bg-discord-100/50 transition-standard group">
-        <div class="flex items-center justify-between mb-4">
+        class="card-container hover:bg-discord-400/30 transition-all duration-200 group flex flex-col justify-between h-32">
+        <div class="flex items-center justify-between mb-2">
             <div
-                class="w-10 h-10 bg-[#9a55f3]/10 text-[#9a55f3] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                class="w-10 h-10 bg-[#9a55f3]/10 text-[#9a55f3] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
                 <i class="ph-fill ph-code"></i>
             </div>
             <span class="text-2xl font-black text-text-heading">{{ snippets_count }}</span>
         </div>
-        <p class="text-[10px] font-black text-text-muted uppercase tracking-widest">Snippets Salvos</p>
+        <p class="form-label !mb-0">Snippets Salvos</p>
     </div>
 
     <!-- Total Perfumes -->
     <div
-        class="bg-discord-200 border border-discord-400 rounded-2xl p-6 hover:bg-discord-100/50 transition-standard group">
-        <div class="flex items-center justify-between mb-4">
+        class="card-container hover:bg-discord-400/30 transition-all duration-200 group flex flex-col justify-between h-32">
+        <div class="flex items-center justify-between mb-2">
             <div
-                class="w-10 h-10 bg-[#ffb000]/10 text-[#ffb000] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                class="w-10 h-10 bg-[#ffb000]/10 text-[#ffb000] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
                 <i class="ph-fill ph-drop"></i>
             </div>
             <span class="text-2xl font-black text-text-heading">{{ perfumes_count }}</span>
         </div>
-        <p class="text-[10px] font-black text-text-muted uppercase tracking-widest">Perfumes Coleção</p>
+        <p class="form-label !mb-0">Perfumes Coleção</p>
     </div>
 
     <!-- Total Pessoas -->
     <div
-        class="bg-discord-200 border border-discord-400 rounded-2xl p-6 hover:bg-discord-100/50 transition-standard group">
-        <div class="flex items-center justify-between mb-4">
+        class="card-container hover:bg-discord-400/30 transition-all duration-200 group flex flex-col justify-between h-32">
+        <div class="flex items-center justify-between mb-2">
             <div
-                class="w-10 h-10 bg-[#43b581]/10 text-[#43b581] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                class="w-10 h-10 bg-success/10 text-success rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
                 <i class="ph-fill ph-users"></i>
             </div>
             <span class="text-2xl font-black text-text-heading">{{ pessoas_count }}</span>
         </div>
-        <p class="text-[10px] font-black text-text-muted uppercase tracking-widest">Pessoas Registradas</p>
+        <p class="form-label !mb-0">Pessoas Registradas</p>
     </div>
 </div>
 
 <!-- Quick Actions Section -->
 <div class="mt-12">
-    <h3 class="text-xs font-bold text-text-muted uppercase tracking-widest mb-4">Ações Rápidas</h3>
+    <h3 class="form-label mb-4">Ações Rápidas</h3>
     <div class="flex flex-wrap gap-4">
         <a href="{{ url_for('tasks.index', action='new') }}"
-            class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-success hover:text-white transition-all duration-300 active:scale-95"
+            class="w-14 h-14 bg-discord-200 border border-discord-100/10 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-success hover:text-white transition-all duration-300 active:scale-95"
             data-tooltip="Nova Tarefa" data-tooltip-pos="top">
             <i class="ph-bold ph-check-square-offset text-2xl"></i>
         </a>
 
         <a href="{{ url_for('lists.index', action='new') }}"
-            class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#ffb000] hover:text-white transition-all duration-300 active:scale-95"
+            class="w-14 h-14 bg-discord-200 border border-discord-100/10 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#ffb000] hover:text-white transition-all duration-300 active:scale-95"
             data-tooltip="Nova Lista" data-tooltip-pos="top">
             <i class="ph-bold ph-list-plus text-2xl"></i>
         </a>
 
         <a href="{{ url_for('pessoas.add') }}"
-            class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#43b581] hover:text-white transition-all duration-300 active:scale-95"
+            class="w-14 h-14 bg-discord-200 border border-discord-100/10 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-success hover:text-white transition-all duration-300 active:scale-95"
             data-tooltip="Nova Pessoa" data-tooltip-pos="top">
             <i class="ph-bold ph-user-plus text-2xl"></i>
         </a>
 
         <a href="{{ url_for('snippets.novo') }}"
-            class="w-14 h-14 bg-discord-200 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#9a55f3] hover:text-white transition-all duration-300 active:scale-95"
+            class="w-14 h-14 bg-discord-200 border border-discord-100/10 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#9a55f3] hover:text-white transition-all duration-300 active:scale-95"
             data-tooltip="Novo Snippet" data-tooltip-pos="top">
             <i class="ph-bold ph-code text-2xl"></i>
         </a>
-
     </div>
 </div>
 {% endblock %}

@@ -8,24 +8,24 @@
         <div class="w-32 h-32 bg-discord-400 rounded-full flex items-center justify-center relative z-10 animate-bounce">
             <i class="ph-bold ph-magnifying-glass text-6xl text-text-muted"></i>
         </div>
-        <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-[#5865f2] rounded-full flex items-center justify-center z-20 shadow-lg">
+        <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-primary rounded-full flex items-center justify-center z-20 shadow-lg">
             <i class="ph-bold ph-warning text-2xl text-white"></i>
         </div>
     </div>
 
     <h1 class="text-6xl font-black text-text-heading mb-4 tracking-tighter">404</h1>
-    <h2 class="text-2xl font-bold text-text-heading mb-6">Parece que você se perdeu...</h2>
+    <h2 class="text-lg md:text-xl font-extrabold text-text-heading tracking-wide mb-6">Parece que você se perdeu...</h2>
     
-    <p class="max-w-md text-text-muted text-lg mb-10 leading-relaxed">
+    <p class="max-w-md text-text-muted text-sm font-medium leading-relaxed mb-10">
         A página que você está procurando não existe ou foi movida para um novo endereço.
     </p>
 
-    <div class="flex flex-col sm:flex-row gap-4">
-        <a href="{{ url_for('main.index') }}" class="px-8 py-4 bg-[#5865f2] text-white font-bold rounded-xl hover:opacity-90 active:scale-95 transition-standard flex items-center gap-2 shadow-lg shadow-[#5865f2]/20">
-            <i class="ph-bold ph-house"></i> Voltar para o Início
+    <div class="flex flex-col sm:flex-row gap-3">
+        <a href="{{ url_for('main.index') }}" class="btn-primary btn-md">
+            <i class="ph-bold ph-house text-base"></i> Voltar para o Início
         </a>
-        <button onclick="history.back()" class="px-8 py-4 bg-discord-400 text-text-normal font-bold rounded-xl hover:bg-discord-100 transition-standard flex items-center gap-2">
-            <i class="ph-bold ph-arrow-left"></i> Página Anterior
+        <button onclick="history.back()" class="btn-ghost btn-md">
+            <i class="ph-bold ph-arrow-left text-base"></i> Página Anterior
         </button>
     </div>
 </div>

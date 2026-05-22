@@ -19,7 +19,16 @@ Sistema de gerenciamento pessoal para tarefas, listas, pessoas, perfumes e snipp
 - **Python 3.8+**
 - **Node.js 18+ & npm** (para processamento do CSS)
 
-## 💻 Instalação Local
+##  Instale as dependências do sistema
+Você precisa instalar o libpq-dev (que fornece o pg_config) e os compiladores necessários. No seu terminal (fora do ambiente virtual ou dentro dele, tanto faz), execute:
+```bash
+sudo apt update && sudo apt install -y libpq-dev build-essential python3.14-dev
+``
+
+## 💻 Instalação Local##  Instale as dependências do sistema
+Você precisa instalar o libpq-dev (que fornece o pg_config) e os compiladores necessários. No seu terminal (fora do ambiente virtual ou dentro dele, tanto faz), execute:
+sudo apt update && sudo apt install -y libpq-dev build-essential
+
 
 1. **Clone o repositório**:
    ```bash
@@ -112,3 +121,6 @@ Siga estes passos para colocar sua aplicação online usando o **Render** e o **
 - **Database**: SQLite (local) / PostgreSQL (produção).
 - **Scraper**: BeautifulSoup4, Requests.
 - **Segurança**: Flask-Login, Flask-WTF (CSRF).
+
+
+

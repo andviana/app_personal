@@ -507,6 +507,14 @@
         const modal = document.getElementById(id);
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        
+        // Auto focus the first input inside the modal
+        const firstInput = modal.querySelector('input:not([type="hidden"]), select, textarea');
+        if (firstInput) {
+            setTimeout(() => {
+                firstInput.focus();
+            }, 50);
+        }
     }
 
     function closeModal(id) {

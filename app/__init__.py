@@ -1,4 +1,5 @@
-from flask import Flask
+import os
+from flask import Flask, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -90,5 +91,16 @@ def create_app(config_class=Config):
 
     from app.blueprints.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
+
+    @app.context_processor
+    def utility_processor():
+        def get_file_version(filename):
+            try:
+                # Retorna a data de modificação do arquivo como versão
+                path = os.path.join(current_app.root_path, '..', filename)
+                return int(os.path.getmtime(path))
+            except OSError:
+                return 1
+        return dict(get_file_version=get_file_version)
 
     return app

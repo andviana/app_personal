@@ -35,7 +35,7 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
 
     <!-- Tailwind CSS (Production Built) -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}?v={{ get_file_version('app/static/css/output.css') }}">
 
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>

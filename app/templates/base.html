@@ -204,7 +204,7 @@
     <!-- Desktop Sidebar (Server List Pattern) -->
     <nav class="hidden md:flex flex-col w-[72px] bg-discord-100 items-center py-3 gap-2 flex-shrink-0 z-50 relative">
         <a href="{{ url_for('main.index') }}"
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] bg-discord-300 text-text-normal hover:bg-primary-DEFAULT hover:text-white flex items-center justify-center transition-all duration-200 relative mb-2"
+            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] bg-discord-300 text-text-normal hover:bg-primary hover:text-white flex items-center justify-center transition-all duration-200 relative mb-2"
             data-tooltip="DayLog" data-tooltip-pos="right">
             <i class="ph-bold ph-check-square-offset text-2xl"></i>
         </a>
@@ -215,7 +215,7 @@
         <!-- Dashboard -->
         <a href="{{ url_for('main.index') }}"
             class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
-                {% if request.endpoint == 'main.index' %}bg-[#5865f2] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#5865f2] hover:text-white{% endif %}"
+                {% if request.endpoint == 'main.index' %}bg-primary text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-primary hover:text-white{% endif %}"
             data-tooltip="Dashboard" data-tooltip-pos="right">
             <i class="ph-fill ph-squares-four text-2xl"></i>
             <div
@@ -226,7 +226,7 @@
         <!-- Tarefas -->
         <a href="{{ url_for('tasks.index') }}"
             class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
-                {% if request.endpoint and 'tasks' in request.endpoint %}bg-[#23a55a] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#23a55a] hover:text-white{% endif %}"
+                {% if request.endpoint and 'tasks' in request.endpoint %}bg-success text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-success hover:text-white{% endif %}"
             data-tooltip="Tarefas" data-tooltip-pos="right">
             <i class="ph-fill ph-list-checks text-2xl"></i>
             <div
@@ -324,7 +324,7 @@
     <header
         class="md:hidden bg-discord-200 border-b border-discord-100 flex items-center justify-between px-4 h-[56px] flex-shrink-0 shadow-sm z-30">
         <a href="{{ url_for('main.index') }}" class="flex items-center gap-2 text-text-heading font-bold text-lg">
-            <i class="ph-fill ph-check-square-offset text-primary-DEFAULT"></i> DayLog
+            <i class="ph-fill ph-check-square-offset text-primary"></i> DayLog
         </a>
         {% if current_user.is_authenticated %}
         <div class="flex items-center gap-3">
@@ -337,7 +337,7 @@
     <!-- Main Content Area -->
     <main
         class="flex-1 w-full h-[calc(100vh-56px)] md:h-screen overflow-y-auto bg-discord-300 rounded-tl-lg md:rounded-tl-[8px] shadow-inner relative z-10 pb-20 md:pb-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8">
             {% block content %}{% endblock %}
         </div>
     </main>
@@ -347,12 +347,12 @@
     <nav
         class="md:hidden fixed bottom-0 left-0 right-0 bg-discord-100 border-t border-discord-200 px-4 py-2 flex justify-between items-center z-50 shadow-t-xl h-[64px]">
         <a href="{{ url_for('main.index') }}"
-            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-[#5865f2]' if request.endpoint == 'main.index' else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-primary' if request.endpoint == 'main.index' else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
             <i
                 class="{{ 'ph-fill' if request.endpoint == 'main.index' else 'ph-bold' }} ph-squares-four text-[22px]"></i>
         </a>
         <a href="{{ url_for('tasks.index') }}"
-            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-[#23a55a]' if request.endpoint and 'tasks' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
+            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-success' if request.endpoint and 'tasks' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
             <i
                 class="{{ 'ph-fill' if request.endpoint and 'tasks' in request.endpoint else 'ph-bold' }} ph-list-checks text-[22px]"></i>
         </a>
@@ -391,7 +391,7 @@
     <div id="loading-overlay">
         <div
             class="flex flex-col items-center gap-4 bg-slate-900/40 p-10 rounded-3xl backdrop-blur-md border border-white/10 shadow-2xl">
-            <div class="p-4 bg-[#5865f2] rounded-2xl shadow-lg shadow-[#5865f2]/50">
+            <div class="p-4 bg-primary rounded-2xl shadow-lg shadow-primary/50">
                 <i class="ph-bold ph-circle-notch text-4xl text-white spinner"></i>
             </div>
             <div class="text-center">

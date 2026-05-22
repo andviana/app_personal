@@ -10,41 +10,110 @@
 }
 
 @layer components {
+  /* Buttons & Actions Base */
   .btn-base {
     @apply inline-flex items-center justify-center gap-2 font-bold transition-standard active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-primary {
-    @apply btn-base bg-primary text-white hover:bg-primary-hover shadow-sm;
+    @apply btn-base bg-primary text-white hover:bg-primary-hover active:bg-primary-active shadow-sm;
   }
 
   .btn-secondary {
-    @apply btn-base bg-discord-400 text-text-normal hover:brightness-125;
+    @apply btn-base bg-discord-400 text-text-heading hover:bg-[#4e5058] active:bg-[#6d6f78] shadow-sm;
   }
 
   .btn-danger {
-    @apply btn-base bg-danger text-white hover:brightness-90;
+    @apply btn-base bg-danger text-white hover:bg-[#a92b2f] active:bg-[#822023] shadow-sm;
   }
 
   .btn-success {
-    @apply btn-base bg-success text-white hover:brightness-90;
+    @apply btn-base bg-success text-white hover:bg-[#1a7f43] active:bg-[#156334] shadow-sm;
   }
 
   .btn-ghost {
-    @apply btn-base text-text-muted hover:text-text-normal hover:bg-discord-300;
+    @apply btn-base bg-transparent text-text-muted hover:text-text-heading hover:bg-discord-400/40;
   }
 
   /* Sizing Variants */
   .btn-md { @apply h-11 px-5 rounded-xl text-sm; }
   .btn-lg { @apply h-12 px-6 rounded-xl text-base; }
   .btn-sm { @apply h-8 px-3 rounded-lg text-xs tracking-wide; }
-  .btn-icon-md { @apply btn-base w-11 h-11 rounded-xl bg-discord-300 text-text-muted hover:text-text-normal border border-discord-400; }
+  .btn-icon-md { @apply btn-base w-11 h-11 rounded-xl bg-discord-300 text-text-muted hover:text-text-heading border border-discord-400; }
   .btn-icon-sm { @apply btn-base w-8 h-8 rounded-lg bg-discord-300 text-text-muted hover:text-text-normal border border-discord-400; }
+
+  /* Design System: Icon Buttons */
+  .btn-icon {
+    @apply btn-base w-9 h-9 bg-discord-300 hover:bg-discord-400 text-text-muted hover:text-text-heading rounded-lg shadow-sm;
+  }
+  
+  .btn-icon-danger {
+    @apply btn-base w-9 h-9 bg-discord-300 hover:bg-danger text-text-muted hover:text-white rounded-lg shadow-sm;
+  }
+
+  /* Design System: Formulários e Inputs */
+  .form-label {
+    @apply text-[10px] md:text-xs font-black uppercase tracking-widest text-text-muted mb-2 block;
+  }
+
+  .form-input {
+    @apply w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal placeholder:text-text-muted/40 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200;
+  }
+
+  .form-textarea {
+    @apply w-full p-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal placeholder:text-text-muted/40 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 min-h-[100px];
+  }
+
+  .form-checkbox {
+    @apply w-5 h-5 bg-discord-100 border border-discord-400 text-primary rounded focus:ring-primary focus:ring-2 focus:ring-offset-0 transition-all duration-200 cursor-pointer;
+  }
+
+  .form-input-error {
+    @apply border-danger focus:ring-danger text-text-heading;
+  }
+
+  .form-error-msg {
+    @apply text-xs font-semibold text-danger mt-1.5 block;
+  }
+
+  /* Design System: Superfícies e Cards */
+  .card-container {
+    @apply bg-discord-200 border border-discord-100/10 rounded-xl p-5 hover:bg-discord-400/30 transition-all duration-200 shadow-md;
+  }
+
+  /* Design System: Navegação Interna */
+  .tabs-container {
+    @apply flex items-center gap-1.5 bg-discord-100 p-1.5 rounded-lg w-max max-w-full overflow-x-auto;
+  }
+
+  .tab-item-active {
+    @apply px-4 py-2 bg-discord-400 text-text-heading font-bold text-xs md:text-sm rounded-md transition-all duration-200 shadow-sm;
+  }
+
+  .tab-item-inactive {
+    @apply px-4 py-2 text-text-muted hover:bg-discord-200/50 hover:text-text-normal font-bold text-xs md:text-sm rounded-md transition-all duration-200;
+  }
+
+  /* Design System: Feedback Visual (Badges) */
+  .badge-success {
+    @apply px-2 py-0.5 bg-success/15 text-success border border-success/25 rounded text-[10px] md:text-[11px] font-extrabold uppercase tracking-wider;
+  }
+
+  .badge-warning {
+    @apply px-2 py-0.5 bg-[#f0b232]/15 text-[#f0b232] border border-[#f0b232]/25 rounded text-[10px] md:text-[11px] font-extrabold uppercase tracking-wider;
+  }
+
+  .badge-danger {
+    @apply px-2 py-0.5 bg-danger/15 text-danger border border-danger/25 rounded text-[10px] md:text-[11px] font-extrabold uppercase tracking-wider;
+  }
+
+  .badge-neutral {
+    @apply px-2 py-0.5 bg-discord-400 text-text-normal border border-discord-400/50 rounded text-[10px] md:text-[11px] font-extrabold uppercase tracking-wider;
+  }
 
   .transition-standard {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
-
 
   .calendar-square {
     @apply rounded-[2px] transition-all duration-300;

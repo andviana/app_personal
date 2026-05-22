@@ -3,11 +3,11 @@
 {% block title %}Login - AppPessoal{% endblock %}
 
 {% block content %}
-<div class="min-h-[70vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 bg-[#313338] p-10 rounded-[2.5rem] shadow-xl border border-discord-400">
+<div class="min-h-[70vh] flex items-center justify-center py-12 px-4 md:px-8">
+    <div class="max-w-md w-full space-y-8 bg-discord-200 border border-discord-100/20 rounded-2xl p-8 md:p-10 shadow-2xl">
         <div class="flex flex-col items-center gap-1">
             <div
-                class="mx-auto h-16 w-16 bg-primary-DEFAULT rounded-3xl flex items-center justify-center shadow-lg shadow-primary-DEFAULT/20 mb-2">
+                class="mx-auto h-16 w-16 bg-primary rounded-3xl flex items-center justify-center shadow-lg shadow-primary/20 mb-2">
                 <i class="ph-fill ph-lock-key text-white text-3xl"></i>
             </div>
             <h2 class="text-center text-3xl font-black text-text-heading tracking-tight">DayLog</h2>
@@ -30,41 +30,38 @@
                 {% endif %}
             {% endwith %}
             
-            <div class="rounded-2xl space-y-4">
-                <div class="flex flex-col gap-2">
-                    <label for="username"
-                        class="text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Usuário</label>
+            <div class="space-y-4">
+                <div class="flex flex-col">
+                    <label for="username" class="form-label ml-1">Usuário</label>
                     <div class="relative">
                         <div
                             class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
                             <i class="ph-bold ph-user text-lg"></i>
                         </div>
                         <input id="username" name="username" type="text" required
-                            class="appearance-none relative block w-full px-12 h-12 bg-[#1e1f22] border-none text-text-normal rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT transition-standard font-semibold placeholder:text-text-muted"
+                            class="form-input !px-12 !h-12 !rounded-xl"
                             placeholder="nome de usuário">
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-2">
-                    <label for="password"
-                        class="text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Senha</label>
+                <div class="flex flex-col">
+                    <label for="password" class="form-label ml-1">Senha</label>
                     <div class="relative">
                         <div
                             class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
                             <i class="ph-bold ph-lock-key text-lg"></i>
                         </div>
                         <input id="password" name="password" type="password" required
-                            class="appearance-none relative block w-full px-12 h-12 bg-[#1e1f22] border-none text-text-normal rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT transition-standard font-semibold placeholder:text-text-muted"
+                            class="form-input !px-12 !h-12 !rounded-xl"
                             placeholder="sua senha">
                     </div>
                 </div>
             </div>
 
             <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <input id="remember" name="remember" type="checkbox"
-                        class="h-5 w-5 bg-[#1e1f22] border border-discord-400 text-primary-DEFAULT focus:ring-primary-DEFAULT rounded transition-standard">
-                    <label for="remember" class="ml-2 block text-sm text-text-normal tracking-wide font-medium">
+                <div class="flex items-center gap-3">
+                    <input id="remember" name="remember" type="checkbox" class="form-checkbox">
+                    <label for="remember" class="text-sm font-semibold text-text-normal cursor-pointer select-none">
                         Lembrar-me
                     </label>
                 </div>
@@ -72,7 +69,7 @@
 
             <div class="pt-2">
                 <button type="submit"
-                    class="btn-primary btn-md group !bg-[#5865f2] !text-white !shadow-[#5865f2]/20 font-black tracking-widest text-[11px] h-12 w-full flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                    class="btn-primary btn-lg w-full tracking-widest text-xs uppercase hover:scale-[1.01] active:scale-[0.99] transition-all duration-200">
                     <i class="ph-bold ph-sign-in"></i> ACESSAR CONTA
                 </button>
             </div>

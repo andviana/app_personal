@@ -18,7 +18,7 @@ Os seguintes tokens de cores estão definidos na configuração do Tailwind (`ta
 | `text-text-heading` | `#f2f3f5` | Títulos, cabeçalhos e textos de alta legibilidade (branco/cinza muito claro) |
 | `text-text-normal`  | `#dbdee1` | Texto principal corrido, parágrafos |
 | `text-text-muted`   | `#949ba4` | Textos secundários, legendas, descrições secundárias |
-| `bg-primary-DEFAULT`| `#5865F2` | Cor principal (Blurple do Discord), botões primários |
+| `bg-primary`        | `#5865F2` | Cor principal (Blurple do Discord), botões primários |
 | `bg-success`        | `#23a559` | Status positivo, concluído, botões de sucesso |
 | `bg-danger`         | `#da373c` | Status de erro, cancelamento, botões de perigo |
 
@@ -90,14 +90,14 @@ Os seguintes tokens de cores estão definidos na configuração do Tailwind (`ta
 
 ### Padrões Adotados
 *   **Labels**: Sempre em caixa alta, espaçadas e em tons acinzentados (`text-text-muted`).
-*   **Inputs / Textareas / Selects**: Fundo escuro (`discord-100`), sem bordas pesadas, com foco em anel azul do Discord (`ring-primary-DEFAULT`).
+*   **Inputs / Textareas / Selects**: Fundo escuro (`discord-100`), sem bordas pesadas, com foco em anel azul do Discord (`ring-primary`).
 *   **Checkboxes**: Foco e visual minimalista.
 
 ### Classes Tailwind
 *   **Label**: `text-[10px] md:text-xs font-black uppercase tracking-widest text-text-muted mb-2 block`
-*   **Input / Select**: `w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal placeholder:text-text-muted/40 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT transition-all duration-200`
-*   **Textarea**: `w-full p-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal placeholder:text-text-muted/40 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT transition-all duration-200 min-h-[100px]`
-*   **Checkbox**: `w-5 h-5 bg-discord-100 border border-discord-400 text-primary-DEFAULT rounded focus:ring-primary-DEFAULT focus:ring-2 focus:ring-offset-0 transition-all duration-200 cursor-pointer`
+*   **Input / Select**: `w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal placeholder:text-text-muted/40 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200`
+*   **Textarea**: `w-full p-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal placeholder:text-text-muted/40 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 min-h-[100px]`
+*   **Checkbox**: `w-5 h-5 bg-discord-100 border border-discord-400 text-primary rounded focus:ring-primary focus:ring-2 focus:ring-offset-0 transition-all duration-200 cursor-pointer`
 *   **Input com Erro**: `border-danger focus:ring-danger text-text-heading`
 *   **Mensagem de Erro**: `text-xs font-semibold text-danger mt-1.5 block`
 
@@ -108,7 +108,7 @@ Os seguintes tokens de cores estão definidos na configuração do Tailwind (`ta
     <div class="flex flex-col">
         <label for="titulo" class="text-[10px] md:text-xs font-black uppercase tracking-widest text-text-muted mb-2 block">Título da Tarefa</label>
         <input type="text" id="titulo" name="titulo" placeholder="Ex: Resolver pendências do deploy" 
-            class="w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal placeholder:text-text-muted/40 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-DEFAULT transition-all duration-200">
+            class="w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal placeholder:text-text-muted/40 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200">
     </div>
 
     <!-- Input com Erro -->
@@ -122,7 +122,7 @@ Os seguintes tokens de cores estão definidos na configuração do Tailwind (`ta
     <!-- Checkbox Personalizado -->
     <div class="flex items-center gap-3">
         <input type="checkbox" id="lembrar" name="lembrar" 
-            class="w-5 h-5 bg-discord-100 border border-discord-400 text-primary-DEFAULT rounded focus:ring-primary-DEFAULT focus:ring-2 focus:ring-offset-0 transition-all duration-200 cursor-pointer">
+            class="w-5 h-5 bg-discord-100 border border-discord-400 text-primary rounded focus:ring-primary focus:ring-2 focus:ring-offset-0 transition-all duration-200 cursor-pointer">
         <label for="lembrar" class="text-sm font-semibold text-text-normal cursor-pointer select-none">Manter conectado</label>
     </div>
 </form>
@@ -133,7 +133,7 @@ Os seguintes tokens de cores estão definidos na configuração do Tailwind (`ta
 ## 4. Botões e Ações
 
 ### Classes Adotadas (Tipos e Estados)
-*   **Primary (Blurple)**: `px-4 h-10 md:h-11 bg-primary-DEFAULT hover:bg-primary-hover active:bg-primary-active text-white font-bold text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 shadow-sm`
+*   **Primary (Blurple)**: `px-4 h-10 md:h-11 bg-primary hover:bg-primary-hover active:bg-primary-active text-white font-bold text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 shadow-sm`
 *   **Secondary (Dark Gray)**: `px-4 h-10 md:h-11 bg-discord-400 hover:bg-[#4e5058] active:bg-[#6d6f78] text-text-heading font-bold text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 shadow-sm`
 *   **Danger (Red)**: `px-4 h-10 md:h-11 bg-danger hover:bg-[#a92b2f] active:bg-[#822023] text-white font-bold text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 shadow-sm`
 *   **Success (Green)**: `px-4 h-10 md:h-11 bg-success hover:bg-[#1a7f43] active:bg-[#156334] text-white font-bold text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 shadow-sm`
@@ -145,7 +145,7 @@ Os seguintes tokens de cores estão definidos na configuração do Tailwind (`ta
 ```html
 <div class="flex flex-wrap gap-3">
     <!-- Primário com ícone -->
-    <button class="px-4 h-11 bg-primary-DEFAULT hover:bg-primary-hover active:bg-primary-active text-white font-bold text-sm rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-sm">
+    <button class="px-4 h-11 bg-primary hover:bg-primary-hover active:bg-primary-active text-white font-bold text-sm rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-sm">
         <i class="ph-bold ph-plus"></i>
         <span>Adicionar Item</span>
     </button>

@@ -9,7 +9,10 @@ class SimpleListService:
 
     @staticmethod
     def get_list_by_id(lista_id):
-        return Lista.query.get(lista_id)
+        lista = Lista.query.get(lista_id)
+        if lista:
+            lista.itens.sort(key=lambda x: (x.status, x.item))
+        return lista
 
     @staticmethod
     def create_list(nome):

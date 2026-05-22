@@ -25,7 +25,10 @@ def create_app(config_class=Config):
 
     # 2. Configura o cache do navegador para 1 ano (em segundos) em produção
     # O navegador guardará o CSS localmente e não fará requisições repetidas ao Render
-    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
+    if app.debug:
+        app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+    else:
+        app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
 
     db.init_app(app)
     migrate.init_app(app, db)

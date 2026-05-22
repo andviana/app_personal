@@ -39,6 +39,7 @@ class ListService:
         repo_grupos = BaseRepository(GrupoItem)
         lista = repo_lista.get_or_404(id)
         grupos = repo_grupos.list_all(order_by=GrupoItem.denominacao)
+        lista.itens.sort(key=lambda x: (x.status, x.item))
         return lista, grupos
 
     @staticmethod

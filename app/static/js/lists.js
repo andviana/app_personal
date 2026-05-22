@@ -133,6 +133,7 @@ function confirmDelete(event, form, itemName = 'este item') {
         text: `Deseja realmente remover "${itemName}"? Essa ação não pode ser desfeita!`,
         confirmText: 'Sim, excluir',
         onConfirm: () => {
+            if (window.saveScrollPosition) window.saveScrollPosition();
             form.submit();
         }
     });

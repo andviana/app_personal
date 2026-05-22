@@ -3,6 +3,48 @@
  * Handlers for loading overlay, flash messages and global UI patterns.
  */
 
+const getNormalizedPath = (urlStr) => {
+    try {
+        const url = new URL(urlStr, window.location.origin);
+        const pathname = url.pathname.replace(/\/+$/, '') || '/';
+        const searchParams = new URLSearchParams(url.search);
+        searchParams.sort();
+        const search = searchParams.toString();
+        return pathname + (search ? '?' + search : '');
+    } catch (e) {
+        return urlStr;
+    }
+};
+
+const saveScrollPosition = () => {
+    const mainContainer = document.querySelector('main');
+    const scrollPos = mainContainer ? mainContainer.scrollTop : 0;
+    sessionStorage.setItem('global_scroll_pos', scrollPos);
+    sessionStorage.setItem('global_scroll_path', getNormalizedPath(window.location.href));
+};
+
+window.addEventListener('beforeunload', saveScrollPosition);
+
+window.addEventListener('load', () => {
+    const scrollPos = sessionStorage.getItem('global_scroll_pos');
+    const scrollPath = sessionStorage.getItem('global_scroll_path');
+    const currentPath = getNormalizedPath(window.location.href);
+    
+    if (scrollPos !== null && scrollPath === currentPath) {
+        const mainContainer = document.querySelector('main');
+        if (mainContainer) {
+            mainContainer.scrollTop = parseInt(scrollPos, 10);
+            
+            // Fallback for slower rendering
+            setTimeout(() => {
+                mainContainer.scrollTop = parseInt(scrollPos, 10);
+            }, 100);
+        }
+    }
+    sessionStorage.removeItem('global_scroll_pos');
+    sessionStorage.removeItem('global_scroll_path');
+});
+
 const showLoading = () => {
     const overlay = document.getElementById('loading-overlay');
     if (overlay) overlay.classList.add('active');
@@ -20,6 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Form submission global loading handler
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function (e) {
+            // Save scroll position for standard page reload submissions
+            saveScrollPosition();
+
             // Don't show loading if the form handling is prevented elsewhere
             if (e.defaultPrevented) return;
             
@@ -128,4 +173,5 @@ const AppUI = {
 // Global Exposure
 window.showToast = AppUI.toast;
 window.AppUI = AppUI;
+window.saveScrollPosition = saveScrollPosition;
 

@@ -9,9 +9,8 @@
 } %}
 <div class="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
     <div class="flex flex-col gap-4">
-        <a href="{{ url_for('lists.index') }}"
-            class="btn-ghost btn-sm group !p-0 !text-text-muted hover:!text-[#ff4700] w-fit">
-            <i class="ph-bold ph-arrow-left group-hover:-translate-x-1 transition-standard border border-text-muted group-hover:border-[#ff4700] rounded-md p-1"></i>
+        <a href="{{ url_for('lists.index') }}" class="btn-back group">
+            <i class="ph-bold ph-arrow-left btn-back-icon"></i>
             Voltar
         </a>
 
@@ -61,7 +60,7 @@
                 <i class="ph-bold ph-plus-circle text-xl"></i>
             </div>
             <input type="text" name="item" placeholder="O QUE ADICIONAR À LISTA?"
-                class="block w-full h-12 pl-12 border-none rounded-xl bg-[#1e1f22] text-text-heading focus:ring-2 focus:ring-[#ff4700] text-sm font-bold placeholder:text-text-muted transition-standard uppercase"
+                class="block w-full h-12 pl-12 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-bold placeholder:text-text-muted/40 rounded-xl transition-all uppercase"
                 required autofocus autocomplete="off">
         </div>
 
@@ -72,7 +71,7 @@
                     <span class="text-xs font-black leading-none uppercase">R$</span>
                 </div>
                 <input type="number" step="0.01" name="valor" placeholder="0.00"
-                    class="block w-full h-12 pl-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-bold placeholder:text-text-muted">
+                    class="block w-full h-12 pl-10 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-bold placeholder:text-text-muted/40 rounded-xl transition-all">
             </div>
 
             <!-- Categoria -->
@@ -82,7 +81,7 @@
                     <i class="ph-bold ph-tag text-lg"></i>
                 </div>
                 <select name="grupo_id"
-                    class="appearance-none block w-full h-12 pl-11 pr-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-bold transition-standard cursor-pointer uppercase">
+                    class="appearance-none block w-full h-12 pl-11 pr-10 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-bold rounded-xl transition-all cursor-pointer uppercase">
                     <option value="" selected>OUTROS (PADRÃO)</option>
                     {% for g in grupos %}
                     {% if g.denominacao.upper() != 'OUTROS' %}
@@ -128,15 +127,14 @@
                 <tr class="group hover:bg-discord-300 transition-standard {% if it.status %}bg-success/5{% endif %}">
                     <td class="px-3 sm:px-6 py-3 sm:py-4">
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <form action="{{ url_for('lists.toggle_item', item_id=it.id) }}" method="POST">
+                            <form action="{{ url_for('lists.toggle_item', item_id=it.id) }}" method="POST" class="inline flex items-center">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-                                <button type="submit"
-                                    class="flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-standard
-                                    {% if it.status %}bg-success border-success text-white
-                                    {% else %}border-text-muted hover:border-text-normal text-transparent hover:text-text-normal{% endif %}">
-                                    <i class="ph-bold ph-check"></i>
-                                </button>
+                                <label class="relative flex items-center cursor-pointer select-none">
+                                    <input type="checkbox" class="peer hidden" {% if it.status %}checked{% endif %} onchange="if(window.saveScrollPosition) window.saveScrollPosition(); this.form.submit()">
+                                    <div class="w-5 h-5 rounded border border-discord-400 bg-discord-100 text-transparent peer-checked:bg-success peer-checked:border-success peer-checked:text-white flex items-center justify-center transition-all duration-200 hover:border-text-normal">
+                                        <i class="ph-bold ph-check text-xs"></i>
+                                    </div>
+                                </label>
                             </form>
                             <div class="flex flex-col min-w-0 flex-1">
                                 <!-- Categoria (Visível apenas no Celular) -->
@@ -290,7 +288,7 @@
                     <label
                         class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Denominação</label>
                     <input type="text" name="denominacao" placeholder="Ex: Higiene, Laticínios..."
-                        class="block w-full h-10 px-3 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-primary-DEFAULT text-sm font-semibold"
+                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-semibold rounded-xl transition-all"
                         required autofocus>
                 </div>
                 <div class="flex flex-col md:flex-row gap-4 pt-6 justify-end">
@@ -334,14 +332,14 @@
                 <div>
                     <label class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">Item</label>
                     <input type="text" id="edit_item_nome" name="item"
-                        class="block w-full h-11 px-4 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-bold uppercase"
+                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-bold rounded-xl transition-all uppercase"
                         required>
                 </div>
                 <div>
                     <label
                         class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">Categoria</label>
                     <select id="edit_item_grupo" name="grupo_id"
-                        class="block w-full h-11 px-4 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-bold uppercase">
+                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-bold rounded-xl transition-all uppercase">
                         <option value="">OUTROS (PADRÃO)</option>
                         {% for g in grupos %}
                         {% if g.denominacao.upper() != 'OUTROS' %}
@@ -355,11 +353,11 @@
                         Estimado</label>
                     <div class="relative">
                         <div
-                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
+                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
                             <span class="text-xs font-bold leading-none">R$</span>
                         </div>
                         <input type="number" step="0.01" id="edit_item_valor" name="valor"
-                            class="block w-full h-10 pl-8 border-none rounded-md bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-bold">
+                            class="block w-full h-11 pl-10 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-bold rounded-xl transition-all">
                     </div>
                 </div>
                 <div>
@@ -367,11 +365,11 @@
                         (Referência Externa)</label>
                     <div class="relative">
                         <div
-                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted">
+                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
                             <i class="ph-bold ph-link text-lg"></i>
                         </div>
                         <input type="url" id="edit_item_link" name="link" placeholder="https://exemplo.com"
-                            class="block w-full h-11 pl-10 border-none rounded-xl bg-[#1e1f22] text-text-normal focus:ring-2 focus:ring-[#ff4700] text-sm font-semibold">
+                            class="block w-full h-11 pl-10 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-semibold rounded-xl transition-all">
                     </div>
                 </div>
                 <div class="flex flex-col md:flex-row gap-4 pt-6 justify-end">
@@ -433,7 +431,7 @@
                                 <i class="ph-bold ph-link text-xl"></i>
                             </div>
                             <input type="url" name="url" id="urlInputScrape" required placeholder="https://..."
-                                class="block w-full h-14 pl-12 border-none rounded-2xl bg-[#1e1f22] text-text-heading focus:ring-2 focus:ring-[#ff4700] text-sm font-medium placeholder:text-text-muted transition-standard">
+                                class="block w-full h-12 pl-12 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-medium placeholder:text-text-muted/40 rounded-xl transition-all">
                         </div>
                     </div>
 

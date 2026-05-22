@@ -218,61 +218,12 @@ function updateTaskRowStatus(row, status) {
     }
 }
 
-const getNormalizedPath = (urlStr) => {
-    try {
-        const url = new URL(urlStr, window.location.origin);
-        const pathname = url.pathname.replace(/\/+$/, '') || '/';
-        const searchParams = new URLSearchParams(url.search);
-        searchParams.sort();
-        const search = searchParams.toString();
-        return pathname + (search ? '?' + search : '');
-    } catch (e) {
-        return urlStr;
-    }
-};
-
-// Preserve scroll position on reload/actions
-window.addEventListener('beforeunload', () => {
-    const mainContainer = document.querySelector('main');
-    const scrollPos = mainContainer ? mainContainer.scrollTop : 0;
-    sessionStorage.setItem('tasks_scroll_pos', scrollPos);
-    sessionStorage.setItem('tasks_scroll_path', getNormalizedPath(window.location.href));
-});
-
-window.addEventListener('load', () => {
-    const scrollPos = sessionStorage.getItem('tasks_scroll_pos');
-    const scrollPath = sessionStorage.getItem('tasks_scroll_path');
-    const currentPath = getNormalizedPath(window.location.href);
-    
-    if (scrollPos !== null && scrollPath === currentPath) {
-        const mainContainer = document.querySelector('main');
-        if (mainContainer) {
-            mainContainer.scrollTop = parseInt(scrollPos, 10);
-            
-            // Fallback for slower rendering
-            setTimeout(() => {
-                mainContainer.scrollTop = parseInt(scrollPos, 10);
-            }, 100);
-        }
-    }
-    sessionStorage.removeItem('tasks_scroll_pos');
-    sessionStorage.removeItem('tasks_scroll_path');
-});
-
 document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('submit', async (e) => {
         const form = e.target;
         const isStatusToggle = form.closest('.task-row') && (form.action.includes('/concluir/') || form.action.includes('/iniciar/'));
         const isEditForm = form.id === 'formEditTarefa';
-
-        if (!isStatusToggle && !isEditForm) {
-            // Save scroll position for standard page reload submissions
-            const mainContainer = document.querySelector('main');
-            const scrollPos = mainContainer ? mainContainer.scrollTop : 0;
-            sessionStorage.setItem('tasks_scroll_pos', scrollPos);
-            sessionStorage.setItem('tasks_scroll_path', getNormalizedPath(window.location.href));
-        }
 
         if (isStatusToggle) {
             e.preventDefault();

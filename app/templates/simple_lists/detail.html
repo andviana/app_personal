@@ -5,10 +5,9 @@
 {% block content %}
 <div class="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
     <div class="flex flex-col gap-4">
-        <a href="{{ url_for('simple_lists.index') }}"
-            class="btn-ghost btn-sm group !p-0 !text-text-muted hover:!text-[#00d1ff] w-fit flex items-center gap-2">
-            <i class="ph-bold ph-arrow-left group-hover:-translate-x-1 transition-all border border-text-muted group-hover:border-[#00d1ff] rounded-md p-1"></i>
-            <span class="font-bold uppercase text-[10px] tracking-widest">VOLTAR PARA LISTAS</span>
+        <a href="{{ url_for('simple_lists.index') }}" class="btn-back group">
+            <i class="ph-bold ph-arrow-left btn-back-icon"></i>
+            Voltar
         </a>
 
         <div class="flex flex-col gap-1">
@@ -38,13 +37,13 @@
 <div class="bg-discord-200 border border-discord-400 rounded-3xl overflow-hidden shadow-sm">
     <div class="p-4 sm:p-8 space-y-2">
         {% for item in lista.itens %}
-        <div class="group flex items-center justify-between p-2 rounded-xl hover:bg-discord-400/50 transition-all border border-transparent hover:border-discord-400">
+        <div class="group flex items-center justify-between p-3 rounded-xl hover:bg-discord-300 transition-standard border border-transparent hover:border-discord-400">
             <div class="flex items-center gap-3 flex-1 min-w-0">
-                <label class="relative flex items-center cursor-pointer">
+                <label class="relative flex items-center cursor-pointer select-none">
                     <input type="checkbox" class="peer hidden" {% if item.status %}checked{% endif %} 
                            onchange="toggleItem('{{ item.id }}', this.checked)">
-                    <div class="w-5 h-5 rounded-md border-2 border-text-muted peer-checked:bg-[#00d1ff] peer-checked:border-[#00d1ff] flex items-center justify-center transition-all group-hover:border-white/30">
-                        <i class="ph-bold ph-check text-black text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                    <div class="w-5 h-5 rounded border border-discord-400 bg-discord-100 text-transparent peer-checked:bg-[#00d1ff] peer-checked:border-[#00d1ff] peer-checked:text-black flex items-center justify-center transition-all duration-200 hover:border-text-normal">
+                        <i class="ph-bold ph-check text-xs"></i>
                     </div>
                 </label>
                 
@@ -105,12 +104,12 @@
                 <div>
                     <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">NOME DO ITEM</label>
                     <input type="text" name="nome" required placeholder="O QUE ADICIONAR?" autofocus
-                        class="block w-full h-12 px-4 border-none rounded-xl bg-discord-400 text-text-heading focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase transition-all">
+                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase rounded-xl transition-all">
                 </div>
                 <div>
                     <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">LINK (OPCIONAL)</label>
                     <input type="url" name="link" placeholder="HTTPS://EXEMPLO.COM"
-                        class="block w-full h-12 px-4 border-none rounded-xl bg-discord-400 text-text-heading focus:ring-2 focus:ring-[#00d1ff] text-sm font-semibold transition-all">
+                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#00d1ff] text-sm font-semibold rounded-xl transition-all">
                 </div>
                 <div class="flex gap-4 pt-4">
                     <button type="button" onclick="closeModal('modalNovoItem')" class="flex-1 h-12 bg-discord-400 hover:bg-discord-500 text-text-normal font-black uppercase tracking-widest text-[11px] rounded-xl transition-all">CANCELAR</button>
@@ -137,12 +136,12 @@
                 <div>
                     <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">NOME DO ITEM</label>
                     <input type="text" id="edit_item_nome" name="nome" required
-                        class="block w-full h-12 px-4 border-none rounded-xl bg-discord-400 text-text-heading focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase transition-all">
+                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase rounded-xl transition-all">
                 </div>
                 <div>
                     <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">LINK (OPCIONAL)</label>
                     <input type="url" id="edit_item_link" name="link"
-                        class="block w-full h-12 px-4 border-none rounded-xl bg-discord-400 text-text-heading focus:ring-2 focus:ring-[#00d1ff] text-sm font-semibold transition-all">
+                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#00d1ff] text-sm font-semibold rounded-xl transition-all">
                 </div>
                 <div class="flex gap-4 pt-4">
                     <button type="button" onclick="closeModal('modalEditarItem')" class="flex-1 h-12 bg-discord-400 hover:bg-discord-500 text-text-normal font-black uppercase tracking-widest text-[11px] rounded-xl transition-all">CANCELAR</button>
@@ -168,7 +167,7 @@
                 <div>
                     <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">ITENS (SEPARADOS POR ENTER, VÍRGULA OU ;)</label>
                     <textarea name="batch_text" rows="8" required placeholder="ITEM 1&#10;ITEM 2, ITEM 3; ITEM 4"
-                        class="block w-full p-4 border-none rounded-xl bg-discord-400 text-text-heading focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase transition-all custom-scrollbar"></textarea>
+                        class="block w-full p-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase rounded-xl transition-all custom-scrollbar"></textarea>
                 </div>
                 <div class="flex gap-4 pt-4">
                     <button type="button" onclick="closeModal('modalLoteItem')" class="flex-1 h-12 bg-discord-400 hover:bg-discord-500 text-text-normal font-black uppercase tracking-widest text-[11px] rounded-xl transition-all">CANCELAR</button>

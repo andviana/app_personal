@@ -28,6 +28,9 @@ class BookmarkService:
             )
             if img_tag:
                 image_url = img_tag.get('content', img_tag.get('href', ''))
+                if image_url and not image_url.startswith('http') and not image_url.startswith('//'):
+                    from urllib.parse import urljoin
+                    image_url = urljoin(url, image_url)
 
             # Lógica especial para YouTube (caso o scraping falhe ou queira ser mais preciso)
             if "youtube.com" in url or "youtu.be" in url:
@@ -54,14 +57,60 @@ class BookmarkService:
             if desc_tag:
                 description = desc_tag.get('content', '')
 
+            final_title = BookmarkService.clean_title(title)
+            final_description = BookmarkService.translate_to_portuguese(description)
+
             return {
                 'success': True,
-                'title': title.strip() if title else "",
-                'description': description.strip() if description else "",
+                'title': final_title,
+                'description': final_description,
                 'image_url': image_url
             }
         except Exception as e:
             return {'success': False, 'error': str(e)}
+
+    @staticmethod
+    def clean_title(title):
+        if not title:
+            return ""
+        for separator in [' - ', ' | ', ' – ', ' » ', ' : ']:
+            if separator in title:
+                parts = [p.strip() for p in title.split(separator) if p.strip()]
+                if len(parts) > 1:
+                    # Check for TLDs
+                    for part in parts:
+                        if any(tld in part.lower() for tld in ['.com', '.org', '.net', '.io', '.ai', '.co', '.edu', '.gov', '.app']):
+                            return part
+                    # Check for short parts
+                    sorted_parts = sorted(parts, key=len)
+                    for part in sorted_parts:
+                        if 3 <= len(part) <= 25:
+                            return part
+                    return parts[0]
+        return title.strip()
+
+    @staticmethod
+    def translate_to_portuguese(text):
+        if not text:
+            return ""
+        try:
+            import requests
+            url = 'https://translate.googleapis.com/translate_a/single'
+            params = {
+                'client': 'gtx',
+                'sl': 'auto',
+                'tl': 'pt',
+                'dt': 't',
+                'q': text
+            }
+            response = requests.get(url, params=params, timeout=5)
+            if response.status_code == 200:
+                result = response.json()
+                translated_chunks = [chunk[0] for chunk in result[0] if chunk[0]]
+                return "".join(translated_chunks)
+        except Exception as e:
+            pass
+        return text
 
     @staticmethod
     def get_all_bookmarks():

@@ -4,8 +4,8 @@ set -o errexit
 
 pip install -r requirements.txt
 
-# Instalar dependências de frontend e buildar CSS
-npm install
+# Instalar dependências de frontend otimizada e buildar CSS minificado
+npm ci
 npm run build:css
 
 # Executar migrações do banco de dados

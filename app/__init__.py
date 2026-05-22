@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from config import Config
 from flask_wtf.csrf import CSRFProtect
+from flask_compress import Compress
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -17,8 +18,17 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    # 1. Ativa compressão Gzip/Brotli automática para arquivos estáticos (CSS, JS)
+    app.config['COMPRESS_ALGORITHM_STREAMING'] = ['br', 'gzip']
+    Compress(app)
+
+    # 2. Configura o cache do navegador para 1 ano (em segundos) em produção
+    # O navegador guardará o CSS localmente e não fará requisições repetidas ao Render
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
+
     db.init_app(app)
     migrate.init_app(app, db)
+
     login.init_app(app)
     csrf.init_app(app)
 

@@ -26,7 +26,7 @@ def add():
     descricao = request.form.get('descricao')
     grupo_id = request.form.get('grupo_id')
     TaskService.create_task(descricao, grupo_id, current_user)
-    return redirect(url_for('tasks.index'))
+    return redirect(request.referrer or url_for('tasks.index'))
 
 @bp.route('/edit/<int:id>', methods=['POST'])
 def edit(id):
@@ -34,28 +34,44 @@ def edit(id):
     grupo_id = request.form.get('grupo_id')
     status_nome = request.form.get('status_nome')
     TaskService.update_task_basic(id, descricao, grupo_id, status_nome, current_user)
-    return redirect(url_for('tasks.index'))
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return {
+            'success': True,
+            'task': {
+                'id': id,
+                'descricao': descricao,
+                'grupo_id': int(grupo_id) if grupo_id else None,
+                'status': status_nome
+            }
+        }
+    return redirect(request.referrer or url_for('tasks.index'))
 
 @bp.route('/iniciar/<int:id>', methods=['POST'])
 def iniciar(id):
     TaskService.start_task(id, current_user)
-    return redirect(url_for('tasks.index'))
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return {'success': True, 'status': 'INICIADO'}
+    return redirect(request.referrer or url_for('tasks.index'))
 
 @bp.route('/concluir/<int:id>', methods=['POST'])
 def concluir(id):
     TaskService.complete_task(id, current_user)
-    return redirect(url_for('tasks.index'))
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return {'success': True, 'status': 'FINALIZADO'}
+    return redirect(request.referrer or url_for('tasks.index'))
 
 @bp.route('/delete/<int:id>', methods=['POST'])
 def delete(id):
     TaskService.delete_task(id, current_user)
-    return redirect(url_for('tasks.index'))
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return {'success': True}
+    return redirect(request.referrer or url_for('tasks.index'))
 
 @bp.route('/add_grupo', methods=['POST'])
 def add_grupo():
     denominacao = request.form.get('denominacao')
     TaskService.create_group(denominacao, current_user)
-    return redirect(url_for('tasks.index'))
+    return redirect(request.referrer or url_for('tasks.index'))
 
 @bp.route('/export_pdf')
 def export_pdf():

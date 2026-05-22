@@ -138,31 +138,40 @@ Os seguintes tokens de cores estão definidos na configuração do Tailwind (`ta
 *   **Danger (Red)**: `px-4 h-10 md:h-11 bg-danger hover:bg-[#a92b2f] active:bg-[#822023] text-white font-bold text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 shadow-sm`
 *   **Success (Green)**: `px-4 h-10 md:h-11 bg-success hover:bg-[#1a7f43] active:bg-[#156334] text-white font-bold text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 shadow-sm`
 *   **Ghost (Transparent)**: `px-4 h-10 md:h-11 bg-transparent hover:bg-discord-400/40 text-text-muted hover:text-text-heading font-bold text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2`
+*   **Back Button (Voltar)**: Classe `.btn-back` aplicada a links de retorno em rotas internas. O ícone dentro dele herda a classe `.btn-back-icon` que se desloca suavemente para a esquerda em foco de hover.
 *   **Icon Button (Edição/Padrão)**: `w-9 h-9 flex items-center justify-center bg-discord-300 hover:bg-discord-400 text-text-muted hover:text-text-heading rounded-lg transition-all duration-200 shadow-sm`
 *   **Icon Button (Exclusão/Perigo)**: `w-9 h-9 flex items-center justify-center bg-discord-300 hover:bg-danger text-text-muted hover:text-white rounded-lg transition-all duration-200 shadow-sm`
 
 ### Exemplo Estrutural (HTML)
 ```html
-<div class="flex flex-wrap gap-3">
-    <!-- Primário com ícone -->
-    <button class="px-4 h-11 bg-primary hover:bg-primary-hover active:bg-primary-active text-white font-bold text-sm rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-sm">
-        <i class="ph-bold ph-plus"></i>
-        <span>Adicionar Item</span>
-    </button>
+<div class="flex flex-col gap-4">
+    <!-- Botão de Voltar para Rotas Internas -->
+    <a href="#" class="btn-back group">
+        <i class="ph-bold ph-arrow-left btn-back-icon"></i>
+        Voltar
+    </a>
 
-    <!-- Secundário -->
-    <button class="px-4 h-11 bg-discord-400 hover:bg-[#4e5058] active:bg-[#6d6f78] text-text-heading font-bold text-sm rounded-lg transition-all duration-200 shadow-sm">
-        Cancelar
-    </button>
+    <div class="flex flex-wrap gap-3">
+        <!-- Primário com ícone -->
+        <button class="px-4 h-11 bg-primary hover:bg-primary-hover active:bg-primary-active text-white font-bold text-sm rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-sm">
+            <i class="ph-bold ph-plus"></i>
+            <span>Adicionar Item</span>
+        </button>
 
-    <!-- Icon Buttons (Ações de linha) -->
-    <div class="flex items-center gap-1.5">
-        <button class="w-9 h-9 flex items-center justify-center bg-discord-300 hover:bg-discord-400 text-text-muted hover:text-text-heading rounded-lg transition-all duration-200 shadow-sm" title="Editar">
-            <i class="ph-bold ph-pencil-simple text-base"></i>
+        <!-- Secundário -->
+        <button class="px-4 h-11 bg-discord-400 hover:bg-[#4e5058] active:bg-[#6d6f78] text-text-heading font-bold text-sm rounded-lg transition-all duration-200 shadow-sm">
+            Cancelar
         </button>
-        <button class="w-9 h-9 flex items-center justify-center bg-discord-300 hover:bg-danger text-text-muted hover:text-white rounded-lg transition-all duration-200 shadow-sm" title="Excluir">
-            <i class="ph-bold ph-trash text-base"></i>
-        </button>
+
+        <!-- Icon Buttons (Ações de linha) -->
+        <div class="flex items-center gap-1.5">
+            <button class="w-9 h-9 flex items-center justify-center bg-discord-300 hover:bg-discord-400 text-text-muted hover:text-text-heading rounded-lg transition-all duration-200 shadow-sm" title="Editar">
+                <i class="ph-bold ph-pencil-simple text-base"></i>
+            </button>
+            <button class="w-9 h-9 flex items-center justify-center bg-discord-300 hover:bg-danger text-text-muted hover:text-white rounded-lg transition-all duration-200 shadow-sm" title="Excluir">
+                <i class="ph-bold ph-trash text-base"></i>
+            </button>
+        </div>
     </div>
 </div>
 ```

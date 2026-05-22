@@ -2,7 +2,6 @@
  * Tasks Module
  * Handles task filtering, group toggling and CRUD modals.
  */
-
 function togglePanel() {
     const filterBar = document.getElementById('filterBar');
     const taskForm = document.getElementById('taskFormArea');
@@ -39,19 +38,62 @@ function openEditModal(id, descricao, grupo_id, status) {
     AppUI.toggleModal('modalEditTarefa', true);
 }
 
+function openAddTaskModal(grupoId, grupoDenominacao) {
+    const titleSub = document.getElementById('modalNovaTarefaGrupo');
+    const hiddenInput = document.getElementById('novaTarefaGrupoId');
+    const descInput = document.getElementById('novaTarefaDescricao');
+
+    if (titleSub) titleSub.textContent = "Grupo: " + grupoDenominacao.toUpperCase();
+    if (hiddenInput) hiddenInput.value = grupoId;
+    if (descInput) descInput.value = "";
+
+    AppUI.toggleModal('modalNovaTarefa', true);
+
+    setTimeout(() => {
+        if (descInput) descInput.focus();
+    }, 100);
+}
+
 function confirmDeleteTask(id, descricao) {
     AppUI.confirmAction({
         title: 'Excluir Tarefa?',
         text: `Deseja realmente remover a tarefa "${descricao}"?`,
         confirmText: 'Sim, excluir!',
-        onConfirm: () => {
+        onConfirm: async () => {
             const form = document.getElementById('delete-task-form');
-            form.action = "/tasks/delete/" + id;
-            form.submit();
+            const url = "/tasks/delete/" + id;
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: new FormData(form)
+                });
+                const data = await response.json();
+                if (data.success) {
+                    const btn = document.querySelector(`.task-row button[data-id="${id}"]`);
+                    if (btn) {
+                        const row = btn.closest('.task-row');
+                        const groupContainer = row.closest('.task-group');
+                        row.remove();
+                        if (groupContainer && groupContainer.querySelectorAll('.task-row').length === 0) {
+                            groupContainer.remove();
+                        }
+                    }
+                    if (window.AppUI && window.AppUI.toast) {
+                        window.AppUI.toast('success', 'Tarefa excluída com sucesso.');
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                if (window.AppUI && window.AppUI.toast) {
+                    window.AppUI.toast('error', 'Não foi possível excluir a tarefa.');
+                }
+            }
         }
     });
 }
-
 
 function filterTasks() {
     const filterDescElem = document.getElementById('filterDesc');
@@ -100,3 +142,200 @@ function clearFilters() {
     if (filterStatusElem) filterStatusElem.selectedIndex = 0;
     filterTasks();
 }
+
+// AJAX Interceptors for Task Actions
+async function submitAjaxForm(url, formData) {
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    });
+    if (!response.ok) {
+        throw new Error('Erro na requisição');
+    }
+    return await response.json();
+}
+
+function updateTaskRowStatus(row, status) {
+    row.setAttribute('data-status', status);
+    
+    // Update badge status
+    const badge = row.querySelector('.min-w-0 span[class*="badge-"]');
+    if (badge) {
+        badge.className = ''; // Reset classes
+        if (status === 'PENDENTE') {
+            badge.className = 'badge-warning text-[9px] tracking-widest px-2 py-0.5';
+        } else if (status === 'INICIADO') {
+            badge.className = 'badge-success text-[9px] tracking-widest px-2 py-0.5';
+        } else {
+            badge.className = 'badge-neutral opacity-60 text-[9px] tracking-widest px-2 py-0.5';
+        }
+        badge.textContent = status;
+    }
+
+    // Update text formatting
+    const descSpan = row.querySelector('.min-w-0 span.block');
+    if (descSpan) {
+        if (status === 'FINALIZADO') {
+            descSpan.classList.add('text-text-muted', 'line-through');
+            descSpan.classList.remove('text-text-heading');
+        } else {
+            descSpan.classList.remove('text-text-muted', 'line-through');
+            descSpan.classList.add('text-text-heading');
+        }
+    }
+
+    // Update main status button
+    const checkForm = row.querySelector('form[action*="/concluir"], form[action*="/iniciar"]');
+    const checkBtn = checkForm ? checkForm.querySelector('button') : null;
+    if (checkForm && checkBtn) {
+        const taskId = checkForm.action.split('/').pop();
+        if (status === 'FINALIZADO') {
+            checkForm.action = "/tasks/iniciar/" + taskId;
+            checkBtn.className = 'flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 bg-success border-success text-white';
+            checkBtn.innerHTML = '<i class="ph-bold ph-check"></i>';
+        } else if (status === 'INICIADO') {
+            checkForm.action = "/tasks/concluir/" + taskId;
+            checkBtn.className = 'flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 bg-success border-success text-white animate-pulse';
+            checkBtn.innerHTML = '<i class="ph-bold ph-play"></i>';
+        } else {
+            checkForm.action = "/tasks/concluir/" + taskId;
+            checkBtn.className = 'flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 border-text-muted hover:border-text-normal text-transparent hover:text-text-normal';
+            checkBtn.innerHTML = '<i class="ph-bold ph-check"></i>';
+        }
+    }
+
+    // Update separate play button form visibility
+    const playForm = row.querySelector('.play-btn-form');
+    if (playForm) {
+        if (status === 'PENDENTE') {
+            playForm.classList.remove('hidden');
+        } else {
+            playForm.classList.add('hidden');
+        }
+    }
+}
+
+const getNormalizedPath = (urlStr) => {
+    try {
+        const url = new URL(urlStr, window.location.origin);
+        const pathname = url.pathname.replace(/\/+$/, '') || '/';
+        const searchParams = new URLSearchParams(url.search);
+        searchParams.sort();
+        const search = searchParams.toString();
+        return pathname + (search ? '?' + search : '');
+    } catch (e) {
+        return urlStr;
+    }
+};
+
+// Preserve scroll position on reload/actions
+window.addEventListener('beforeunload', () => {
+    const mainContainer = document.querySelector('main');
+    const scrollPos = mainContainer ? mainContainer.scrollTop : 0;
+    sessionStorage.setItem('tasks_scroll_pos', scrollPos);
+    sessionStorage.setItem('tasks_scroll_path', getNormalizedPath(window.location.href));
+});
+
+window.addEventListener('load', () => {
+    const scrollPos = sessionStorage.getItem('tasks_scroll_pos');
+    const scrollPath = sessionStorage.getItem('tasks_scroll_path');
+    const currentPath = getNormalizedPath(window.location.href);
+    
+    if (scrollPos !== null && scrollPath === currentPath) {
+        const mainContainer = document.querySelector('main');
+        if (mainContainer) {
+            mainContainer.scrollTop = parseInt(scrollPos, 10);
+            
+            // Fallback for slower rendering
+            setTimeout(() => {
+                mainContainer.scrollTop = parseInt(scrollPos, 10);
+            }, 100);
+        }
+    }
+    sessionStorage.removeItem('tasks_scroll_pos');
+    sessionStorage.removeItem('tasks_scroll_path');
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    document.addEventListener('submit', async (e) => {
+        const form = e.target;
+        const isStatusToggle = form.closest('.task-row') && (form.action.includes('/concluir/') || form.action.includes('/iniciar/'));
+        const isEditForm = form.id === 'formEditTarefa';
+
+        if (!isStatusToggle && !isEditForm) {
+            // Save scroll position for standard page reload submissions
+            const mainContainer = document.querySelector('main');
+            const scrollPos = mainContainer ? mainContainer.scrollTop : 0;
+            sessionStorage.setItem('tasks_scroll_pos', scrollPos);
+            sessionStorage.setItem('tasks_scroll_path', getNormalizedPath(window.location.href));
+        }
+
+        if (isStatusToggle) {
+            e.preventDefault();
+            const row = form.closest('.task-row');
+            try {
+                const data = await submitAjaxForm(form.action, new FormData(form));
+                if (data.success) {
+                    updateTaskRowStatus(row, data.status);
+                    if (window.AppUI && window.AppUI.toast) {
+                        window.AppUI.toast('success', 'Status da tarefa atualizado.');
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                if (window.AppUI && window.AppUI.toast) {
+                    window.AppUI.toast('error', 'Não foi possível atualizar o status.');
+                }
+            }
+        } else if (isEditForm) {
+            e.preventDefault();
+            try {
+                const taskId = form.action.split('/').pop();
+                const editBtn = document.querySelector(`.task-row button[data-id="${taskId}"]`);
+                const oldGroupId = editBtn ? editBtn.getAttribute('data-grupo') : null;
+
+                const data = await submitAjaxForm(form.action, new FormData(form));
+                if (data.success) {
+                    const newGroupId = String(data.task.grupo_id);
+                    if (oldGroupId !== newGroupId) {
+                        // Reload if group changed to re-render groupings
+                        window.location.reload();
+                        return;
+                    }
+
+                    const btn = document.querySelector(`.task-row button[data-id="${taskId}"]`);
+                    if (btn) {
+                        const row = btn.closest('.task-row');
+                        const descSpan = row.querySelector('span.block');
+                        if (descSpan) {
+                            descSpan.textContent = data.task.descricao;
+                        }
+
+                        const editBtns = row.querySelectorAll('button[data-id]');
+                        editBtns.forEach(b => {
+                            b.setAttribute('data-desc', data.task.descricao);
+                            b.setAttribute('data-grupo', data.task.grupo_id);
+                            b.setAttribute('data-status', data.task.status);
+                        });
+
+                        updateTaskRowStatus(row, data.task.status);
+                    }
+
+                    AppUI.toggleModal('modalEditTarefa', false);
+                    if (window.AppUI && window.AppUI.toast) {
+                        window.AppUI.toast('success', 'Tarefa atualizada com sucesso.');
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                if (window.AppUI && window.AppUI.toast) {
+                    window.AppUI.toast('error', 'Não foi possível salvar as alterações.');
+                }
+            }
+        }
+    });
+});

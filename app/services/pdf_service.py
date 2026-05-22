@@ -1,40 +1,60 @@
 import io
 from flask import send_file
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from app.services.list_service import ListService
 
-def generate_pdf_report(title, headers, row_data):
+def generate_pdf_report(title, headers, row_data, colWidths=None):
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=18)
+    doc = SimpleDocTemplate(buffer, pagesize=landscape(A4), rightMargin=36, leftMargin=36, topMargin=36, bottomMargin=18)
     
     elements = []
     styles = getSampleStyleSheet()
+    
+    # Custom styles with size 10 and leading 12 for cells to auto-wrap text
+    cell_style = ParagraphStyle(
+        'CellText',
+        parent=styles['Normal'],
+        fontSize=10,
+        leading=12,
+        textColor=colors.black
+    )
+    header_style = ParagraphStyle(
+        'HeaderCellText',
+        parent=styles['Normal'],
+        fontSize=10,
+        leading=12,
+        textColor=colors.whitesmoke,
+        fontName='Helvetica-Bold',
+        alignment=1 # Center
+    )
     
     # Title
     elements.append(Paragraph(title, styles['Title']))
     elements.append(Spacer(1, 20))
     
-    # Table
-    data = [headers] + row_data
-    t = Table(data)
+    # Wrap headers and rows in Paragraphs to prevent overflowing cell limits
+    wrapped_headers = [Paragraph(str(h), header_style) for h in headers]
+    wrapped_rows = []
+    for row in row_data:
+        wrapped_row = []
+        for cell in row:
+            wrapped_row.append(Paragraph(str(cell), cell_style))
+        wrapped_rows.append(wrapped_row)
+        
+    data = [wrapped_headers] + wrapped_rows
+    t = Table(data, colWidths=colWidths)
     
     # Style
     t.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 12),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 1), (-1, -1), 8),
-        ('TOPPADDING', (0, 1), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
         ('GRID', (0, 0), (-1, -1), 1, colors.black)
     ]))
     
@@ -48,18 +68,29 @@ def generate_pdf_report(title, headers, row_data):
 def build_tasks_pdf(tarefas):
     headers = ["ID", "Descrição", "Status", "Grupo", "Cadastro", "Execução"]
     data = []
-    for t in tarefas:
+    
+    status_priority = {'INICIADO': 0, 'PENDENTE': 1, 'FINALIZADO': 2}
+    sorted_tarefas = sorted(
+        tarefas,
+        key=lambda t: (
+            t.grupo.denominacao.upper() if t.grupo else '',
+            status_priority.get(t.status.denominacao.upper() if t.status else 'PENDENTE', 9)
+        )
+    )
+    
+    for t in sorted_tarefas:
         dt_cad = t.data_cadastro.strftime("%d/%m/%Y") if t.data_cadastro else ""
         dt_exec = t.data_executado.strftime("%d/%m/%Y") if t.data_executado else ""
         data.append([
             str(t.id),
-            t.descricao[:40],
+            t.descricao,
             t.status.denominacao if t.status else "",
             t.grupo.denominacao if t.grupo else "",
             dt_cad,
             dt_exec
         ])
-    return generate_pdf_report("Relatório de Tarefas", headers, data)
+    colWidths = [40, 340, 90, 120, 89, 90]
+    return generate_pdf_report("Relatório de Tarefas", headers, data, colWidths=colWidths)
 
 def build_lists_pdf(lista_obj):
     headers = ["Item", "Grupo", "Status", "Valor (R$)"]
@@ -69,14 +100,15 @@ def build_lists_pdf(lista_obj):
         if it.valor:
             total += it.valor
         data.append([
-            it.item[:40],
+            it.item,
             it.grupo.denominacao if it.grupo else "",
             "Comprado" if it.status else "Pendente",
             f"{it.valor:.2f}" if it.valor else ""
         ])
     
     title = f"Lista: {lista_obj.denominacao} | Total est: R$ {total:.2f}"
-    return generate_pdf_report(title, headers, data)
+    colWidths = [360, 160, 120, 129]
+    return generate_pdf_report(title, headers, data, colWidths=colWidths)
 
 
 class PDFService:
@@ -87,13 +119,13 @@ class PDFService:
         if not lista:
             return None
 
-        # Build PDF in memory
+        # Build PDF in memory with landscape layout and 36pt margins
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(
             buffer, 
-            pagesize=A4, 
-            rightMargin=30, leftMargin=30, 
-            topMargin=30, bottomMargin=30,
+            pagesize=landscape(A4), 
+            rightMargin=36, leftMargin=36, 
+            topMargin=36, bottomMargin=36,
             title=f"Lista - {lista.denominacao}"
         )
 
@@ -131,21 +163,33 @@ class PDFService:
                 total += it.valor
                 if it.status:
                     comprado += it.valor
-                    
+
+        # Summary Styles
+        summary_base = ParagraphStyle(
+            'SummaryText',
+            parent=styles['Normal'],
+            fontSize=10,
+            leading=12,
+            alignment=1 # Center
+        )
+        summary_green = ParagraphStyle('SumGreen', parent=summary_base, textColor=colors.HexColor('#2e7d32'), fontName='Helvetica-Bold')
+        summary_blue = ParagraphStyle('SumBlue', parent=summary_base, textColor=colors.HexColor('#1565c0'), fontName='Helvetica-Bold')
+        summary_dark = ParagraphStyle('SumDark', parent=summary_base, textColor=colors.black, fontName='Helvetica-Bold')
+
         resumo_table = Table(
-            [[f"Comprado: R$ {comprado:.2f}", f"Pendente: R$ {total - comprado:.2f}", f"Total Estimado: R$ {total:.2f}"]],
-            colWidths=['33%', '33%', '34%']
+            [[
+                Paragraph(f"Comprado: R$ {comprado:.2f}", summary_green),
+                Paragraph(f"Pendente: R$ {total - comprado:.2f}", summary_blue),
+                Paragraph(f"Total Estimado: R$ {total:.2f}", summary_dark)
+            ]],
+            colWidths=[256, 256, 257] # Sums to 769 (landscape A4 available width)
         )
         resumo_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (0, 0), colors.HexColor('#e8f5e9')), # green light
             ('BACKGROUND', (1, 0), (1, 0), colors.HexColor('#e3f2fd')), # blue light
             ('BACKGROUND', (2, 0), (2, 0), colors.HexColor('#f5f5f5')), # gray
-            ('TEXTCOLOR', (0, 0), (0, 0), colors.HexColor('#2e7d32')),
-            ('TEXTCOLOR', (1, 0), (1, 0), colors.HexColor('#1565c0')),
-            ('TEXTCOLOR', (2, 0), (2, 0), colors.black),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
             ('TOPPADDING', (0, 0), (-1, -1), 8),
             ('BOX', (0, 0), (-1, -1), 0.5, colors.lightgrey),
@@ -156,48 +200,61 @@ class PDFService:
             elements.append(resumo_table)
             elements.append(Spacer(1, 20))
 
-        # Table Headers
-        data = [["Status", "Item", "Categoria", "Valor (R$)"]]
+        # Cell and Header Styles with size 10 and auto-wrap support
+        header_center = ParagraphStyle('HC', parent=styles['Normal'], fontSize=10, leading=12, textColor=colors.white, fontName='Helvetica-Bold', alignment=1)
+        header_left = ParagraphStyle('HL', parent=styles['Normal'], fontSize=10, leading=12, textColor=colors.white, fontName='Helvetica-Bold', alignment=0)
+        header_right = ParagraphStyle('HR', parent=styles['Normal'], fontSize=10, leading=12, textColor=colors.white, fontName='Helvetica-Bold', alignment=2)
+
+        cell_center = ParagraphStyle('CC', parent=styles['Normal'], fontSize=10, leading=12, textColor=colors.HexColor('#1f2937'), alignment=1)
+        cell_left = ParagraphStyle('CL', parent=styles['Normal'], fontSize=10, leading=12, textColor=colors.HexColor('#1f2937'), alignment=0)
+        cell_right = ParagraphStyle('CR', parent=styles['Normal'], fontSize=10, leading=12, textColor=colors.HexColor('#1f2937'), alignment=2)
+
+        cell_center_checked = ParagraphStyle('CCC', parent=cell_center, textColor=colors.HexColor('#9ca3af'))
+        cell_left_checked = ParagraphStyle('CLC', parent=cell_left, textColor=colors.HexColor('#9ca3af'))
+        cell_right_checked = ParagraphStyle('CRC', parent=cell_right, textColor=colors.HexColor('#9ca3af'))
+
+        # Table Headers wrapped in Paragraph
+        data = [[
+            Paragraph("Status", header_center),
+            Paragraph("Item", header_left),
+            Paragraph("Categoria", header_left),
+            Paragraph("Valor (R$)", header_right)
+        ]]
         
         # Populate Table Rows
         for it in lista.itens:
             check = "[ X ]" if it.status else "[   ]"
-            nome = it.item[:50] + '...' if len(it.item) > 50 else it.item
+            nome = it.item
             categoria = it.grupo.denominacao.upper() if it.grupo else 'OUTROS'
             valor = f"{it.valor:.2f}" if it.valor else "--"
-            data.append([check, nome, categoria, valor])
+            
+            c_center = cell_center_checked if it.status else cell_center
+            c_left = cell_left_checked if it.status else cell_left
+            c_right = cell_right_checked if it.status else cell_right
+
+            data.append([
+                Paragraph(check, c_center),
+                Paragraph(nome, c_left),
+                Paragraph(categoria, c_left),
+                Paragraph(valor, c_right)
+            ])
 
         # Formatting table
-        item_table = Table(data, colWidths=[50, 275, 120, 90])
+        item_table = Table(data, colWidths=[60, 429, 160, 120]) # Sums to 769 (landscape A4 available width)
         table_style = TableStyle([
-            # Header row
             ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#313338')),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 10),
-            ('ALIGN', (0, 0), (0, -1), 'CENTER'), # Status Centered
-            ('ALIGN', (1, 0), (2, -1), 'LEFT'),   # Name/Category Left
-            ('ALIGN', (3, 0), (3, -1), 'RIGHT'),  # Prices Right
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
-            ('TOPPADDING', (0, 0), (-1, 0), 8),
-            # Lines
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
             ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.lightgrey),
             ('BOX', (0, 0), (-1, -1), 0.25, colors.lightgrey),
         ])
         
-        # Alternate row colors and strikethrough logic (fallback to gray text)
-        for i, row in enumerate(data[1:], start=1):
+        # Alternate row backgrounds
+        for i in range(1, len(data)):
             if i % 2 == 0:
                 table_style.add('BACKGROUND', (0, i), (-1, i), colors.HexColor('#f9f9f9'))
-            
-            # If item is checked, make it gray
-            if lista.itens[i-1].status:
-                table_style.add('TEXTCOLOR', (0, i), (-1, i), colors.HexColor('#9ca3af'))
-            else:
-                table_style.add('TEXTCOLOR', (0, i), (-1, i), colors.HexColor('#1f2937'))
-                
-            table_style.add('FONTNAME', (0, i), (-1, i), 'Helvetica')
-            table_style.add('FONTSIZE', (0, i), (-1, i), 9)
             table_style.add('BOTTOMPADDING', (0, i), (-1, i), 6)
             table_style.add('TOPPADDING', (0, i), (-1, i), 6)
 

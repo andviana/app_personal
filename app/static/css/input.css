@@ -94,6 +94,15 @@
     @apply px-4 py-2 text-text-muted hover:bg-discord-200/50 hover:text-text-normal font-bold text-xs md:text-sm rounded-md transition-all duration-200;
   }
 
+  /* Design System: Botão Voltar para Rotas Internas */
+  .btn-back {
+    @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-text-muted hover:text-success transition-all duration-200 w-fit cursor-pointer;
+  }
+
+  .btn-back-icon {
+    @apply flex items-center justify-center p-1 rounded-md border border-text-muted/30 group-hover:border-success group-hover:-translate-x-0.5 transition-all duration-200;
+  }
+
   /* Design System: Feedback Visual (Badges) */
   .badge-success {
     @apply px-2 py-0.5 bg-success/15 text-success border border-success/25 rounded text-[10px] md:text-[11px] font-extrabold uppercase tracking-wider;

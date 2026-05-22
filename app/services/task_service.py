@@ -12,10 +12,14 @@ class TaskService:
         """Fetches all groups with their tasks eagerly loaded to prevent N+1 queries."""
         SeedService.init_tasks_defaults()
         repo_grupos = BaseRepository(GrupoTarefas)
-        return repo_grupos.list_all(
+        grupos = repo_grupos.list_all(
             order_by=GrupoTarefas.denominacao,
             options=[joinedload(GrupoTarefas.tarefas)]
         )
+        status_priority = {'INICIADO': 0, 'PENDENTE': 1, 'FINALIZADO': 2}
+        for g in grupos:
+            g.tarefas.sort(key=lambda t: status_priority.get(t.status.denominacao.upper() if t.status else 'PENDENTE', 9))
+        return grupos
 
     @staticmethod
     def get_all_groups() -> List[GrupoTarefas]:
@@ -28,7 +32,10 @@ class TaskService:
     def get_group_detail(grupo_id: int) -> GrupoTarefas:
         """Fetches a specific group with its tasks."""
         repo_grupos = BaseRepository(GrupoTarefas)
-        return repo_grupos.get_or_404(grupo_id)
+        grupo = repo_grupos.get_or_404(grupo_id)
+        status_priority = {'INICIADO': 0, 'PENDENTE': 1, 'FINALIZADO': 2}
+        grupo.tarefas.sort(key=lambda t: status_priority.get(t.status.denominacao.upper() if t.status else 'PENDENTE', 9))
+        return grupo
 
     @staticmethod
     def create_task(descricao: str, grupo_id: Optional[int], current_user: Any) -> Optional[Tarefa]:

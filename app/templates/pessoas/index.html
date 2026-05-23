@@ -2,10 +2,21 @@
 
 {% block title %}Pessoas - AppPessoal{% endblock %}
 
+{% block head_extra %}
+<style>
+    .pessoa-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .pessoa-card:hover {
+        transform: translateY(-4px);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="mb-8 flex justify-between items-end">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
     <div class="flex flex-col gap-1">
-        <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
+        <h1 class="text-2xl md:text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
             <i class="ph-bold ph-users text-[#8a05be]"></i> Pessoas
         </h1>
         <p class="text-[11px] font-bold text-text-muted/50 uppercase tracking-[0.2em]">
@@ -13,11 +24,10 @@
         </p>
     </div>
     <a href="{{ url_for('pessoas.add') }}"
-        class="btn-primary btn-md w-full md:w-auto group !bg-[#8a05be] !text-white !shadow-[#8a05be]/20 font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2">
+        class="w-full md:w-auto h-11 px-6 bg-[#8a05be] hover:brightness-110 active:scale-95 text-white font-black tracking-widest text-[11px] rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#8a05be]/20 uppercase">
         ADICIONAR
-        <i class="ph-bold ph-plus text-xl transition-transform duration-300 group-hover:rotate-90"></i>
+        <i class="ph-bold ph-plus text-lg transition-transform duration-300 group-hover:rotate-90"></i>
     </a>
-
 </div>
 
 <!-- Search Bar -->
@@ -28,118 +38,111 @@
     </div>
     <form action="{{ url_for('pessoas.index') }}" method="GET">
         <input type="text" name="search" value="{{ search }}" placeholder="Buscar por nome..."
-            class="w-full h-12 pl-12 pr-4 bg-discord-200 border border-discord-400 rounded-xl focus:ring-2 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-sm font-semibold transition-all">
+            class="w-full h-12 pl-12 pr-4 bg-discord-200 border border-discord-100/30 rounded-xl focus:ring-2 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-sm font-semibold transition-all">
     </form>
 </div>
 
 <!-- People Grid -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for p in pessoas %}
-    <div
-        class="bg-discord-200 border border-discord-400 rounded-2xl overflow-hidden hover:border-[#8a05be]/50 transition-all group flex flex-col">
-        <div class="p-6 flex-1">
-            <div class="flex items-start justify-between mb-4">
-                <div
-                    class="bg-gradient-to-r from-gray-300 to-gray-500  w-12 h-12 bg-discord-300 rounded-xl flex items-center justify-center text-[#8a05be] shadow-inner group-hover:scale-110 transition-transform overflow-hidden">
+    <div class="pessoa-card group flex flex-col bg-discord-200 border border-discord-100/10 rounded-xl overflow-hidden shadow-md">
+        <!-- Profile Banner -->
+        <div class="h-16 bg-gradient-to-r from-[#8a05be]/80 to-pink-600/80 relative flex-shrink-0">
+            <!-- Edit/Delete Actions -->
+            <div class="absolute top-3 right-3 flex gap-1.5 z-10">
+                <a href="{{ url_for('pessoas.edit', id=p.id) }}" 
+                   class="w-7 h-7 flex items-center justify-center bg-black/40 hover:bg-black/60 text-white rounded-lg transition-all"
+                   data-tooltip="Editar">
+                    <i class="ph-bold ph-pencil-simple text-sm"></i>
+                </a>
+                <button type="button" data-id="{{ p.id }}" data-nome="{{ p.nome_completo }}"
+                    onclick="confirmDelete(this.dataset.id, this.dataset.nome, '{{ url_for('pessoas.delete', id=0) }}')"
+                    class="w-7 h-7 flex items-center justify-center bg-black/40 hover:bg-[#da373c] text-white rounded-lg transition-all" 
+                    data-tooltip="Excluir">
+                    <i class="ph-bold ph-trash text-sm"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Avatar and Identity -->
+        <div class="px-6 pb-6 relative flex-grow flex flex-col">
+            <!-- Overlapping Avatar -->
+            <div class="absolute -top-8 left-6 p-1 bg-discord-200 rounded-2xl shadow-lg">
+                <div class="w-16 h-16 bg-discord-300 rounded-xl flex items-center justify-center text-[#8a05be] overflow-hidden border border-discord-100/10">
                     {% if p.foto_url %}
                     <img src="{{ p.foto_url }}" alt="{{ p.nome_completo }}" class="w-full h-full object-cover">
                     {% else %}
-                    <i class="ph-fill ph-user text-2xl"></i>
+                    <i class="ph-fill ph-user text-3xl"></i>
                     {% endif %}
                 </div>
-                <div class="flex gap-1">
-                    <a href="{{ url_for('pessoas.edit', id=p.id) }}" class="btn-icon-sm !bg-transparent !border-none"
-                        data-tooltip="Editar">
-                        <i class="ph-bold ph-pencil-simple text-lg"></i>
-                    </a>
-                    <button type="button" data-id="{{ p.id }}" data-nome="{{ p.nome_completo }}"
-                        onclick="confirmDelete(this.dataset.id, this.dataset.nome, '{{ url_for('pessoas.delete', id=0) }}')"
-                        class="btn-icon-sm !bg-transparent !border-none hover:!text-danger" data-tooltip="Excluir">
-                        <i class="ph-bold ph-trash text-lg"></i>
-                    </button>
-                </div>
-
             </div>
-
-            <h3 class="text-lg font-black text-text-heading uppercase tracking-tight mb-1">{{ p.nome_completo }}</h3>
-            <div class="flex flex-wrap gap-x-3 gap-y-2 mb-4">
-                {% if p.cpf %}
-                <span class="text-[10px] font-bold text-text-muted uppercase tracking-widest"><span
-                        class="opacity-50">CPF:</span> {{ p.cpf }}</span>
-                {% endif %}
-                {% if p.rg_numero %}
-                <span class="text-[10px] font-bold text-text-muted uppercase tracking-widest"><span
-                        class="opacity-50">RG:</span> {{ p.rg_numero }}</span>
-                {% endif %}
-                {% if p.data_nascimento %}
-                <div class="flex items-center gap-2">
-                    <span class="text-[10px] font-bold text-text-muted uppercase tracking-widest">{{
-                        p.data_nascimento.strftime('%d/%m/%Y') }}</span>
+            
+            <div class="pt-10 flex-grow">
+                <!-- Name -->
+                <h3 class="text-base font-extrabold text-text-heading uppercase tracking-tight mb-2 truncate" title="{{ p.nome_completo }}">
+                    {{ p.nome_completo }}
+                </h3>
+                
+                <!-- Short Badges (Age/Birthday/CPF) -->
+                <div class="flex flex-wrap gap-1.5 mb-4">
                     {% if p.idade %}
-                    <span
-                        class="px-1.5 py-0.5 bg-[#8a05be]/10 text-[#8a05be] text-[9px] font-black rounded border border-[#8a05be]/20">{{
-                        p.idade }} anos</span>
+                    <span class="px-2 py-0.5 bg-[#8a05be]/10 text-[#8a05be] text-[9px] font-black rounded uppercase tracking-wider border border-[#8a05be]/20">
+                        {{ p.idade }} anos
+                    </span>
+                    {% endif %}
+                    {% if p.cpf %}
+                    <span class="px-2 py-0.5 bg-discord-300 text-text-muted text-[9px] font-bold rounded uppercase tracking-wider border border-discord-100/10">
+                        CPF: {{ p.cpf }}
+                    </span>
                     {% endif %}
                 </div>
-                {% endif %}
-            </div>
-
-            <div class="space-y-4">
-                {% if p.telefones %}
-                <div class="flex flex-col gap-1.5">
-                    <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Telefones</span>
-                    <div class="flex flex-wrap gap-3">
-                        {% for t in p.telefones[:2] %}
-                        <span class="flex items-center gap-1.5 text-xs font-semibold text-text-normal">
-                            <i class="ph-bold ph-phone text-[#8a05be]"></i> {{ t.numero }}
-                        </span>
-                        {% endfor %}
+                
+                <!-- Quick Info Lines (Phone & Address) -->
+                <div class="space-y-3 pt-3 border-t border-discord-100/10">
+                    {% if p.telefones %}
+                    <div class="flex items-center gap-2 text-xs text-text-normal">
+                        <i class="ph-bold ph-phone text-[#8a05be] text-sm"></i>
+                        <span class="truncate font-semibold">{{ p.telefones[0].numero }}</span>
                     </div>
-                </div>
-                {% endif %}
-
-                {% if p.enderecos %}
-                <div class="flex flex-col gap-1.5">
-                    <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Endereços</span>
-                    <div class="flex flex-col gap-1">
-                        {% for e in p.enderecos[:1] %}
-                        <div class="flex items-start gap-2 text-[11px] text-text-muted italic leading-snug">
-                            <i class="ph-bold ph-map-pin text-[#8a05be] mt-0.5 flex-shrink-0"></i>
-                            <span class="line-clamp-2">{{ e.descricao }}</span>
-                        </div>
-                        {% endfor %}
+                    {% endif %}
+                    
+                    {% if p.enderecos %}
+                    <div class="flex items-start gap-2 text-xs text-text-muted">
+                        <i class="ph-bold ph-map-pin text-[#8a05be] text-sm mt-0.5"></i>
+                        <span class="line-clamp-2 leading-snug">{{ p.enderecos[0].descricao }}</span>
                     </div>
+                    {% endif %}
                 </div>
-                {% endif %}
             </div>
         </div>
-        <div class="p-4 bg-discord-300 border-t border-discord-400 flex justify-between items-center mt-auto">
-            <span class="text-[10px] text-text-muted font-bold uppercase tracking-widest italic">
+        
+        <!-- Footer / Card Actions -->
+        <div class="px-6 py-4 bg-discord-300 border-t border-discord-100/10 flex justify-between items-center mt-auto">
+            <span class="text-[9px] text-text-muted/60 font-bold uppercase tracking-widest italic">
                 Desde {{ p.data_cadastro.strftime('%d/%m/%Y') }}
             </span>
             <button onclick="toggleModal('modal-pessoa-{{ p.id }}')"
-                class=" bg- bg-gradient-to-r from-[#8a05be] to-pink-500 p-2 rounded-lg text-white font-black uppercase tracking-[0.15em] text-[9px] hover:ring-2 flex items-center transition-all">
+                class="px-3 py-1.5 bg-gradient-to-r from-[#8a05be] to-pink-600 hover:brightness-110 active:scale-95 rounded-lg text-white font-black uppercase tracking-wider text-[9px] flex items-center transition-all shadow-sm">
                 Mostrar ficha <i class="ph-bold ph-caret-right ml-1"></i>
             </button>
-
         </div>
     </div>
 
     <!-- Modal Digital Profile -->
-    <div id="modal-pessoa-{{ p.id }}" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-[#000000]/80 backdrop-blur-sm" onclick="toggleModal('modal-pessoa-{{ p.id }}')">
-        </div>
-        <div
-            class="relative bg-discord-200 w-full max-w-2xl rounded-3xl border border-discord-400 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-            <!-- Header -->
-            <div class="relative h-14 bg-gradient-to-r from-[#8a05be] to-[#6b0496] flex-shrink-0">
+    <div id="modal-pessoa-{{ p.id }}" class="hidden fixed inset-0 z-[999] flex items-center justify-center p-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/75 backdrop-blur-sm" onclick="toggleModal('modal-pessoa-{{ p.id }}')"></div>
+        
+        <!-- Container -->
+        <div class="relative bg-discord-modal w-full max-w-2xl rounded-xl border border-discord-100/30 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+            <!-- Header Banner -->
+            <div class="relative h-20 bg-gradient-to-r from-[#8a05be] to-pink-600 flex-shrink-0">
                 <button onclick="toggleModal('modal-pessoa-{{ p.id }}')"
                     class="absolute top-4 right-4 w-8 h-8 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center transition-all z-10">
                     <i class="ph-bold ph-x text-base"></i>
                 </button>
-                <div class="absolute -bottom-6 left-8 p-1 bg-discord-200 rounded-2xl shadow-xl">
-                    <div
-                        class="w-16 h-16 bg-discord-300 rounded-xl flex items-center justify-center text-[#8a05be] overflow-hidden">
+                <div class="absolute -bottom-8 left-8 p-1 bg-discord-200 rounded-2xl shadow-xl">
+                    <div class="w-20 h-20 bg-discord-300 rounded-xl flex items-center justify-center text-[#8a05be] overflow-hidden border border-discord-100/10">
                         {% if p.foto_url %}
                         <img src="{{ p.foto_url }}" alt="{{ p.nome_completo }}" class="w-full h-full object-cover">
                         {% else %}
@@ -149,94 +152,86 @@
                 </div>
             </div>
 
-            <!-- Content -->
-            <div class="pt-10 pb-8 px-8 overflow-y-auto custom-scrollbar">
-                <div class="mb-8">
-                    <h2 class="text-3xl font-black text-text-heading uppercase tracking-tight leading-tight">{{
-                        p.nome_completo }}</h2>
+            <!-- Scrollable Body -->
+            <div class="pt-12 pb-6 px-8 overflow-y-auto custom-scrollbar flex-grow space-y-6">
+                <div>
+                    <h2 class="text-2xl font-black text-text-heading uppercase tracking-tight leading-tight">
+                        {{ p.nome_completo }}
+                    </h2>
                 </div>
 
                 <div class="flex flex-col gap-6">
                     <!-- Section 1: Personal Data -->
-                    <div class="bg-discord-300/30 p-6 rounded-2xl border border-discord-400/50">
-                        <h3
-                            class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-5">
-                            <i class="ph-bold ph-identification-card text-lg text-[#8a05be]"></i> Dados Pessoais
+                    <div class="bg-discord-300/30 p-5 rounded-xl border border-discord-100/10">
+                        <h3 class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4">
+                            <i class="ph-bold ph-identification-card text-base text-[#8a05be]"></i> Dados Pessoais
                         </h3>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             {% if p.cpf %}
-                            <div class="flex flex-col group/item">
-                                <span
-                                    class="text-[9px] font-black text-text-muted/50 uppercase flex items-center gap-2">
+                            <div class="bg-discord-100/40 p-3 rounded-lg border border-discord-100/20 flex flex-col group/item relative">
+                                <span class="text-[9px] font-black text-text-muted uppercase tracking-widest flex items-center gap-1.5">
                                     CPF
                                     <button onclick="copyToClipboard('{{ p.cpf }}', 'numbers', 'CPF')"
-                                        class="btn-icon-sm opacity-100 md:opacity-0 md:group-hover/item:opacity-100 !bg-transparent !border-none !p-1"
+                                        class="text-text-muted hover:text-text-normal p-0.5 rounded transition-all"
                                         title="Copiar apenas números">
                                         <i class="ph-bold ph-copy text-[10px]"></i>
                                     </button>
-
                                 </span>
-                                <span class="text-sm font-bold text-text-normal">{{ p.cpf }}</span>
+                                <span class="text-sm font-bold text-text-heading mt-1">{{ p.cpf }}</span>
                             </div>
                             {% endif %}
+                            
                             {% if p.data_nascimento %}
-                            <div class="flex flex-col group/item">
-                                <span
-                                    class="text-[9px] font-black text-text-muted/50 uppercase flex items-center gap-2">
-                                    Nascimento / Idade
-                                    <button
-                                        onclick="copyToClipboard('{{ p.data_nascimento.strftime('%d/%m/%Y') }}', 'date', 'Nascimento')"
-                                        class="btn-icon-sm opacity-100 md:opacity-0 md:group-hover/item:opacity-100 !bg-transparent !border-none !p-1"
-                                        title="Copiar em formato AAAA-MM-DD">
+                            <div class="bg-discord-100/40 p-3 rounded-lg border border-discord-100/20 flex flex-col group/item relative">
+                                <span class="text-[9px] font-black text-text-muted uppercase tracking-widest flex items-center gap-1.5">
+                                    Nascimento
+                                    <button onclick="copyToClipboard('{{ p.data_nascimento.strftime('%d/%m/%Y') }}', 'date', 'Nascimento')"
+                                        class="text-text-muted hover:text-text-normal p-0.5 rounded transition-all"
+                                        title="Copiar data">
                                         <i class="ph-bold ph-copy text-[10px]"></i>
                                     </button>
-
                                 </span>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm font-bold text-text-normal">{{
-                                        p.data_nascimento.strftime('%d/%m/%Y') }}</span>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-sm font-bold text-text-heading">{{ p.data_nascimento.strftime('%d/%m/%Y') }}</span>
                                     {% if p.idade %}
-                                    <span
-                                        class="px-1.5 py-0.5 bg-[#8a05be]/10 text-[#8a05be] text-[9px] font-black rounded border border-[#8a05be]/20">{{
-                                        p.idade }}<span class="hidden sm:inline"> anos</span></span>
+                                    <span class="px-1.5 py-0.5 bg-[#8a05be]/10 text-[#8a05be] text-[9px] font-black rounded border border-[#8a05be]/20">
+                                        {{ p.idade }} anos
+                                    </span>
                                     {% endif %}
                                 </div>
                             </div>
                             {% endif %}
+
                             {% if p.rg_numero %}
-                            <div class="flex flex-col group/item">
-                                <span
-                                    class="text-[9px] font-black text-text-muted/50 uppercase flex items-center gap-2">
-                                    RG / Expedição
+                            <div class="bg-discord-100/40 p-3 rounded-lg border border-discord-100/20 flex flex-col group/item relative">
+                                <span class="text-[9px] font-black text-text-muted uppercase tracking-widest flex items-center gap-1.5">
+                                    RG
                                     <button onclick="copyToClipboard('{{ p.rg_numero }}', 'numbers', 'RG')"
-                                        class="btn-icon-sm opacity-100 md:opacity-0 md:group-hover/item:opacity-100 !bg-transparent !border-none !p-1"
+                                        class="text-text-muted hover:text-text-normal p-0.5 rounded transition-all"
                                         title="Copiar apenas números">
                                         <i class="ph-bold ph-copy text-[10px]"></i>
                                     </button>
-
                                 </span>
-                                <span class="text-sm font-bold text-text-normal">
+                                <span class="text-xs font-bold text-text-heading mt-1 truncate">
                                     {{ p.rg_numero }} {{ p.rg_orgao or '' }}
                                     {% if p.rg_data_expedicao %}
-                                    <span class="text-text-muted font-normal ml-1">({{
-                                        p.rg_data_expedicao.strftime('%d/%m/%Y') }})</span>
+                                    <span class="text-text-muted font-normal block text-[10px]">({{ p.rg_data_expedicao.strftime('%d/%m/%Y') }})</span>
                                     {% endif %}
                                 </span>
                             </div>
                             {% endif %}
+
                             {% if p.pis %}
-                            <div class="flex flex-col group/item">
-                                <span
-                                    class="text-[9px] font-black text-text-muted/50 uppercase flex items-center gap-2">
+                            <div class="bg-discord-100/40 p-3 rounded-lg border border-discord-100/20 flex flex-col group/item relative">
+                                <span class="text-[9px] font-black text-text-muted uppercase tracking-widest flex items-center gap-1.5">
                                     PIS
                                     <button onclick="copyToClipboard('{{ p.pis }}', 'numbers', 'PIS')"
-                                        class="btn-icon-sm opacity-100 md:opacity-0 md:group-hover/item:opacity-100 !bg-transparent !border-none !p-1"
+                                        class="text-text-muted hover:text-text-normal p-0.5 rounded transition-all"
                                         title="Copiar apenas números">
                                         <i class="ph-bold ph-copy text-[10px]"></i>
                                     </button>
-
                                 </span>
-                                <span class="text-sm font-bold text-text-normal">{{ p.pis }}</span>
+                                <span class="text-sm font-bold text-text-heading mt-1">{{ p.pis }}</span>
                             </div>
                             {% endif %}
                         </div>
@@ -244,23 +239,20 @@
 
                     <!-- Section 2: Contact Methods -->
                     {% if p.telefones %}
-                    <div class="bg-discord-300/30 p-6 rounded-2xl border border-discord-400/50">
-                        <h3
-                            class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-5">
-                            <i class="ph-bold ph-phone text-lg text-[#8a05be]"></i> Telefone
+                    <div class="bg-discord-300/30 p-5 rounded-xl border border-discord-100/10">
+                        <h3 class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4">
+                            <i class="ph-bold ph-phone text-base text-[#8a05be]"></i> Telefones
                         </h3>
                         <div class="flex flex-wrap gap-2">
                             {% for t in p.telefones %}
-                            <div
-                                class="px-3 py-2 bg-discord-300 rounded-xl text-xs font-bold text-text-normal flex items-center gap-3 border border-discord-400 shadow-sm group/tel transition-all hover:border-[#8a05be]/30">
-                                <div class="flex items-center gap-2">
-                                    <i class="ph-fill ph-phone-call text-[#8a05be]"></i> {{ t.numero }}
-                                </div>
+                            <div class="px-3 py-2 bg-discord-100/50 rounded-lg text-xs font-bold text-text-normal flex items-center gap-3 border border-discord-100/20 transition-all hover:border-[#8a05be]/30">
+                                <span class="flex items-center gap-2">
+                                    <i class="ph-fill ph-phone-call text-[#8a05be] text-sm"></i> {{ t.numero }}
+                                </span>
                                 <button onclick="copyToClipboard('{{ t.numero }}', 'numbers', 'Telefone')"
-                                    class="btn-icon-sm !bg-transparent !border-none !p-1" title="Copiar apenas números">
-                                    <i class="ph-bold ph-copy text-sm"></i>
+                                    class="text-text-muted hover:text-text-normal p-0.5 rounded" title="Copiar apenas números">
+                                    <i class="ph-bold ph-copy text-xs"></i>
                                 </button>
-
                             </div>
                             {% endfor %}
                         </div>
@@ -269,22 +261,21 @@
 
                     <!-- Section 3: Addresses -->
                     {% if p.enderecos %}
-                    <div class="bg-discord-300/30 p-6 rounded-2xl border border-discord-400/50">
-                        <h3
-                            class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-5">
-                            <i class="ph-bold ph-map-pin text-lg text-[#8a05be]"></i> Endereços
+                    <div class="bg-discord-300/30 p-5 rounded-xl border border-discord-100/10">
+                        <h3 class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4">
+                            <i class="ph-bold ph-map-pin text-base text-[#8a05be]"></i> Endereços
                         </h3>
-                        <div class="space-y-3">
+                        <div class="space-y-2.5">
                             {% for e in p.enderecos %}
-                            <div
-                                class="flex items-center justify-between p-3 bg-discord-300 rounded-xl border border-discord-400 group/addr transition-all">
-                                <span class="text-xs font-semibold text-text-normal leading-relaxed pr-4">{{ e.descricao
-                                    }}</span>
+                            <div class="flex items-center justify-between p-3 bg-discord-100/40 rounded-lg border border-discord-100/20">
+                                <span class="text-xs font-semibold text-text-normal leading-relaxed pr-4">
+                                    {{ e.descricao }}
+                                </span>
                                 <button onclick="copyToClipboard('{{ e.descricao }}')"
-                                    class="btn-icon-sm !bg-discord-400 !bg-opacity-100" data-tooltip="Copiar Endereço">
-                                    <i class="ph-bold ph-copy text-lg"></i>
+                                    class="w-7 h-7 flex-shrink-0 flex items-center justify-center bg-discord-400 hover:bg-[#4e5058] text-text-heading rounded transition-all" 
+                                    data-tooltip="Copiar Endereço">
+                                    <i class="ph-bold ph-copy text-sm"></i>
                                 </button>
-
                             </div>
                             {% endfor %}
                         </div>
@@ -293,27 +284,25 @@
 
                     <!-- Section 4: Documentation -->
                     {% if p.arquivos %}
-                    <div class="bg-discord-300/30 p-6 rounded-2xl border border-discord-400/50">
-                        <h3
-                            class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-5">
-                            <i class="ph-bold ph-files text-lg text-[#8a05be]"></i> Documentação
+                    <div class="bg-discord-300/30 p-5 rounded-xl border border-discord-100/10">
+                        <h3 class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4">
+                            <i class="ph-bold ph-files text-base text-[#8a05be]"></i> Documentação
                         </h3>
-                        <div class="space-y-3">
+                        <div class="space-y-2.5">
                             {% for f in p.arquivos %}
-                            <div
-                                class="flex items-center justify-between p-3 bg-discord-300 rounded-xl border border-discord-400 group/doc transition-all">
+                            <div class="flex items-center justify-between p-3 bg-discord-100/40 rounded-lg border border-discord-100/20">
                                 <span class="text-xs font-bold text-text-normal truncate pr-2">{{ f.titulo }}</span>
-                                <div class="flex items-center gap-1">
+                                <div class="flex items-center gap-1.5">
                                     <a href="{{ f.url }}" target="_blank"
-                                        class="btn-icon-sm !bg-discord-400 !bg-opacity-100"
+                                        class="w-7 h-7 flex items-center justify-center bg-discord-400 hover:bg-[#4e5058] text-text-heading rounded transition-all"
                                         data-tooltip="Abrir em Nova Aba">
-                                        <i class="ph-bold ph-arrow-square-out text-lg"></i>
+                                        <i class="ph-bold ph-arrow-square-out text-sm"></i>
                                     </a>
                                     <button onclick="copyToClipboard('{{ f.url }}')"
-                                        class="btn-icon-sm !bg-discord-400 !bg-opacity-100" data-tooltip="Copiar URL">
-                                        <i class="ph-bold ph-copy text-lg"></i>
+                                        class="w-7 h-7 flex items-center justify-center bg-discord-400 hover:bg-[#4e5058] text-text-heading rounded transition-all" 
+                                        data-tooltip="Copiar URL">
+                                        <i class="ph-bold ph-copy text-sm"></i>
                                     </button>
-
                                 </div>
                             </div>
                             {% endfor %}
@@ -324,12 +313,16 @@
             </div>
 
             <!-- Footer -->
-            <div class="p-6 bg-discord-300 border-t border-discord-400 flex justify-end gap-3 flex-shrink-0">
-                <button onclick="toggleModal('modal-pessoa-{{ p.id }}')" class="btn-secondary btn-md">Fechar</button>
+            <div class="p-6 bg-discord-200 border-t border-discord-100/10 flex justify-end gap-3 flex-shrink-0">
+                <button onclick="toggleModal('modal-pessoa-{{ p.id }}')" 
+                        class="px-4 h-10 bg-discord-400 hover:bg-[#4e5058] active:bg-[#6d6f78] text-text-heading font-bold text-xs rounded-lg transition-all uppercase tracking-wider">
+                    Fechar
+                </button>
                 <a href="{{ url_for('pessoas.edit', id=p.id) }}"
-                    class="btn-primary btn-md !bg-[#8a05be] !text-white">Editar Dados</a>
+                    class="px-4 h-10 bg-[#8a05be] hover:brightness-110 active:scale-95 text-white font-bold text-xs rounded-lg transition-all uppercase tracking-wider flex items-center justify-center shadow-md shadow-[#8a05be]/20">
+                    Editar Dados
+                </a>
             </div>
-
         </div>
     </div>
     {% else %}

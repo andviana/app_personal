@@ -60,12 +60,18 @@ function openModal(mode, id = '', nome = '', marca = '', corr = '', valor = '', 
     updateImagePreview(url_imagem || url);
     
     modal.classList.remove('hidden');
-    if (fieldNome) fieldNome.focus();
+    modal.classList.add('flex');
+    if (fieldNome) {
+        setTimeout(() => fieldNome.focus(), 50);
+    }
 }
 
 function closeModal() {
     const modal = document.getElementById('modalPerfume');
-    if (modal) modal.classList.add('hidden');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 }
 
 function updateImagePreview(url) {
@@ -74,43 +80,26 @@ function updateImagePreview(url) {
     
     if (!previewArea || !previewImg) return;
 
-    if (url && (url.match(/\.(jpeg|jpg|gif|png|webp|avif)$/) != null)) {
+    if (url && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/'))) {
+        previewImg.onload = () => {
+            previewArea.classList.remove('hidden');
+        };
+        previewImg.onerror = () => {
+            previewArea.classList.add('hidden');
+        };
         previewImg.src = url;
-        previewArea.classList.remove('hidden');
     } else {
         previewArea.classList.add('hidden');
+        previewImg.src = '';
     }
 }
 
 function confirmDeleteByForm(action, nome) {
-    if (typeof Swal === 'undefined') {
-        if (confirm(`Deseja realmente excluir "${nome}"? Esta ação não pode ser desfeita.`)) {
-            const form = document.getElementById('deletePerfumeForm');
-            form.action = action;
-            form.submit();
-        }
-        return;
-    }
-
-    Swal.fire({
-        title: 'Remover Perfume?',
+    AppUI.confirmAction({
+        title: 'REMOVER PERFUME',
         text: `Deseja realmente excluir "${nome}"? Esta ação não pode ser desfeita.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#da373c',
-        cancelButtonColor: '#383a40',
-        confirmButtonText: 'Sim, excluir!',
-        cancelButtonText: 'Cancelar',
-        reverseButtons: true,
-        customClass: {
-            popup: 'rounded-[1.5rem] bg-discord-200 text-text-normal',
-            title: 'text-text-heading font-black',
-            content: 'text-text-muted',
-            confirmButton: 'rounded-xl px-6 py-2.5 font-bold uppercase tracking-widest text-xs',
-            cancelButton: 'rounded-xl px-6 py-2.5 font-bold uppercase tracking-widest text-xs'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
+        confirmText: 'SIM, EXCLUIR',
+        onConfirm: () => {
             const form = document.getElementById('deletePerfumeForm');
             form.action = action;
             form.submit();

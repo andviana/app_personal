@@ -39,7 +39,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.daylog.rule=Host(`daylog.institutoviva.digital`)"
-      - "traefik.http.routers.daylog.entrypoints=websecure"
+      - "traefik.http.routers.daylog.entrypoints=web,websecure"
       - "traefik.http.routers.daylog.tls=true"
       - "traefik.http.routers.daylog.tls.certresolver=letsencrypt"
       - "traefik.http.services.daylog.loadbalancer.server.port=5000"

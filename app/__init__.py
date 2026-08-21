@@ -16,15 +16,23 @@ login.login_message = 'Por favor, faça login para acessar esta página.'
 login.login_message_category = 'info'
 
 def create_app(config_class=Config):
-    app = Flask(__name__)
+    app = Flask(
+        __name__,
+        static_folder=config_class.STATIC_FOLDER,
+        static_url_path='/static'
+    )
     app.config.from_object(config_class)
+
+    # Garantir que o diretório de mídia (caminho absoluto) exista
+    if 'MEDIA_FOLDER' in app.config:
+        os.makedirs(app.config['MEDIA_FOLDER'], exist_ok=True)
 
     # 1. Ativa compressão Gzip/Brotli automática para arquivos estáticos (CSS, JS)
     app.config['COMPRESS_ALGORITHM_STREAMING'] = ['br', 'gzip']
     Compress(app)
 
     # 2. Configura o cache do navegador para 1 ano (em segundos) em produção
-    # O navegador guardará o CSS localmente e não fará requisições repetidas ao Render
+    # O navegador guardará o CSS localmente e não fará requisições repetidas ao Render/Hostinger
     if app.debug:
         app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
     else:
@@ -36,22 +44,46 @@ def create_app(config_class=Config):
     login.init_app(app)
     csrf.init_app(app)
 
+    @app.route('/media/<path:filename>')
+    def serve_media(filename):
+        from flask import send_from_directory
+        return send_from_directory(app.config['MEDIA_FOLDER'], filename)
+
     @login.user_loader
     def load_user(id):
         from app.models import User
         return db.session.get(User, int(id))
 
     @app.before_request
+    def validate_host():
+        from flask import request, abort
+        from app.services.log_service import LogService
+        
+        # Em ambiente local, permite qualquer host dev
+        if app.config.get('ENVIRONMENT') == 'local':
+            return
+
+        allowed = app.config.get('ALLOWED_HOSTS', [])
+        if '*' in allowed:
+            return
+
+        host = request.host.split(':')[0]
+        if host not in allowed:
+            LogService.log_action('Security', 'UNAUTHORIZED_HOST', f"Host não permitido tentou acesso: {host}")
+            abort(400, description="Host não autorizado.")
+
+    @app.before_request
     def require_login():
         from flask import request
         from flask_login import current_user
         
-        # Excluir rotas de autenticação, estáticas e o próprio login
+        # Excluir rotas de autenticação, estáticas, mídia e o próprio login
         if not current_user.is_authenticated:
             if request.endpoint and \
                'auth.' not in request.endpoint and \
                'snippets.shared' not in request.endpoint and \
-               'static' != request.endpoint:
+               'static' != request.endpoint and \
+               'serve_media' != request.endpoint:
                 
                 # Se for a home page, redireciona silenciosamente sem mensagem de erro
                 if request.endpoint == 'main.index':
@@ -94,6 +126,24 @@ def create_app(config_class=Config):
 
     from app.blueprints.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
+
+    @app.after_request
+    def set_security_and_cors_headers(response):
+        from flask import request
+        origin = request.headers.get('Origin')
+        allowed_origins = app.config.get('CORS_ALLOWED_ORIGINS', [])
+
+        if origin and ('*' in allowed_origins or origin in allowed_origins):
+            response.headers['Access-Control-Allow-Origin'] = origin
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With, X-CSRFToken'
+
+        # Cabeçalhos de Segurança HTTP recomendados em Produção
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        return response
 
     @app.context_processor
     def utility_processor():

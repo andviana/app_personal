@@ -4,6 +4,7 @@ import sys
 # Adicionar o diretório raiz ao path para importar a app
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from decouple import config
 from app import create_app, db
 from app.models import User
 
@@ -13,8 +14,11 @@ def seed():
         # Criar as tabelas caso não existam
         db.create_all()
         
+        admin_username = config('SEED_ADMIN_USER', default='admin')
+        admin_password = config('SEED_ADMIN_PASSWORD', default='admin')
+        
         users_to_create = [
-            {'username': 'admin', 'password': 'admin'}
+            {'username': admin_username, 'password': admin_password}
         ]
         
         for u_data in users_to_create:

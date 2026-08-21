@@ -1,0 +1,64 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: daylog_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-daylog}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-daylog}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - daylog_internal
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: daylog_web
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - ENVIRONMENT=production
+      - POSTGRES_HOST=db
+    volumes:
+      - media_data:/app/app/media
+      - logs_data:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.daylog.rule=Host(`daylog.institutoviva.digital`)"
+      - "traefik.http.routers.daylog.entrypoints=websecure"
+      - "traefik.http.routers.daylog.tls=true"
+      - "traefik.http.routers.daylog.tls.certresolver=letsencrypt"
+      - "traefik.http.services.daylog.loadbalancer.server.port=5000"
+      - "traefik.docker.network=traefik_net"
+    networks:
+      - daylog_internal
+      - traefik_net
+
+volumes:
+  postgres_data:
+    driver: local
+  media_data:
+    driver: local
+  logs_data:
+    driver: local
+
+networks:
+  # Rede interna para comunicação isolada entre web e o banco Postgres
+  daylog_internal:
+    driver: bridge
+    internal: true
+  # Rede compartilhada com o proxy reverso Traefik
+  traefik_net:
+    external: true

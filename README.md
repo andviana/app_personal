@@ -101,10 +101,24 @@ Siga estes passos para colocar sua aplicação online usando o **Render** e o **
    - **Build Command:** `./render-build.sh`
    - **Start Command:** `gunicorn run:app`
 4. Em **Environment Variables**, adicione:
+   - `ENVIRONMENT`: `homologation` (ou `production` em servidor próprio)
    - `SECRET_KEY`: Uma chave segura e aleatória.
-   - `DATABASE_URL`: A URI obtida no Supabase.
+   - `DATABASE_URL`: A URI obtida no Supabase (Homologação) ou Docker Postgres (Produção).
    - `FLASK_APP`: `run.py`
-   - `FLASK_ENV`: `production`
+
+---
+
+## ⚙️ Cenários de Ambiente (`ENVIRONMENT`)
+
+A aplicação suporta 3 cenários configuráveis via variável `ENVIRONMENT` em um único arquivo `.env`:
+
+| Cenário | Valor de `ENVIRONMENT` | Banco de Dados | Modo `DEBUG` |
+| :--- | :--- | :--- | :--- |
+| **Local** | `local` | SQLite nativo (`app.db`) | Configurável (`True` por padrão) |
+| **Homologação** | `homologation` | PostgreSQL do Supabase (Render) | Estritamente `False` |
+| **Produção** | `production` | PostgreSQL via Docker (Hostinger) | Estritamente `False` |
+
+---
 
 ### 3. Considerações Importantes
 

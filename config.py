@@ -41,17 +41,19 @@ class Config:
 
     elif ENVIRONMENT == 'production':
         # Produção: PostgreSQL interno via Docker na Hostinger
+        pg_user = config('POSTGRES_USER', default='postgres')
+        pg_pass = config('POSTGRES_PASSWORD', default='postgres')
+        pg_host = config('POSTGRES_HOST', default='db')
+        pg_port = config('POSTGRES_PORT', default='5432')
+        pg_db = config('POSTGRES_DB', default='daylog')
+        
         db_url = config('DATABASE_URL', default='')
-        if db_url:
+        # Se POSTGRES_PASSWORD for especificado no .env, usa diretamente para garantir sincronia com o container db
+        if db_url and not config('POSTGRES_PASSWORD', default=''):
             if db_url.startswith("postgres://"):
                 db_url = db_url.replace("postgres://", "postgresql://", 1)
             SQLALCHEMY_DATABASE_URI = db_url
         else:
-            pg_user = config('POSTGRES_USER', default='postgres')
-            pg_pass = config('POSTGRES_PASSWORD', default='postgres')
-            pg_host = config('POSTGRES_HOST', default='db')
-            pg_port = config('POSTGRES_PORT', default='5432')
-            pg_db = config('POSTGRES_DB', default='daylog')
             SQLALCHEMY_DATABASE_URI = f"postgresql://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}"
 
     else:

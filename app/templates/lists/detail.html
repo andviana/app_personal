@@ -24,9 +24,6 @@
                     {{ lista.tipo.denominacao if lista.tipo else 'Genérica' }}
                 </span>
             </div>
-            <p class="text-[11px] font-bold text-text-muted/50 uppercase tracking-[0.2em]">
-                Gestão de itens e categorias
-            </p>
         </div>
     </div>
 
@@ -97,7 +94,7 @@
             <!-- Botão Adicionar -->
             <button type="submit"
                 class="btn-primary btn-md w-full lg:w-auto lg:px-10 group !bg-[#ff4700] !text-black !shadow-[#ff4700]/20">
-                <span class="tracking-widest uppercase text-xs">Adicionar</span>
+                <span class="tracking-widest uppercase text-xs">ADICIONAR</span>
                 <i class="ph-bold ph-plus text-lg group-hover:rotate-90 transition-transform duration-300"></i>
             </button>
 
@@ -273,9 +270,6 @@
                     <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
                         <i class="ph-bold ph-folder-plus text-primary-DEFAULT"></i> Nova Categoria
                     </h2>
-                    <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">
-                        Organize seus itens por grupo
-                    </p>
                 </div>
                 <button type="button" onclick="document.getElementById('modalNovoGrupoItem').classList.add('hidden')"
                     class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
@@ -299,7 +293,7 @@
                     </button>
                     <button type="submit"
                         class="btn-primary btn-md group !bg-[#ff4700] !text-white !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-12 px-10 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto order-1 md:order-2">
-                        <i class="ph-bold ph-check"></i> ADICIONAR
+                        <i class="ph-bold ph-check"></i> SALVAR
                     </button>
                 </div>
 
@@ -318,9 +312,6 @@
                     <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
                         <i class="ph-bold ph-pencil-simple text-[#ff4700]"></i> Editar Item
                     </h2>
-                    <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">
-                        Atualizar detalhes do produto
-                    </p>
                 </div>
                 <button type="button" onclick="document.getElementById('modalEditarItem').classList.add('hidden')"
                     class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
@@ -379,7 +370,7 @@
                     </button>
                     <button type="submit"
                         class="btn-primary btn-md group !bg-[#ff4700] !text-white !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-12 px-10 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto order-1 md:order-2">
-                        <i class="ph-bold ph-check"></i> SALVAR ALTERAÇÕES
+                        <i class="ph-bold ph-check"></i> SALVAR
                     </button>
                 </div>
 
@@ -399,7 +390,6 @@
                     <h3 class="text-xl font-black text-text-heading tracking-tight flex items-center gap-2">
                         <i class="ph-bold ph-planet text-[#ff4700]"></i> Importar Link
                     </h3>
-                    <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">Extraia dados automaticamente</p>
                 </div>
                 <button onclick="closeScrapeModal()"
                     class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-discord-400 transition-standard text-text-muted">
@@ -442,7 +432,7 @@
                         </button>
                         <button type="submit" id="btnScrapeSubmit"
                             class="btn-primary btn-md group !bg-[#ff4700] !text-black !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-12 px-10 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto order-1 md:order-2">
-                            <span id="txtScrapeBtn">IMPORTAR AGORA</span>
+                            <span id="txtScrapeBtn">IMPORTAR</span>
                             <div id="loaderScrape" class="hidden">
                                 <svg class="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 24 24">
@@ -474,9 +464,6 @@
                     <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
                         <i class="ph-bold ph-eye text-[#ff4700]"></i> Ver Detalhes
                     </h2>
-                    <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">
-                        Informações completas do item
-                    </p>
                 </div>
                 <button type="button" onclick="document.getElementById('modalVerItem').classList.add('hidden')"
                     class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
@@ -516,16 +503,16 @@
             <div class="mt-8 flex gap-3">
                 <button type="button" id="btnEditFromView"
                     onclick="document.getElementById('modalVerItem').classList.add('hidden'); openEditItemModal(this)"
-                    class="btn-secondary btn-md flex-1">
-                    <i class="ph-bold ph-pencil-simple"></i> Editar
+                    class="btn-secondary btn-md flex-1 uppercase tracking-widest text-[11px] font-black">
+                    <i class="ph-bold ph-pencil-simple text-sm"></i> EDITAR
                 </button>
                 <form id="formDeleteFromView" action="" method="POST" onsubmit="confirmDelete(event, this)"
                     class="flex-1">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="lista_id" value="{{ lista.id }}">
                     <button type="submit"
-                        class="btn-danger btn-md w-full !bg-danger/10 hover:!bg-danger !text-danger hover:!text-white border-none">
-                        <i class="ph-bold ph-trash"></i> Excluir
+                        class="btn-danger btn-md w-full !bg-danger/10 hover:!bg-danger !text-danger hover:!text-white border-none uppercase tracking-widest text-[11px] font-black h-11 flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-trash text-sm"></i> EXCLUIR
                     </button>
                 </form>
             </div>
@@ -533,7 +520,7 @@
 
             <div class="mt-3">
                 <button type="button" onclick="document.getElementById('modalVerItem').classList.add('hidden')"
-                    class="w-full h-11 text-text-muted font-bold rounded-xl transition-standard hover:text-text-normal">Fechar</button>
+                    class="w-full h-11 text-text-muted font-black rounded-xl transition-standard hover:text-text-normal uppercase tracking-widest text-[11px]">FECHAR</button>
             </div>
         </div>
     </div>

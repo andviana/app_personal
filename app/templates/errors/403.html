@@ -4,28 +4,19 @@
 
 {% block content %}
 <div class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-    <div class="relative mb-8">
-        <div class="w-32 h-32 bg-danger/10 border-4 border-danger rounded-full flex items-center justify-center z-10">
-            <i class="ph-bold ph-lock-key text-6xl text-danger"></i>
-        </div>
-        <div class="absolute -top-2 -right-2 w-12 h-12 bg-discord-100 rounded-full flex items-center justify-center z-20 shadow-lg border-2 border-discord-400">
-            <i class="ph-bold ph-hand-stop text-2xl text-danger"></i>
-        </div>
+    <div class="mb-6 text-[#ed4245]">
+        <i class="ph-bold ph-lock-key text-6xl"></i>
     </div>
 
-    <h1 class="text-6xl font-black text-text-heading mb-4 tracking-tighter">403</h1>
-    <h2 class="text-lg md:text-xl font-extrabold text-text-heading tracking-wide mb-6">Acesso Negado</h2>
-    
-    <p class="max-w-md text-text-muted text-sm font-medium leading-relaxed mb-10">
-        Você não tem as permissões necessárias para acessar este recurso. Por favor, entre em contato com o administrador se achar que isso é um erro.
-    </p>
+    <h1 class="text-6xl font-black text-text-heading mb-2 tracking-tighter">403</h1>
+    <h2 class="text-lg md:text-xl font-extrabold text-text-heading tracking-wide mb-10 uppercase">ACESSO NEGADO</h2>
 
     <div class="flex flex-col sm:flex-row gap-3">
-        <a href="{{ url_for('main.index') }}" class="btn-primary btn-md">
-            <i class="ph-bold ph-house text-base"></i> Ir para o Dashboard
+        <a href="{{ url_for('main.index') }}" class="btn-primary btn-md uppercase tracking-widest text-[11px] font-black h-11 px-6 flex items-center justify-center gap-2">
+            <i class="ph-bold ph-house text-base"></i> INÍCIO
         </a>
-        <button onclick="window.history.back()" class="btn-ghost btn-md">
-            <i class="ph-bold ph-arrow-left text-base"></i> Voltar
+        <button onclick="window.history.back()" class="btn-secondary btn-md uppercase tracking-widest text-[11px] font-black h-11 px-6 flex items-center justify-center gap-2">
+            <i class="ph-bold ph-arrow-left text-base"></i> VOLTAR
         </button>
     </div>
 </div>

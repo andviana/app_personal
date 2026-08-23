@@ -19,9 +19,6 @@
         <h1 class="text-2xl md:text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
             <i class="ph-bold ph-drop text-[#ffb000]"></i> Perfumes
         </h1>
-        <p class="text-[11px] font-bold text-text-muted/50 uppercase tracking-[0.2em]">
-            Coleção pessoal de fragrâncias
-        </p>
         <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mt-2">
             <!-- Total de Perfumes -->
             <span class="text-[10px] font-black text-text-muted uppercase tracking-widest flex items-center gap-1.5">
@@ -90,7 +87,7 @@
                     data-url-imagem="{{ p.url_imagem or '' }}"
                     class="px-4 h-10 bg-[#ffb000] hover:brightness-110 active:scale-95 text-black font-bold text-xs rounded-lg transition-all flex items-center justify-center gap-2 shadow-md uppercase tracking-wider">
                     <i class="ph-bold ph-pencil-simple text-sm"></i>
-                    Editar Detalhes
+                    EDITAR
                 </button>
             </div>
         </div>
@@ -159,9 +156,6 @@
                 <h2 id="modalTitle" class="text-lg md:text-xl font-extrabold text-text-heading flex items-center gap-2">
                     <i class="ph-bold ph-drop text-[#ffb000]"></i> Novo Perfume
                 </h2>
-                <p class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">
-                    Gerenciar acervo de essências
-                </p>
             </div>
             <button onclick="closeModal()" class="text-text-muted hover:text-text-normal transition-colors">
                 <i class="ph-bold ph-x text-xl"></i>
@@ -227,14 +221,14 @@
             <!-- Footer -->
             <div class="px-6 py-4 bg-discord-200 flex items-center justify-end gap-3 border-t border-discord-100/10">
                 <button type="button" onclick="closeModal()"
-                    class="px-4 h-11 bg-discord-400 hover:bg-[#4e5058] active:bg-[#6d6f78] text-text-heading font-bold text-sm rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-sm">
+                    class="px-4 h-11 bg-discord-400 hover:bg-[#4e5058] active:bg-[#6d6f78] text-text-heading font-black tracking-widest text-[11px] uppercase rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-sm">
                     <i class="ph-bold ph-x"></i>
-                    Cancelar
+                    CANCELAR
                 </button>
                 <button type="submit"
-                    class="px-4 h-11 bg-[#ffb000] hover:brightness-110 active:scale-[0.98] text-black font-bold text-sm rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-sm">
+                    class="px-4 h-11 bg-[#ffb000] hover:brightness-110 active:scale-[0.98] text-black font-black tracking-widest text-[11px] uppercase rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-sm">
                     <i class="ph-bold ph-check"></i>
-                    Salvar Dados
+                    SALVAR
                 </button>
             </div>
         </form>

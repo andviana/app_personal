@@ -126,7 +126,3 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #9a55f3;
 }
-
-.uppercase {
-    text-transform: uppercase;
-}

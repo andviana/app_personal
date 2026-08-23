@@ -1,9 +1,8 @@
 from flask import render_template, redirect, url_for, flash, request
-from flask_login import login_user, logout_user, current_user, login_required
+from flask_login import logout_user, current_user
 from urllib.parse import urlsplit
-from app import db
 from app.blueprints.auth import bp
-from app.models import User
+from app.services.auth_service import AuthService
 from app.services.log_service import LogService
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -16,15 +15,17 @@ def login():
         password = request.form.get('password')
         remember = True if request.form.get('remember') else False
         
-        user = User.query.filter_by(username=username).first()
+        user, error = AuthService.authenticate_user(
+            username=username,
+            password=password,
+            remember=remember,
+            ip_address=request.remote_addr
+        )
         
-        if user is None or not user.check_password(password):
-            LogService.log_action(username, 'LOGIN_FAILED', f'Attempt from IP: {request.remote_addr}')
-            flash('Credenciais inválidas.', 'danger')
+        if error:
+            flash(error, 'danger')
             return redirect(url_for('auth.login'))
         
-        login_user(user, remember=remember)
-        LogService.log_action(user, 'LOGIN_SUCCESS')
         next_page = request.args.get('next')
         if not next_page or urlsplit(next_page).netloc != '':
             next_page = url_for('main.index')

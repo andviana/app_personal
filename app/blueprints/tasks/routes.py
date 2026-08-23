@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, Response
 from app.blueprints.tasks import bp
-from app.models import Tarefa
+
 from app.services.pdf_service import build_tasks_pdf
 from app.services.task_service import TaskService
 from flask_login import current_user
@@ -75,7 +75,6 @@ def add_grupo():
 
 @bp.route('/export_pdf')
 def export_pdf():
-    from app.repositories.base_repository import BaseRepository
-    tarefas = BaseRepository(Tarefa).list_all()
+    tarefas = TaskService.get_all_tasks()
     pdf_bytes = build_tasks_pdf(tarefas)
     return Response(pdf_bytes, mimetype='application/pdf', headers={'Content-Disposition': 'attachment;filename=tarefas.pdf'})

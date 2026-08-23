@@ -59,3 +59,6 @@ class BaseRepository(Generic[T]):
     def flush(self) -> None:
         db.session.flush()
 
+    def rollback(self) -> None:
+        db.session.rollback()
+

@@ -1,18 +1,18 @@
-from app.repositories.base_repository import BaseRepository
+from app.repositories.list_repository import ListRepository, ItemListaRepository, GrupoItemRepository, TipoListaRepository
 from app.models import Lista, ItemLista, TipoLista, GrupoItem
 from app.services.log_service import LogService
 
 class ListService:
     @staticmethod
     def get_lists_data():
-        repo_listas = BaseRepository(Lista)
-        repo_tipos = BaseRepository(TipoLista)
-        return repo_listas.list_all(order_by=Lista.denominacao), repo_tipos.list_all(order_by=TipoLista.denominacao)
+        repo_listas = ListRepository()
+        repo_tipos = TipoListaRepository()
+        return repo_listas.list_ordered_by_denominacao(), repo_tipos.list_ordered_by_denominacao()
 
     @staticmethod
     def create_list(denominacao, tipo_id, current_user):
         if denominacao:
-            repo = BaseRepository(Lista)
+            repo = ListRepository()
             nova_lista = Lista(
                 denominacao=denominacao.upper(), 
                 tipo_id=tipo_id if tipo_id else None
@@ -25,7 +25,7 @@ class ListService:
 
     @staticmethod
     def delete_list(id, current_user):
-        repo = BaseRepository(Lista)
+        repo = ListRepository()
         lista = repo.get_or_404(id)
         denominacao = lista.denominacao
         repo.delete(lista)
@@ -35,21 +35,21 @@ class ListService:
 
     @staticmethod
     def get_list_detail(id):
-        repo_lista = BaseRepository(Lista)
-        repo_grupos = BaseRepository(GrupoItem)
+        repo_lista = ListRepository()
+        repo_grupos = GrupoItemRepository()
         lista = repo_lista.get_or_404(id)
-        grupos = repo_grupos.list_all(order_by=GrupoItem.denominacao)
+        grupos = repo_grupos.list_ordered_by_denominacao()
         lista.itens.sort(key=lambda x: (x.status, x.item))
         return lista, grupos
 
     @staticmethod
     def create_list_item(lista_id, item_text, grupo_id, valor, link, current_user):
         if item_text:
-            repo = BaseRepository(ItemLista)
+            repo = ItemListaRepository()
             # Garantir grupo 'OUTROS' se não informado
             if not grupo_id:
-                repo_g = BaseRepository(GrupoItem)
-                outros = GrupoItem.query.filter_by(denominacao='OUTROS').first()
+                repo_g = GrupoItemRepository()
+                outros = repo_g.find_by_denominacao('OUTROS')
                 if not outros:
                     outros = GrupoItem(denominacao='OUTROS')
                     repo_g.add(outros)
@@ -71,7 +71,7 @@ class ListService:
 
     @staticmethod
     def update_list_item(item_id, item_text, grupo_id, valor, link, current_user):
-        repo = BaseRepository(ItemLista)
+        repo = ItemListaRepository()
         item = repo.get_or_404(item_id)
         if item_text:
             item.item = item_text.upper()
@@ -85,7 +85,7 @@ class ListService:
 
     @staticmethod
     def toggle_item_check(item_id, checked, current_user):
-        repo = BaseRepository(ItemLista)
+        repo = ItemListaRepository()
         item = repo.get_or_404(item_id)
         if checked is None:
             item.status = not item.status
@@ -98,7 +98,7 @@ class ListService:
 
     @staticmethod
     def delete_item(item_id, current_user):
-        repo = BaseRepository(ItemLista)
+        repo = ItemListaRepository()
         item = repo.get_or_404(item_id)
         item_text = item.item
         repo.delete(item)
@@ -109,7 +109,7 @@ class ListService:
     @staticmethod
     def create_list_type(denominacao, current_user):
         if denominacao:
-            repo = BaseRepository(TipoLista)
+            repo = TipoListaRepository()
             novo_tipo = TipoLista(denominacao=denominacao.upper())
             repo.add(novo_tipo)
             repo.commit()
@@ -120,7 +120,7 @@ class ListService:
     @staticmethod
     def create_item_group(denominacao, current_user):
         if denominacao:
-            repo = BaseRepository(GrupoItem)
+            repo = GrupoItemRepository()
             novo_grupo = GrupoItem(denominacao=denominacao.upper())
             repo.add(novo_grupo)
             repo.commit()

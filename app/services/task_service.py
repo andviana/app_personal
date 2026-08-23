@@ -1,17 +1,22 @@
 from datetime import datetime, timezone
 from typing import List, Optional, Any
 from sqlalchemy.orm import joinedload
-from app.repositories.base_repository import BaseRepository
+from app.repositories.task_repository import TaskRepository, GrupoTarefasRepository
 from app.models import Tarefa, GrupoTarefas
 from app.services.log_service import LogService
 from app.services.seed_service import SeedService
 
 class TaskService:
     @staticmethod
+    def get_all_tasks() -> List[Tarefa]:
+        repo = TaskRepository()
+        return repo.list_all()
+
+    @staticmethod
     def get_tasks_data() -> List[GrupoTarefas]:
         """Fetches all groups with their tasks eagerly loaded to prevent N+1 queries."""
         SeedService.init_tasks_defaults()
-        repo_grupos = BaseRepository(GrupoTarefas)
+        repo_grupos = GrupoTarefasRepository()
         grupos = repo_grupos.list_all(
             order_by=GrupoTarefas.denominacao,
             options=[joinedload(GrupoTarefas.tarefas)]
@@ -25,13 +30,13 @@ class TaskService:
     def get_all_groups() -> List[GrupoTarefas]:
         """Fetches all groups with task counts."""
         SeedService.init_tasks_defaults()
-        repo_grupos = BaseRepository(GrupoTarefas)
+        repo_grupos = GrupoTarefasRepository()
         return repo_grupos.list_all(order_by=GrupoTarefas.denominacao)
 
     @staticmethod
     def get_group_detail(grupo_id: int) -> GrupoTarefas:
         """Fetches a specific group with its tasks."""
-        repo_grupos = BaseRepository(GrupoTarefas)
+        repo_grupos = GrupoTarefasRepository()
         grupo = repo_grupos.get_or_404(grupo_id)
         status_priority = {'INICIADO': 0, 'PENDENTE': 1, 'FINALIZADO': 2}
         grupo.tarefas.sort(key=lambda t: status_priority.get(t.status.denominacao.upper() if t.status else 'PENDENTE', 9))
@@ -41,7 +46,7 @@ class TaskService:
     def create_task(descricao: str, grupo_id: Optional[int], current_user: Any) -> Optional[Tarefa]:
         status_pendente, _, _, grupo_comum = SeedService.init_tasks_defaults()
         if descricao:
-            repo = BaseRepository(Tarefa)
+            repo = TaskRepository()
             nova_tarefa = Tarefa(
                 descricao=descricao.upper(),
                 grupo_id=grupo_id if grupo_id else grupo_comum.id,
@@ -55,7 +60,7 @@ class TaskService:
 
     @staticmethod
     def update_task_basic(id: int, descricao: Optional[str], grupo_id: Optional[int], status_nome: Optional[str], current_user: Any) -> Tarefa:
-        repo = BaseRepository(Tarefa)
+        repo = TaskRepository()
         tarefa = repo.get_or_404(id)
         
         if descricao:
@@ -80,7 +85,7 @@ class TaskService:
 
     @staticmethod
     def start_task(id: int, current_user: Any) -> Tarefa:
-        repo = BaseRepository(Tarefa)
+        repo = TaskRepository()
         tarefa = repo.get_or_404(id)
         _, status_iniciado, _, _ = SeedService.init_tasks_defaults()
         tarefa.status_id = status_iniciado.id
@@ -90,7 +95,7 @@ class TaskService:
 
     @staticmethod
     def complete_task(id: int, current_user: Any) -> Tarefa:
-        repo = BaseRepository(Tarefa)
+        repo = TaskRepository()
         tarefa = repo.get_or_404(id)
         _, _, status_finalizado, _ = SeedService.init_tasks_defaults()
         tarefa.status_id = status_finalizado.id
@@ -101,7 +106,7 @@ class TaskService:
 
     @staticmethod
     def delete_task(id: int, current_user: Any) -> str:
-        repo = BaseRepository(Tarefa)
+        repo = TaskRepository()
         tarefa = repo.get_or_404(id)
         desc = tarefa.descricao
         repo.delete(tarefa)
@@ -112,11 +117,10 @@ class TaskService:
     @staticmethod
     def create_group(denominacao: str, current_user: Any) -> Optional[GrupoTarefas]:
         if denominacao:
-            repo = BaseRepository(GrupoTarefas)
+            repo = GrupoTarefasRepository()
             novo_grupo = GrupoTarefas(denominacao=denominacao.upper())
             repo.add(novo_grupo)
             repo.commit()
             LogService.log_action(current_user.username, 'TASK_GROUP_CREATED', f'NAME: {denominacao.upper()}')
             return novo_grupo
         return None
-

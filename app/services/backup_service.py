@@ -2,6 +2,7 @@ import json
 import sqlalchemy
 from datetime import datetime, date
 from app import db
+from app.repositories.base_repository import BaseRepository
 from app.models import (
     User, GrupoTarefas, StatusTarefas, Tarefa,
     TipoLista, GrupoItem, Lista, ItemLista, 
@@ -39,7 +40,8 @@ def export_data():
     
     for model in MODELS_ORDER:
         table_name = model.__tablename__
-        records = model.query.all()
+        repo = BaseRepository(model)
+        records = repo.list_all()
         
         data[table_name] = []
         for record in records:

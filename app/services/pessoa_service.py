@@ -126,3 +126,9 @@ class PessoaService:
         repo.commit()
         LogService.log_action(current_user_username, "PESSOA_DELETED", f"NOME: {nome}")
         return nome
+
+    @staticmethod
+    def get_pessoa_by_id(id):
+        repo = PessoaRepository()
+        return repo.get_or_404(id)
+

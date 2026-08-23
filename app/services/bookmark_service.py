@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-from app import db
 from app.models import Bookmark, BookmarkCategory
+from app.repositories.bookmark_repository import BookmarkRepository, BookmarkCategoryRepository
 from sqlalchemy.exc import SQLAlchemyError
 
 class BookmarkService:
@@ -114,31 +114,37 @@ class BookmarkService:
 
     @staticmethod
     def get_all_bookmarks():
-        return Bookmark.query.order_by(Bookmark.data_criacao.desc()).all()
+        repo = BookmarkRepository()
+        return repo.list_ordered_by_creation()
 
     @staticmethod
     def get_all_categories():
-        return BookmarkCategory.query.order_by(BookmarkCategory.nome).all()
+        repo_cat = BookmarkCategoryRepository()
+        return repo_cat.list_ordered_by_nome()
 
     @staticmethod
     def create_bookmark(titulo, url, descricao, category_ids=None, image_url=None):
+        repo = BookmarkRepository()
+        repo_cat = BookmarkCategoryRepository()
         try:
             bookmark = Bookmark(titulo=titulo, url=url, descricao=descricao, image_url=image_url)
             if category_ids:
-                categories = BookmarkCategory.query.filter(BookmarkCategory.id.in_(category_ids)).all()
+                categories = repo_cat.find_by_ids(category_ids)
                 bookmark.categories = categories
             
-            db.session.add(bookmark)
-            db.session.commit()
+            repo.add(bookmark)
+            repo.commit()
             return True, "Bookmark salvo com sucesso!"
         except Exception as e:
-            db.session.rollback()
+            repo.rollback()
             return False, str(e)
 
     @staticmethod
     def update_bookmark(bookmark_id, titulo, url, descricao, category_ids=None, image_url=None):
+        repo = BookmarkRepository()
+        repo_cat = BookmarkCategoryRepository()
         try:
-            bookmark = Bookmark.query.get(bookmark_id)
+            bookmark = repo.get_by_id(bookmark_id)
             if not bookmark:
                 return False, "Bookmark não encontrado."
             
@@ -148,68 +154,75 @@ class BookmarkService:
             bookmark.image_url = image_url
             
             if category_ids is not None:
-                categories = BookmarkCategory.query.filter(BookmarkCategory.id.in_(category_ids)).all()
+                categories = repo_cat.find_by_ids(category_ids)
                 bookmark.categories = categories
             
-            db.session.commit()
+            repo.commit()
             return True, "Bookmark atualizado com sucesso!"
         except Exception as e:
-            db.session.rollback()
+            repo.rollback()
             return False, str(e)
 
     @staticmethod
     def delete_bookmark(bookmark_id):
+        repo = BookmarkRepository()
         try:
-            bookmark = Bookmark.query.get(bookmark_id)
+            bookmark = repo.get_by_id(bookmark_id)
             if not bookmark:
                 return False, "Bookmark não encontrado."
             
-            db.session.delete(bookmark)
-            db.session.commit()
+            repo.delete(bookmark)
+            repo.commit()
             return True, "Bookmark removido com sucesso!"
         except Exception as e:
-            db.session.rollback()
+            repo.rollback()
             return False, str(e)
 
     @staticmethod
     def create_category(nome):
+        repo_cat = BookmarkCategoryRepository()
         try:
             category = BookmarkCategory(nome=nome.upper())
-            db.session.add(category)
-            db.session.commit()
+            repo_cat.add(category)
+            repo_cat.commit()
             return True, "Categoria criada!"
         except Exception as e:
-            db.session.rollback()
+            repo_cat.rollback()
             return False, str(e)
+
     @staticmethod
     def update_category(category_id, novo_nome):
+        repo_cat = BookmarkCategoryRepository()
         try:
-            category = BookmarkCategory.query.get(category_id)
+            category = repo_cat.get_by_id(category_id)
             if not category:
                 return False, "Categoria não encontrada."
             category.nome = novo_nome.upper()
-            db.session.commit()
+            repo_cat.commit()
             return True, "Categoria atualizada!"
         except Exception as e:
-            db.session.rollback()
+            repo_cat.rollback()
             return False, str(e)
 
     @staticmethod
     def delete_category(category_id):
+        repo_cat = BookmarkCategoryRepository()
         try:
-            category = BookmarkCategory.query.get(category_id)
+            category = repo_cat.get_by_id(category_id)
             if not category:
                 return False, "Categoria não encontrada."
-            db.session.delete(category)
-            db.session.commit()
+            repo_cat.delete(category)
+            repo_cat.commit()
             return True, "Categoria removida!"
         except Exception as e:
-            db.session.rollback()
+            repo_cat.rollback()
             return False, str(e)
 
     @staticmethod
     def create_batch_bookmarks(batch_text, category_ids=None):
         """Cria bookmarks em lote a partir de um texto com múltiplas URLs."""
+        repo = BookmarkRepository()
+        repo_cat = BookmarkCategoryRepository()
         try:
             import re
             # Extrai URLs usando regex simples
@@ -240,14 +253,14 @@ class BookmarkService:
                 )
                 
                 if category_ids:
-                    categories = BookmarkCategory.query.filter(BookmarkCategory.id.in_(category_ids)).all()
+                    categories = repo_cat.find_by_ids(category_ids)
                     bookmark.categories = categories
                 
-                db.session.add(bookmark)
+                repo.add(bookmark)
                 count += 1
             
-            db.session.commit()
+            repo.commit()
             return True, f"{count} favoritos adicionados com sucesso!"
         except Exception as e:
-            db.session.rollback()
+            repo.rollback()
             return False, f"Erro ao processar lote: {str(e)}"

@@ -83,7 +83,8 @@ class SettingsService:
             entidade = repo.get_or_404(id)
             
             # Check for dependencies
-            if related_model.query.filter_by(**{fk_field: id}).first():
+            related_repo = BaseRepository(related_model)
+            if related_repo.find_one_by(**{fk_field: id}):
                 return False, "Existem registros vinculados a esta categoria."
                 
             repo.delete(entidade)

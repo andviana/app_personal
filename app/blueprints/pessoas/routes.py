@@ -31,8 +31,7 @@ def edit(id):
         except Exception as e:
             flash(f'Erro ao atualizar: {str(e)}', 'danger')
             
-    from app.repositories.pessoa_repository import PessoaRepository
-    pessoa = PessoaRepository().get_or_404(id)
+    pessoa = PessoaService.get_pessoa_by_id(id)
     return render_template('pessoas/form.html', pessoa=pessoa)
 
 @bp.route('/delete/<int:id>', methods=['POST'])

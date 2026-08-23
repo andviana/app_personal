@@ -3,7 +3,6 @@
 {% block title %}Snippets - AppPessoal{% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/snippets.css') }}">
 <style>
     .snippet-list-item.active {
         background-color: #2b2d31;
@@ -222,8 +221,8 @@
 </div>
 
 <!-- Modal: Gerenciar Tags Globais -->
-<div id="modal-manage-tags" class="modal-overlay hidden">
-    <div class="modal-content !max-w-2xl bg-[#1e1f22] border border-discord-400">
+<div id="modal-manage-tags" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[1000] flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-2xl bg-[#1e1f22] rounded-3xl shadow-2xl overflow-hidden border border-discord-400 animate-modal-appear">
         <div class="p-8">
             <div class="flex justify-between items-center mb-8">
                 <div>
@@ -276,8 +275,8 @@
 </div>
 
 <!-- Modal: Adicionar Tag ao Snippet -->
-<div id="modal-snippet-tags" class="modal-overlay hidden">
-    <div class="modal-content !max-w-md bg-[#1e1f22] border border-discord-400">
+<div id="modal-snippet-tags" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[1000] flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-md bg-[#1e1f22] rounded-3xl shadow-2xl overflow-hidden border border-discord-400 animate-modal-appear">
         <div class="p-8">
             <div class="flex justify-between items-center mb-8">
                 <div>

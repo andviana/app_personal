@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros/components.html" as c %}
 
 {% block title %}Login - AppPessoal{% endblock %}
 
@@ -22,40 +23,14 @@
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        <div class="px-4 py-3 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm font-semibold flex items-center gap-3 animate-pulse">
-                            <i class="ph-bold ph-warning-circle text-lg"></i>
-                            {{ message }}
-                        </div>
+                        {{ c.alert(message, category, "animate-pulse") }}
                     {% endfor %}
                 {% endif %}
             {% endwith %}
             
             <div class="space-y-4">
-                <div class="flex flex-col">
-                    <label for="username" class="form-label ml-1">Usuário</label>
-                    <div class="relative">
-                        <div
-                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
-                            <i class="ph-bold ph-user text-lg"></i>
-                        </div>
-                        <input id="username" name="username" type="text" required
-                            class="form-input !px-12 !h-12 !rounded-xl"
-                            placeholder="nome de usuário">
-                    </div>
-                </div>
-
-                <div class="flex flex-col">
-                    <label for="password" class="form-label ml-1">Senha</label>
-                    <div class="relative">
-                        <div
-                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
-                            <i class="ph-bold ph-lock-key text-lg"></i>
-                        </div>
-                        <input id="password" name="password" type="password" required
-                            class="form-input !px-12 !h-12 !rounded-xl"
-                            placeholder="sua senha">
-                    </div>
-                </div>
+                {{ c.form_input("username", label="Usuário", required=true, placeholder="nome de usuário", icon="ph-user") }}
+                {{ c.form_input("password", label="Senha", type="password", required=true, placeholder="sua senha", icon="ph-lock-key") }}
             </div>
 
             <div class="flex items-center justify-between">
@@ -68,10 +43,9 @@
             </div>
 
             <div class="pt-2">
-                <button type="submit"
-                    class="btn-primary btn-lg w-full tracking-widest text-xs uppercase hover:scale-[1.01] active:scale-[0.99] transition-all duration-200">
-                    <i class="ph-bold ph-sign-in"></i> ACESSAR CONTA
-                </button>
+                {% call c.btn_primary("ACESSAR CONTA", type="submit", size="lg", class="w-full tracking-widest text-xs uppercase hover:scale-[1.01] active:scale-[0.99] transition-all duration-200") %}
+                    <i class="ph-bold ph-sign-in"></i>
+                {% endcall %}
             </div>
 
         </form>

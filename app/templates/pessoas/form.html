@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% import "macros/components.html" as c %}
 
 {% block title %}{{ 'Editar' if pessoa else 'Novo' }} Pessoa - AppPessoal{% endblock %}
 
@@ -27,66 +28,29 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             <div class="md:col-span-2">
-                <label class="block text-[10px] md:text-xs font-black text-text-muted uppercase tracking-widest mb-2 ml-1">
-                    Nome Completo *
-                </label>
-                <input type="text" name="nome_completo" value="{{ pessoa.nome_completo if pessoa else '' }}" required
-                    class="w-full h-12 px-4 bg-discord-100 border border-discord-100 focus:ring-2 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-sm font-semibold rounded-xl transition-all">
+                {{ c.form_input("nome_completo", label="Nome Completo *", value=pessoa.nome_completo if pessoa else '', required=true, class="focus:ring-[#8a05be] focus:border-transparent !h-12 !rounded-xl") }}
             </div>
             <div>
-                <label class="block text-[10px] md:text-xs font-black text-text-muted uppercase tracking-widest mb-2 ml-1">
-                    Data de Nascimento
-                </label>
-                <input type="date" name="data_nascimento"
-                    value="{{ pessoa.data_nascimento.strftime('%Y-%m-%d') if pessoa and pessoa.data_nascimento else '' }}"
-                    class="w-full h-12 px-4 bg-discord-100 border border-discord-100 focus:ring-2 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-sm font-semibold rounded-xl transition-all">
+                {{ c.form_input("data_nascimento", label="Data de Nascimento", type="date", value=pessoa.data_nascimento.strftime('%Y-%m-%d') if pessoa and pessoa.data_nascimento else '', class="focus:ring-[#8a05be] focus:border-transparent !h-12 !rounded-xl") }}
             </div>
             <div>
-                <label class="block text-[10px] md:text-xs font-black text-text-muted uppercase tracking-widest mb-2 ml-1">
-                    CPF
-                </label>
-                <input type="text" name="cpf" value="{{ pessoa.cpf if pessoa else '' }}" placeholder="000.000.000-00"
-                    oninput="maskCPF(this)" maxlength="14"
-                    class="w-full h-12 px-4 bg-discord-100 border border-discord-100 focus:ring-2 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-sm font-semibold rounded-xl transition-all">
+                {{ c.form_input("cpf", label="CPF", value=pessoa.cpf if pessoa else '', placeholder="000.000.000-00", class="focus:ring-[#8a05be] focus:border-transparent !h-12 !rounded-xl", oninput="maskCPF(this)", maxlength="14") }}
             </div>
 
             <div class="lg:col-span-1">
-                <label class="block text-[10px] md:text-xs font-black text-text-muted uppercase tracking-widest mb-2 ml-1">
-                    RG (Número)
-                </label>
-                <input type="text" name="rg_numero" value="{{ pessoa.rg_numero if pessoa else '' }}"
-                    class="w-full h-12 px-4 bg-discord-100 border border-discord-100 focus:ring-2 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-sm font-semibold rounded-xl transition-all">
+                {{ c.form_input("rg_numero", label="RG (Número)", value=pessoa.rg_numero if pessoa else '', class="focus:ring-[#8a05be] focus:border-transparent !h-12 !rounded-xl") }}
             </div>
             <div>
-                <label class="block text-[10px] md:text-xs font-black text-text-muted uppercase tracking-widest mb-2 ml-1">
-                    RG (Órgão)
-                </label>
-                <input type="text" name="rg_orgao" value="{{ pessoa.rg_orgao if pessoa else '' }}" placeholder="SSP/SP"
-                    class="w-full h-12 px-4 bg-discord-100 border border-discord-100 focus:ring-2 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-sm font-semibold rounded-xl transition-all">
+                {{ c.form_input("rg_orgao", label="RG (Órgão)", value=pessoa.rg_orgao if pessoa else '', placeholder="SSP/SP", class="focus:ring-[#8a05be] focus:border-transparent !h-12 !rounded-xl") }}
             </div>
             <div>
-                <label class="block text-[10px] md:text-xs font-black text-text-muted uppercase tracking-widest mb-2 ml-1">
-                    RG (Expedição)
-                </label>
-                <input type="date" name="rg_data_expedicao"
-                    value="{{ pessoa.rg_data_expedicao.strftime('%Y-%m-%d') if pessoa and pessoa.rg_data_expedicao else '' }}"
-                    class="w-full h-12 px-4 bg-discord-100 border border-discord-100 focus:ring-2 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-sm font-semibold rounded-xl transition-all">
+                {{ c.form_input("rg_data_expedicao", label="RG (Expedição)", type="date", value=pessoa.rg_data_expedicao.strftime('%Y-%m-%d') if pessoa and pessoa.rg_data_expedicao else '', class="focus:ring-[#8a05be] focus:border-transparent !h-12 !rounded-xl") }}
             </div>
             <div>
-                <label class="block text-[10px] md:text-xs font-black text-text-muted uppercase tracking-widest mb-2 ml-1">
-                    PIS
-                </label>
-                <input type="text" name="pis" value="{{ pessoa.pis if pessoa else '' }}" placeholder="000.00000.00-0"
-                    oninput="maskPIS(this)" maxlength="14"
-                    class="w-full h-12 px-4 bg-discord-100 border border-discord-100 focus:ring-2 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-sm font-semibold rounded-xl transition-all">
+                {{ c.form_input("pis", label="PIS", value=pessoa.pis if pessoa else '', placeholder="000.00000.00-0", class="focus:ring-[#8a05be] focus:border-transparent !h-12 !rounded-xl", oninput="maskPIS(this)", maxlength="14") }}
             </div>
             <div class="md:col-span-2">
-                <label class="block text-[10px] md:text-xs font-black text-text-muted uppercase tracking-widest mb-2 ml-1">
-                    URL da Foto
-                </label>
-                <input type="url" name="foto_url" value="{{ pessoa.foto_url if pessoa else '' }}"
-                    placeholder="https://..."
-                    class="w-full h-12 px-4 bg-discord-100 border border-discord-100 focus:ring-2 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-sm font-semibold rounded-xl transition-all">
+                {{ c.form_input("foto_url", label="URL da Foto", type="url", value=pessoa.foto_url if pessoa else '', placeholder="https://...", class="focus:ring-[#8a05be] focus:border-transparent !h-12 !rounded-xl") }}
             </div>
         </div>
     </div>
@@ -224,14 +188,12 @@
 
     <!-- Actions -->
     <div class="flex flex-col md:flex-row gap-3 pt-4 justify-end">
-        <a href="{{ url_for('pessoas.index') }}"
-            class="px-5 h-12 bg-discord-400 hover:bg-[#4e5058] active:bg-[#6d6f78] text-text-heading font-black tracking-widest text-[11px] rounded-lg transition-all flex items-center justify-center gap-2 opacity-70 hover:opacity-100 w-full md:w-auto order-2 md:order-1 uppercase">
-            <i class="ph-bold ph-x text-base"></i> CANCELAR
-        </a>
-        <button type="submit"
-            class="w-full md:w-auto h-12 px-6 bg-[#8a05be] hover:brightness-110 active:scale-95 text-white font-black tracking-widest text-[11px] rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#8a05be]/20 hover:scale-[1.02] active:scale-[0.98] order-1 md:order-2 uppercase">
-            <i class="ph-bold ph-check text-base"></i> SALVAR REGISTRO COMPLETO
-        </button>
+        {% call c.btn_secondary("CANCELAR", href=url_for('pessoas.index'), class="px-5 h-12 opacity-70 hover:opacity-100 w-full md:w-auto order-2 md:order-1 uppercase") %}
+            <i class="ph-bold ph-x text-base"></i>
+        {% endcall %}
+        {% call c.btn_primary("SALVAR REGISTRO COMPLETO", type="submit", class="w-full md:w-auto h-12 px-6 !bg-[#8a05be] hover:brightness-110 active:scale-95 !text-white font-black tracking-widest text-[11px] rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#8a05be]/20 hover:scale-[1.02] active:scale-[0.98] order-1 md:order-2 uppercase") %}
+            <i class="ph-bold ph-check text-base"></i>
+        {% endcall %}
     </div>
 </form>
 {% endblock %}

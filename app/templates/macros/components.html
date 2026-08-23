@@ -1,0 +1,89 @@
+{# Primary button #}
+{% macro btn_primary(text, type="button", id=none, class="", size="md", href=none) %}
+  {% if href %}
+    <a href="{{ href }}" {% if id %}id="{{ id }}"{% endif %} class="btn-primary btn-{{ size }} {{ class }}" {{ kwargs|xmlattr }}>
+      {{ caller() if caller else '' }}
+      {{ text }}
+    </a>
+  {% else %}
+    <button type="{{ type }}" {% if id %}id="{{ id }}"{% endif %} class="btn-primary btn-{{ size }} {{ class }}" {{ kwargs|xmlattr }}>
+      {{ caller() if caller else '' }}
+      {{ text }}
+    </button>
+  {% endif %}
+{% endmacro %}
+
+{# Secondary button #}
+{% macro btn_secondary(text, type="button", id=none, class="", size="md", href=none) %}
+  {% if href %}
+    <a href="{{ href }}" {% if id %}id="{{ id }}"{% endif %} class="btn-secondary btn-{{ size }} {{ class }}" {{ kwargs|xmlattr }}>
+      {{ caller() if caller else '' }}
+      {{ text }}
+    </a>
+  {% else %}
+    <button type="{{ type }}" {% if id %}id="{{ id }}"{% endif %} class="btn-secondary btn-{{ size }} {{ class }}" {{ kwargs|xmlattr }}>
+      {{ caller() if caller else '' }}
+      {{ text }}
+    </button>
+  {% endif %}
+{% endmacro %}
+
+{# Textual input field #}
+{% macro form_input(name, label=none, type="text", value="", placeholder="", id=none, required=false, class="", icon=none) %}
+  <div class="flex flex-col w-full">
+    {% if label %}
+      <label class="form-label ml-1" {% if id %}for="{{ id }}"{% else %}for="{{ name }}"{% endif %}>{{ label }}</label>
+    {% endif %}
+    {% if icon %}
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
+          <i class="ph-bold {{ icon }} text-lg"></i>
+        </div>
+        <input type="{{ type }}" 
+               name="{{ name }}" 
+               {% if id %}id="{{ id }}"{% else %}id="{{ name }}"{% endif %}
+               value="{{ value or '' }}" 
+               placeholder="{{ placeholder }}" 
+               {% if required %}required{% endif %}
+               class="form-input !px-12 !h-12 !rounded-xl {{ class }}"
+               {{ kwargs|xmlattr }}>
+      </div>
+    {% else %}
+      <input type="{{ type }}" 
+             name="{{ name }}" 
+             {% if id %}id="{{ id }}"{% else %}id="{{ name }}"{% endif %}
+             value="{{ value or '' }}" 
+             placeholder="{{ placeholder }}" 
+             {% if required %}required{% endif %}
+             class="form-input {{ class }}"
+             {{ kwargs|xmlattr }}>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{# Alert box #}
+{% macro alert(message, category="danger", class="") %}
+  {% set bg_color = "bg-danger/10 border-danger/20 text-danger" %}
+  {% set icon = "ph-warning-circle" %}
+  {% if category == "success" %}
+    {% set bg_color = "bg-success/10 border-success/20 text-success" %}
+    {% set icon = "ph-check-circle" %}
+  {% elif category == "warning" %}
+    {% set bg_color = "bg-[#f0b232]/10 border-[#f0b232]/20 text-[#f0b232]" %}
+    {% set icon = "ph-warning" %}
+  {% elif category == "info" %}
+    {% set bg_color = "bg-primary/10 border-primary/20 text-primary" %}
+    {% set icon = "ph-info" %}
+  {% endif %}
+  <div class="flex items-center gap-3 p-4 rounded-xl border {{ bg_color }} {{ class }}" role="alert">
+    <i class="ph-bold {{ icon }} text-lg"></i>
+    <span class="text-xs md:text-sm font-semibold">{{ message }}</span>
+  </div>
+{% endmacro %}
+
+{# Visual card container #}
+{% macro card(class="", id=none) %}
+  <div {% if id %}id="{{ id }}"{% endif %} class="card-container {{ class }}" {{ kwargs|xmlattr }}>
+    {{ caller() }}
+  </div>
+{% endmacro %}

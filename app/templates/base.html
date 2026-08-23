@@ -322,17 +322,118 @@
 
     <!-- Mobile Header (Visible only on mobile) -->
     <header
-        class="md:hidden bg-discord-200 border-b border-discord-100 flex items-center justify-between px-4 h-[56px] flex-shrink-0 shadow-sm z-30">
-        <a href="{{ url_for('main.index') }}" class="flex items-center gap-2 text-text-heading font-bold text-lg">
-            <i class="ph-fill ph-check-square-offset text-primary"></i> DayLog
-        </a>
+        class="md:hidden bg-discord-200 border-b border-discord-100 flex items-center justify-between px-4 h-[56px] flex-shrink-0 shadow-sm z-40 relative">
+        <div class="flex items-center gap-3">
+            {% if current_user.is_authenticated %}
+            <button id="mobile-menu-btn" class="text-text-muted hover:text-text-heading p-1 focus:outline-none" aria-label="Toggle Menu">
+                <i class="ph-bold ph-list text-2xl"></i>
+            </button>
+            {% endif %}
+            <a href="{{ url_for('main.index') }}" class="flex items-center gap-2 text-text-heading font-bold text-lg">
+                <i class="ph-fill ph-check-square-offset text-primary"></i> DayLog
+            </a>
+        </div>
         {% if current_user.is_authenticated %}
         <div class="flex items-center gap-3">
-            <a href="{{ url_for('auth.logout') }}" class="text-text-muted hover:text-danger"><i
+            <a href="{{ url_for('auth.logout') }}" class="text-text-muted hover:text-danger" title="Sair"><i
                     class="ph-bold ph-sign-out text-xl"></i></a>
         </div>
         {% endif %}
     </header>
+
+    <!-- Mobile Drawer Sidebar (collapsible) -->
+    {% if current_user.is_authenticated %}
+    <div id="mobile-drawer" class="fixed inset-0 z-50 flex md:hidden pointer-events-none transition-all duration-300">
+        <!-- Overlay backdrop -->
+        <div id="mobile-drawer-overlay" class="absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 ease-in-out pointer-events-none"></div>
+        
+        <!-- Drawer content container -->
+        <div id="mobile-drawer-content" class="relative flex flex-col w-72 max-w-xs h-full bg-discord-100 border-r border-discord-200 p-4 transform -translate-x-full transition-transform duration-300 ease-in-out pointer-events-auto">
+            <div class="flex justify-between items-center mb-6">
+                <span class="flex items-center gap-2 text-text-heading font-black text-lg">
+                    <i class="ph-fill ph-check-square-offset text-primary"></i> DayLog
+                </span>
+                <button id="mobile-drawer-close" class="text-text-muted hover:text-text-heading p-1 focus:outline-none">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+            
+            <div class="flex flex-col gap-2 overflow-y-auto flex-1 pr-1 custom-scrollbar">
+                <!-- Dashboard -->
+                <a href="{{ url_for('main.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                        {% if request.endpoint == 'main.index' %}bg-primary text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
+                    <i class="ph-fill ph-squares-four text-xl"></i>
+                    <span class="text-sm font-semibold">Dashboard</span>
+                </a>
+        
+                <!-- Tarefas -->
+                <a href="{{ url_for('tasks.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                        {% if request.endpoint and 'tasks' in request.endpoint %}bg-success text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
+                    <i class="ph-fill ph-list-checks text-xl"></i>
+                    <span class="text-sm font-semibold">Tarefas</span>
+                </a>
+        
+                <!-- Listas -->
+                <a href="{{ url_for('lists.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                        {% if request.endpoint and 'lists.' in request.endpoint and 'simple_lists' not in request.endpoint %}bg-[#ff4700] text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
+                    <i class="ph-fill ph-shopping-bag text-xl"></i>
+                    <span class="text-sm font-semibold">Listas Compras</span>
+                </a>
+        
+                <!-- Listas Simples -->
+                <a href="{{ url_for('simple_lists.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                        {% if request.endpoint and 'simple_lists' in request.endpoint %}bg-[#00d1ff] text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
+                    <i class="ph-fill ph-list-bullets text-xl"></i>
+                    <span class="text-sm font-semibold">Listas Simples</span>
+                </a>
+        
+                <!-- Snippets -->
+                <a href="{{ url_for('snippets.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                        {% if request.endpoint and 'snippets.' in request.endpoint %}bg-[#9a55f3] text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
+                    <i class="ph-fill ph-code text-xl"></i>
+                    <span class="text-sm font-semibold">Snippets</span>
+                </a>
+        
+                <!-- Favoritos (Bookmarks) -->
+                <a href="{{ url_for('bookmarks.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                        {% if request.endpoint and 'bookmarks.' in request.endpoint %}bg-[#eb459e] text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
+                    <i class="ph-fill ph-bookmarks text-xl"></i>
+                    <span class="text-sm font-semibold">Favoritos</span>
+                </a>
+        
+                <!-- Perfumes -->
+                <a href="{{ url_for('perfumes.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                        {% if request.endpoint and 'perfumes' in request.endpoint %}bg-[#ffb000] text-black font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
+                    <i class="ph-fill ph-drop text-xl"></i>
+                    <span class="text-sm font-semibold">Perfumes</span>
+                </a>
+        
+                <!-- Pessoas -->
+                <a href="{{ url_for('pessoas.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                        {% if request.endpoint and 'pessoas' in request.endpoint %}bg-[#8a05be] text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
+                    <i class="ph-fill ph-users text-xl"></i>
+                    <span class="text-sm font-semibold">Pessoas</span>
+                </a>
+        
+                <!-- Configurações -->
+                <a href="{{ url_for('settings.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 mt-auto
+                        {% if request.endpoint and 'settings' in request.endpoint %}bg-[#747f8d] text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
+                    <i class="ph-fill ph-gear-six text-xl"></i>
+                    <span class="text-sm font-semibold">Configurações</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Main Content Area -->
     <main
@@ -403,6 +504,35 @@
 
     <script src="{{ url_for('static', filename='js/main.js') }}?v=1.0.3" defer></script>
     <script>
+        // Drawer toggle logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            const closeBtn = document.getElementById('mobile-drawer-close');
+            const drawer = document.getElementById('mobile-drawer');
+            const overlay = document.getElementById('mobile-drawer-overlay');
+            const content = document.getElementById('mobile-drawer-content');
+
+            if (menuBtn && drawer && overlay && content) {
+                const openDrawer = () => {
+                    drawer.classList.remove('pointer-events-none');
+                    overlay.classList.remove('opacity-0', 'pointer-events-none');
+                    overlay.classList.add('opacity-100', 'pointer-events-auto');
+                    content.classList.remove('-translate-x-full');
+                };
+
+                const closeDrawer = () => {
+                    drawer.classList.add('pointer-events-none');
+                    overlay.classList.remove('opacity-100', 'pointer-events-auto');
+                    overlay.classList.add('opacity-0', 'pointer-events-none');
+                    content.classList.add('-translate-x-full');
+                };
+
+                menuBtn.addEventListener('click', openDrawer);
+                if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+                overlay.addEventListener('click', closeDrawer);
+            }
+        });
+
         // Global Flash Message Handler
         {% with messages = get_flashed_messages(with_categories = true) %}
         {% if messages %}

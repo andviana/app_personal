@@ -65,7 +65,7 @@ def upgrade():
             batch_op.add_column(sa.Column('owner_id', sa.Integer(), nullable=True))
             batch_op.create_foreign_key('fk_lista_owner', 'user', ['owner_id'], ['id'])
         if 'is_active' not in lista_cols:
-            batch_op.add_column(sa.Column('is_active', sa.Boolean(), server_default=sa.text('1'), nullable=False))
+            batch_op.add_column(sa.Column('is_active', sa.Boolean(), server_default=sa.text('true'), nullable=False))
 
     tarefa_cols = [c['name'] for c in inspector.get_columns('tarefa')]
     with op.batch_alter_table('tarefa', schema=None) as batch_op:
@@ -73,7 +73,7 @@ def upgrade():
             batch_op.add_column(sa.Column('owner_id', sa.Integer(), nullable=True))
             batch_op.create_foreign_key('fk_tarefa_owner', 'user', ['owner_id'], ['id'])
         if 'is_active' not in tarefa_cols:
-            batch_op.add_column(sa.Column('is_active', sa.Boolean(), server_default=sa.text('1'), nullable=False))
+            batch_op.add_column(sa.Column('is_active', sa.Boolean(), server_default=sa.text('true'), nullable=False))
 
     # Data migration: Ensure user 'anderson' exists and update existing orphan records
     user_res = bind.execute(sa.text('SELECT id FROM "user" WHERE username = \'anderson\'')).fetchone()

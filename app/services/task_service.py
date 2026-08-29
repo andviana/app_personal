@@ -1,45 +1,70 @@
 from datetime import datetime, timezone
 from typing import List, Optional, Any
-from sqlalchemy.orm import joinedload
 from app.repositories.task_repository import TaskRepository, GrupoTarefasRepository
-from app.models import Tarefa, GrupoTarefas
+from app.models import Tarefa, GrupoTarefas, User
 from app.services.log_service import LogService
 from app.services.seed_service import SeedService
 
 class TaskService:
     @staticmethod
-    def get_all_tasks() -> List[Tarefa]:
-        repo = TaskRepository()
-        return repo.list_all()
+    def can_write(tarefa: Tarefa, current_user: Any) -> bool:
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return tarefa.owner_id == current_user.id or any(u.id == current_user.id for u in tarefa.shared_users)
 
     @staticmethod
-    def get_tasks_data() -> List[GrupoTarefas]:
-        """Fetches all groups with their tasks eagerly loaded to prevent N+1 queries."""
+    def can_manage(tarefa: Tarefa, current_user: Any) -> bool:
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return tarefa.owner_id == current_user.id
+
+    @staticmethod
+    def get_all_tasks(current_user: Any, is_active: bool = True) -> List[Tarefa]:
+        repo = TaskRepository()
+        return repo.list_user_tasks(current_user.id, is_active=is_active)
+
+    @staticmethod
+    def get_tasks_data(current_user: Any, is_active: bool = True) -> List[GrupoTarefas]:
+        """Fetches all groups with user's filtered tasks."""
         SeedService.init_tasks_defaults()
         repo_grupos = GrupoTarefasRepository()
-        grupos = repo_grupos.list_all(
-            order_by=GrupoTarefas.denominacao,
-            options=[joinedload(GrupoTarefas.tarefas)]
-        )
+        repo_tasks = TaskRepository()
+        
+        grupos = repo_grupos.list_all(order_by=GrupoTarefas.denominacao)
+        user_tasks = repo_tasks.list_user_tasks(current_user.id, is_active=is_active)
+
         status_priority = {'INICIADO': 0, 'PENDENTE': 1, 'FINALIZADO': 2}
         for g in grupos:
-            g.tarefas.sort(key=lambda t: status_priority.get(t.status.denominacao.upper() if t.status else 'PENDENTE', 9))
+            g.tarefas_filtradas = [t for t in user_tasks if t.grupo_id == g.id]
+            g.tarefas_filtradas.sort(key=lambda t: status_priority.get(t.status.denominacao.upper() if t.status else 'PENDENTE', 9))
         return grupos
 
     @staticmethod
-    def get_all_groups() -> List[GrupoTarefas]:
-        """Fetches all groups with task counts."""
+    def get_all_groups(current_user: Any, is_active: bool = True) -> List[GrupoTarefas]:
+        """Fetches all groups with task counts filtered for user."""
         SeedService.init_tasks_defaults()
         repo_grupos = GrupoTarefasRepository()
-        return repo_grupos.list_all(order_by=GrupoTarefas.denominacao)
+        repo_tasks = TaskRepository()
+        
+        grupos = repo_grupos.list_all(order_by=GrupoTarefas.denominacao)
+        user_tasks = repo_tasks.list_user_tasks(current_user.id, is_active=is_active)
+
+        for g in grupos:
+            g.tarefas_filtradas = [t for t in user_tasks if t.grupo_id == g.id]
+        return grupos
 
     @staticmethod
-    def get_group_detail(grupo_id: int) -> GrupoTarefas:
-        """Fetches a specific group with its tasks."""
+    def get_group_detail(grupo_id: int, current_user: Any, is_active: bool = True) -> GrupoTarefas:
+        """Fetches a specific group with user's filtered tasks."""
         repo_grupos = GrupoTarefasRepository()
+        repo_tasks = TaskRepository()
+        
         grupo = repo_grupos.get_or_404(grupo_id)
+        user_tasks = repo_tasks.list_user_tasks(current_user.id, is_active=is_active, grupo_id=grupo_id)
+
         status_priority = {'INICIADO': 0, 'PENDENTE': 1, 'FINALIZADO': 2}
-        grupo.tarefas.sort(key=lambda t: status_priority.get(t.status.denominacao.upper() if t.status else 'PENDENTE', 9))
+        user_tasks.sort(key=lambda t: status_priority.get(t.status.denominacao.upper() if t.status else 'PENDENTE', 9))
+        grupo.tarefas_filtradas = user_tasks
         return grupo
 
     @staticmethod
@@ -50,7 +75,9 @@ class TaskService:
             nova_tarefa = Tarefa(
                 descricao=descricao.upper(),
                 grupo_id=grupo_id if grupo_id else grupo_comum.id,
-                status_id=status_pendente.id
+                status_id=status_pendente.id,
+                owner_id=current_user.id,
+                is_active=True
             )
             repo.add(nova_tarefa)
             repo.commit()
@@ -62,6 +89,9 @@ class TaskService:
     def update_task_basic(id: int, descricao: Optional[str], grupo_id: Optional[int], status_nome: Optional[str], current_user: Any) -> Tarefa:
         repo = TaskRepository()
         tarefa = repo.get_or_404(id)
+        
+        if not TaskService.can_write(tarefa, current_user):
+            raise PermissionError("Sem permissão para editar esta tarefa.")
         
         if descricao:
             tarefa.descricao = descricao.upper()
@@ -87,6 +117,8 @@ class TaskService:
     def start_task(id: int, current_user: Any) -> Tarefa:
         repo = TaskRepository()
         tarefa = repo.get_or_404(id)
+        if not TaskService.can_write(tarefa, current_user):
+            raise PermissionError("Sem permissão para alterar o status desta tarefa.")
         _, status_iniciado, _, _ = SeedService.init_tasks_defaults()
         tarefa.status_id = status_iniciado.id
         repo.commit()
@@ -97,6 +129,8 @@ class TaskService:
     def complete_task(id: int, current_user: Any) -> Tarefa:
         repo = TaskRepository()
         tarefa = repo.get_or_404(id)
+        if not TaskService.can_write(tarefa, current_user):
+            raise PermissionError("Sem permissão para concluir esta tarefa.")
         _, _, status_finalizado, _ = SeedService.init_tasks_defaults()
         tarefa.status_id = status_finalizado.id
         tarefa.data_executado = datetime.now(timezone.utc)
@@ -108,11 +142,49 @@ class TaskService:
     def delete_task(id: int, current_user: Any) -> str:
         repo = TaskRepository()
         tarefa = repo.get_or_404(id)
+        if not TaskService.can_manage(tarefa, current_user):
+            raise PermissionError("Apenas o proprietário pode excluir esta tarefa.")
         desc = tarefa.descricao
         repo.delete(tarefa)
         repo.commit()
         LogService.log_action(current_user.username, 'TASK_DELETED', f'ID: {id} | DESCRIPTION: {desc}')
         return desc
+
+    @staticmethod
+    def archive_task(id: int, current_user: Any) -> Tarefa:
+        repo = TaskRepository()
+        tarefa = repo.get_or_404(id)
+        if not TaskService.can_manage(tarefa, current_user):
+            raise PermissionError("Apenas o proprietário pode arquivar esta tarefa.")
+        tarefa.is_active = False
+        repo.commit()
+        LogService.log_action(current_user.username, 'TASK_ARCHIVED', f'ID: {id}')
+        return tarefa
+
+    @staticmethod
+    def reactivate_task(id: int, current_user: Any) -> Tarefa:
+        repo = TaskRepository()
+        tarefa = repo.get_or_404(id)
+        if not TaskService.can_manage(tarefa, current_user):
+            raise PermissionError("Apenas o proprietário pode reativar esta tarefa.")
+        tarefa.is_active = True
+        repo.commit()
+        LogService.log_action(current_user.username, 'TASK_REACTIVATED', f'ID: {id}')
+        return tarefa
+
+    @staticmethod
+    def share_task(id: int, user_ids: List[int], current_user: Any) -> Tarefa:
+        repo = TaskRepository()
+        tarefa = repo.get_or_404(id)
+        if not TaskService.can_manage(tarefa, current_user):
+            raise PermissionError("Apenas o proprietário pode compartilhar esta tarefa.")
+        
+        users = User.query.filter(User.id.in_(user_ids)).all() if user_ids else []
+        # Do not include the owner in shared_users list
+        tarefa.shared_users = [u for u in users if u.id != tarefa.owner_id]
+        repo.commit()
+        LogService.log_action(current_user.username, 'TASK_SHARED', f'ID: {id} | SHARED_WITH: {[u.username for u in tarefa.shared_users]}')
+        return tarefa
 
     @staticmethod
     def create_group(denominacao: str, current_user: Any) -> Optional[GrupoTarefas]:
@@ -124,3 +196,4 @@ class TaskService:
             LogService.log_action(current_user.username, 'TASK_GROUP_CREATED', f'NAME: {denominacao.upper()}')
             return novo_grupo
         return None
+

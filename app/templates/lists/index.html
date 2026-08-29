@@ -6,11 +6,26 @@
 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
     <div class="flex flex-col gap-1">
         <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
-            <i class="ph-bold ph-shopping-bag text-[#ff4700]"></i> Listas
+            <i class="ph-bold ph-shopping-bag text-[#ff4700]"></i> Listas {% if is_archived_view %}<span class="text-xs bg-danger/20 text-danger px-3 py-1 rounded-full uppercase tracking-widest font-bold">(Arquivados)</span>{% endif %}
         </h1>
     </div>
 
     <div class="flex flex-wrap gap-2 w-full md:w-auto">
+        {% if is_archived_view %}
+        <a href="{{ url_for('lists.index') }}"
+            class="btn-secondary btn-md w-full md:w-auto opacity-80 hover:opacity-100 flex items-center justify-center gap-2"
+            data-tooltip="Ver Listas Ativas">
+            <i class="ph-bold ph-check-circle text-lg text-success"></i>
+            <span class="font-bold uppercase tracking-widest text-[10px]">Ver Ativos</span>
+        </a>
+        {% else %}
+        <a href="{{ url_for('lists.index', archived='true') }}"
+            class="btn-secondary btn-md w-full md:w-auto opacity-70 hover:opacity-100 border-dashed flex items-center justify-center gap-2"
+            data-tooltip="Ver Listas Desativadas/Arquivadas">
+            <i class="ph-bold ph-archive text-lg text-text-muted"></i>
+            <span class="font-bold uppercase tracking-widest text-[10px]">Ver Arquivados/Desativados</span>
+        </a>
+
         <button onclick="document.getElementById('modalNovaLista').classList.remove('hidden')"
             class="btn-primary btn-md w-full md:w-auto group !bg-[#ff4700] !text-white !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2"
             data-tooltip="Nova Lista" data-tooltip-pos="top">
@@ -24,13 +39,13 @@
             <i class="ph-bold ph-tag text-[#ff4700] text-xl"></i> <span
                 class="hidden md:inline ml-2 font-black uppercase tracking-widest text-[10px]">Tipo</span>
         </button>
-
+        {% endif %}
     </div>
 </div>
 
 <div class="grid grid-cols-1 gap-4 mt-8">
     {% for l in listas %}
-    <div class="group bg-discord-200 border border-discord-400 rounded-[16px] p-4 hover:border-text-muted transition-all duration-300 flex items-center gap-4 relative overflow-hidden shadow-sm cursor-pointer"
+    <div class="group bg-discord-200 border border-discord-400 rounded-[16px] p-4 hover:border-text-muted transition-all duration-300 flex items-center gap-4 relative overflow-hidden shadow-sm cursor-pointer {% if is_archived_view %}opacity-60 grayscale bg-discord-200{% endif %}"
         onclick="window.location.href='{{ url_for('lists.detail', id=l.id) }}';">
         <!-- Visual Accent -->
         <div class="absolute top-0 left-0 w-1 h-full bg-[#ff4700] opacity-0 group-hover:opacity-100 transition-opacity">
@@ -45,17 +60,28 @@
         <!-- Info -->
         <div class="flex-1 min-w-0">
             <div class="flex flex-col gap-0.5">
-                <span
-                    class="text-[9px] font-black tracking-widest uppercase py-0.5 px-2 bg-discord-400 text-text-muted rounded-full w-fit">
-                    {{ l.tipo.denominacao if l.tipo else 'Genérica' }}
-                </span>
-                <h3 class="text-base font-black text-text-heading truncate">{{ l.denominacao }}</h3>
+                <div class="flex items-center gap-2">
+                    <span
+                        class="text-[9px] font-black tracking-widest uppercase py-0.5 px-2 bg-discord-400 text-text-muted rounded-full w-fit">
+                        {{ l.tipo.denominacao if l.tipo else 'Genérica' }}
+                    </span>
+                    {% if is_archived_view %}
+                    <span class="text-[9px] font-black tracking-widest uppercase py-0.5 px-2 bg-gray-600/60 text-gray-200 rounded-full w-fit">
+                        Desativada
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <div class="flex items-center gap-2 mt-1">
+                    {% if not is_archived_view and l.owner_id != current_user.id %}
+                    <i class="ph-bold ph-users text-[#ff4700] text-lg" data-tooltip="Compartilhado com você"></i>
+                    {% endif %}
+                    <h3 class="text-base font-black text-text-heading truncate">{{ l.denominacao }}</h3>
+                </div>
             </div>
             <div class="flex items-center gap-4 text-text-muted mt-1">
                 <span class="text-[11px] font-bold flex items-center gap-1.5"><i class="ph-bold ph-stack"></i> {{
                     l.itens|length }} itens</span>
-                <span class="text-[11px] font-bold flex items-center gap-1.5"><i class="ph-bold ph-calendar-blank"></i>
-                    Hoje</span>
             </div>
         </div>
 
@@ -67,15 +93,45 @@
                 <i class="ph-bold ph-arrow-square-out text-xl"></i>
             </a>
 
-            <form action="{{ url_for('lists.delete', id=l.id) }}" method="POST"
-                onsubmit="confirmListDelete(event, this)" class="flex-shrink-0">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="btn-icon-sm !bg-transparent !border-none hover:!text-danger"
-                    data-tooltip="Excluir" data-tooltip-pos="top">
-                    <i class="ph-bold ph-trash text-lg"></i>
+            {% if is_archived_view %}
+                {% if l.owner_id == current_user.id %}
+                <form action="{{ url_for('lists.reactivate', id=l.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="w-10 h-10 flex items-center justify-center text-success hover:text-white transition-standard"
+                        data-tooltip="Reativar Lista" data-tooltip-pos="top">
+                        <i class="ph-bold ph-arrow-counter-clockwise text-xl"></i>
+                    </button>
+                </form>
+                {% endif %}
+            {% else %}
+                {% if l.owner_id == current_user.id %}
+                <!-- Compartilhar -->
+                <button onclick="openShareModalList({{ l.id }}, {{ l.shared_users|map(attribute='id')|list|tojson }})"
+                    class="w-10 h-10 flex items-center justify-center text-text-muted hover:text-[#ff4700] transition-standard"
+                    data-tooltip="Compartilhar" data-tooltip-pos="top">
+                    <i class="ph-bold ph-share-network text-xl"></i>
                 </button>
 
-            </form>
+                <!-- Arquivar -->
+                <form action="{{ url_for('lists.archive', id=l.id) }}" method="POST" class="flex-shrink-0">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="w-10 h-10 flex items-center justify-center text-text-muted hover:text-warning transition-standard"
+                        data-tooltip="Arquivar" data-tooltip-pos="top">
+                        <i class="ph-bold ph-archive text-xl"></i>
+                    </button>
+                </form>
+
+                <!-- Excluir -->
+                <form action="{{ url_for('lists.delete', id=l.id) }}" method="POST"
+                    onsubmit="confirmListDelete(event, this)" class="flex-shrink-0">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-icon-sm !bg-transparent !border-none hover:!text-danger"
+                        data-tooltip="Excluir" data-tooltip-pos="top">
+                        <i class="ph-bold ph-trash text-lg"></i>
+                    </button>
+                </form>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
     {% else %}
@@ -84,7 +140,7 @@
         <div class="w-20 h-20 bg-discord-400 rounded-full flex items-center justify-center mb-6 text-text-muted">
             <i class="ph-bold ph-shopping-bag text-4xl"></i>
         </div>
-        <h3 class="text-xl font-bold text-text-heading tracking-tight">Suas prateleiras estão vazias</h3>
+        <h3 class="text-xl font-bold text-text-heading tracking-tight">Nenhuma lista encontrada</h3>
         <p class="text-text-muted mt-2 font-medium">Crie sua primeira lista para começar a organizar.</p>
     </div>
     {% endfor %}
@@ -181,10 +237,64 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Compartilhar Lista -->
+<div id="modalCompartilharLista"
+    class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
+    <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
+                    <i class="ph-bold ph-share-network text-[#ff4700]"></i> Compartilhar Lista
+                </h2>
+                <button type="button" onclick="document.getElementById('modalCompartilharLista').classList.add('hidden')"
+                    class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <form id="formCompartilharLista" action="" method="POST" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-3">Selecione os usuários com acesso:</label>
+                    <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-discord-100 rounded-xl border border-discord-400">
+                        {% for u in users %}
+                        {% if u.id != current_user.id %}
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-discord-300 cursor-pointer">
+                            <input type="checkbox" name="user_ids" value="{{ u.id }}" class="list-user-checkbox w-4 h-4 rounded text-[#ff4700] focus:ring-[#ff4700] bg-discord-400 border-discord-400">
+                            <span class="text-sm font-semibold text-text-heading">{{ u.username }}</span>
+                        </label>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row gap-4 pt-4 justify-end">
+                    <button type="button" onclick="document.getElementById('modalCompartilharLista').classList.add('hidden')"
+                        class="btn-secondary btn-md font-black tracking-widest text-[11px] h-12 px-8 flex items-center justify-center gap-2 opacity-70 hover:opacity-100 transition-all w-full md:w-auto order-2 md:order-1">
+                        <i class="ph-bold ph-x"></i> CANCELAR
+                    </button>
+                    <button type="submit"
+                        class="btn-primary btn-md group !bg-[#ff4700] !text-white !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-12 px-10 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto order-1 md:order-2">
+                        <i class="ph-bold ph-check"></i> SALVAR
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts_extra %}
 <script>
+    function openShareModalList(listId, sharedUserIds) {
+        const form = document.getElementById('formCompartilharLista');
+        form.action = "{{ url_for('lists.share', id=0) }}".replace('0', listId);
+        
+        const checkboxes = document.querySelectorAll('.list-user-checkbox');
+        checkboxes.forEach(cb => {
+            cb.checked = sharedUserIds.includes(parseInt(cb.value));
+        });
+        
+        document.getElementById('modalCompartilharLista').classList.remove('hidden');
+    }
+
     function confirmListDelete(event, form) {
         event.preventDefault();
         Swal.fire({

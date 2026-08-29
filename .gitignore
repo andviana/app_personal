@@ -4,6 +4,10 @@
 ### dotenv ###
 .env
 
+### Scratch ###
+scratch/
+
+
 ### Flask ###
 instance/*
 !instance/.gitignore

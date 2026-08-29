@@ -17,7 +17,11 @@
         <div class="flex flex-col gap-1">
             <div class="flex flex-wrap items-center gap-4">
                 <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
-                    <i class="ph-bold ph-shopping-bag text-[#ff4700]"></i> {{ lista.denominacao }}
+                    <i class="ph-bold ph-shopping-bag text-[#ff4700]"></i>
+                    {% if lista.owner_id != current_user.id %}
+                    <i class="ph-bold ph-users text-[#ff4700] text-2xl" data-tooltip="Compartilhado por outro usuário"></i>
+                    {% endif %}
+                    {{ lista.denominacao }}
                 </h1>
                 <span
                     class="bg-discord-400 text-text-muted text-[10px] px-3 py-1 rounded-full font-black tracking-widest uppercase shadow-sm">

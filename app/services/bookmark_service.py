@@ -4,7 +4,28 @@ from app.models import Bookmark, BookmarkCategory
 from app.repositories.bookmark_repository import BookmarkRepository, BookmarkCategoryRepository
 from sqlalchemy.exc import SQLAlchemyError
 
+from app.models import Bookmark, BookmarkCategory, User
+from app.services.log_service import LogService
+
 class BookmarkService:
+    @staticmethod
+    def can_read(bookmark: Bookmark, current_user: getattr(User, '__class__', object)) -> bool:
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return bookmark.owner_id == current_user.id or any(u.id == current_user.id for u in bookmark.shared_users)
+
+    @staticmethod
+    def can_write(bookmark: Bookmark, current_user: getattr(User, '__class__', object)) -> bool:
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return bookmark.owner_id == current_user.id or any(u.id == current_user.id for u in bookmark.shared_users)
+
+    @staticmethod
+    def can_manage(bookmark: Bookmark, current_user: getattr(User, '__class__', object)) -> bool:
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return bookmark.owner_id == current_user.id
+
     @staticmethod
     def scrape_url(url):
         """Extrai título e descrição de uma URL."""
@@ -32,7 +53,7 @@ class BookmarkService:
                     from urllib.parse import urljoin
                     image_url = urljoin(url, image_url)
 
-            # Lógica especial para YouTube (caso o scraping falhe ou queira ser mais preciso)
+            # Lógica especial para YouTube
             if "youtube.com" in url or "youtu.be" in url:
                 import re
                 video_id = None
@@ -44,10 +65,9 @@ class BookmarkService:
                         video_id = match.group(1)
                 
                 if video_id:
-                    # Prefere a imagem do YouTube se for um vídeo
                     image_url = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
 
-            # Tenta encontrar a descrição em várias meta tags
+            # Tenta encontrar a descrição
             description = ""
             desc_tag = (
                 soup.find('meta', attrs={'name': 'description'}) or 
@@ -77,11 +97,9 @@ class BookmarkService:
             if separator in title:
                 parts = [p.strip() for p in title.split(separator) if p.strip()]
                 if len(parts) > 1:
-                    # Check for TLDs
                     for part in parts:
                         if any(tld in part.lower() for tld in ['.com', '.org', '.net', '.io', '.ai', '.co', '.edu', '.gov', '.app']):
                             return part
-                    # Check for short parts
                     sorted_parts = sorted(parts, key=len)
                     for part in sorted_parts:
                         if 3 <= len(part) <= 25:
@@ -113,9 +131,9 @@ class BookmarkService:
         return text
 
     @staticmethod
-    def get_all_bookmarks():
+    def get_all_bookmarks(current_user, is_active: bool = True):
         repo = BookmarkRepository()
-        return repo.list_ordered_by_creation()
+        return repo.list_user_bookmarks(current_user.id, is_active=is_active)
 
     @staticmethod
     def get_all_categories():
@@ -123,30 +141,41 @@ class BookmarkService:
         return repo_cat.list_ordered_by_nome()
 
     @staticmethod
-    def create_bookmark(titulo, url, descricao, category_ids=None, image_url=None):
+    def create_bookmark(titulo, url, descricao, category_ids=None, image_url=None, current_user=None):
         repo = BookmarkRepository()
         repo_cat = BookmarkCategoryRepository()
         try:
-            bookmark = Bookmark(titulo=titulo, url=url, descricao=descricao, image_url=image_url)
+            bookmark = Bookmark(
+                titulo=titulo,
+                url=url,
+                descricao=descricao,
+                image_url=image_url,
+                owner_id=current_user.id if current_user else None,
+                is_active=True
+            )
             if category_ids:
                 categories = repo_cat.find_by_ids(category_ids)
                 bookmark.categories = categories
             
             repo.add(bookmark)
             repo.commit()
+            LogService.log_action(current_user.username if current_user else 'system', 'BOOKMARK_CREATED', f'ID: {bookmark.id} | TITLE: {titulo}')
             return True, "Bookmark salvo com sucesso!"
         except Exception as e:
             repo.rollback()
             return False, str(e)
 
     @staticmethod
-    def update_bookmark(bookmark_id, titulo, url, descricao, category_ids=None, image_url=None):
+    def update_bookmark(bookmark_id, titulo, url, descricao, category_ids=None, image_url=None, current_user=None):
         repo = BookmarkRepository()
         repo_cat = BookmarkCategoryRepository()
         try:
             bookmark = repo.get_by_id(bookmark_id)
             if not bookmark:
                 return False, "Bookmark não encontrado."
+            
+            if current_user and not BookmarkService.can_write(bookmark, current_user):
+                return False, "Sem permissão para editar este favorito."
             
             bookmark.titulo = titulo
             bookmark.url = url
@@ -158,22 +187,80 @@ class BookmarkService:
                 bookmark.categories = categories
             
             repo.commit()
+            LogService.log_action(current_user.username if current_user else 'system', 'BOOKMARK_EDITED', f'ID: {bookmark_id}')
             return True, "Bookmark atualizado com sucesso!"
         except Exception as e:
             repo.rollback()
             return False, str(e)
 
     @staticmethod
-    def delete_bookmark(bookmark_id):
+    def delete_bookmark(bookmark_id, current_user=None):
         repo = BookmarkRepository()
         try:
             bookmark = repo.get_by_id(bookmark_id)
             if not bookmark:
                 return False, "Bookmark não encontrado."
             
+            if current_user and not BookmarkService.can_manage(bookmark, current_user):
+                return False, "Apenas o proprietário pode excluir este favorito."
+            
             repo.delete(bookmark)
             repo.commit()
+            LogService.log_action(current_user.username if current_user else 'system', 'BOOKMARK_DELETED', f'ID: {bookmark_id}')
             return True, "Bookmark removido com sucesso!"
+        except Exception as e:
+            repo.rollback()
+            return False, str(e)
+
+    @staticmethod
+    def archive_bookmark(bookmark_id, current_user):
+        repo = BookmarkRepository()
+        try:
+            bookmark = repo.get_by_id(bookmark_id)
+            if not bookmark:
+                return False, "Bookmark não encontrado."
+            if not BookmarkService.can_manage(bookmark, current_user):
+                return False, "Apenas o proprietário pode desativar este favorito."
+            bookmark.is_active = False
+            repo.commit()
+            LogService.log_action(current_user.username, 'BOOKMARK_ARCHIVED', f'ID: {bookmark_id}')
+            return True, "Favorito desativado com sucesso!"
+        except Exception as e:
+            repo.rollback()
+            return False, str(e)
+
+    @staticmethod
+    def reactivate_bookmark(bookmark_id, current_user):
+        repo = BookmarkRepository()
+        try:
+            bookmark = repo.get_by_id(bookmark_id)
+            if not bookmark:
+                return False, "Bookmark não encontrado."
+            if not BookmarkService.can_manage(bookmark, current_user):
+                return False, "Apenas o proprietário pode reativar este favorito."
+            bookmark.is_active = True
+            repo.commit()
+            LogService.log_action(current_user.username, 'BOOKMARK_REACTIVATED', f'ID: {bookmark_id}')
+            return True, "Favorito reativado com sucesso!"
+        except Exception as e:
+            repo.rollback()
+            return False, str(e)
+
+    @staticmethod
+    def share_bookmark(bookmark_id, user_ids, current_user):
+        repo = BookmarkRepository()
+        try:
+            bookmark = repo.get_by_id(bookmark_id)
+            if not bookmark:
+                return False, "Bookmark não encontrado."
+            if not BookmarkService.can_manage(bookmark, current_user):
+                return False, "Apenas o proprietário pode compartilhar este favorito."
+            
+            users = User.query.filter(User.id.in_(user_ids)).all() if user_ids else []
+            bookmark.shared_users = [u for u in users if u.id != bookmark.owner_id]
+            repo.commit()
+            LogService.log_action(current_user.username, 'BOOKMARK_SHARED', f'ID: {bookmark_id} | SHARED_WITH: {[u.username for u in bookmark.shared_users]}')
+            return True, "Compartilhamento atualizado com sucesso!"
         except Exception as e:
             repo.rollback()
             return False, str(e)
@@ -219,13 +306,12 @@ class BookmarkService:
             return False, str(e)
 
     @staticmethod
-    def create_batch_bookmarks(batch_text, category_ids=None):
+    def create_batch_bookmarks(batch_text, category_ids=None, current_user=None):
         """Cria bookmarks em lote a partir de um texto com múltiplas URLs."""
         repo = BookmarkRepository()
         repo_cat = BookmarkCategoryRepository()
         try:
             import re
-            # Extrai URLs usando regex simples
             urls = re.findall(r'https?://[^\s,;]+', batch_text)
             
             if not urls:
@@ -233,7 +319,6 @@ class BookmarkService:
 
             count = 0
             for url in urls:
-                # Tenta fazer o scraping básico
                 data = BookmarkService.scrape_url(url)
                 
                 if data['success']:
@@ -249,7 +334,9 @@ class BookmarkService:
                     titulo=titulo,
                     url=url,
                     descricao=descricao,
-                    image_url=image_url
+                    image_url=image_url,
+                    owner_id=current_user.id if current_user else None,
+                    is_active=True
                 )
                 
                 if category_ids:
@@ -260,6 +347,7 @@ class BookmarkService:
                 count += 1
             
             repo.commit()
+            LogService.log_action(current_user.username if current_user else 'system', 'BOOKMARK_BATCH_CREATED', f'COUNT: {count}')
             return True, f"{count} favoritos adicionados com sucesso!"
         except Exception as e:
             repo.rollback()

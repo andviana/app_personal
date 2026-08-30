@@ -1,5 +1,6 @@
 from typing import TypeVar, Type, List, Optional, Any, Generic
 from app import db
+from app.exceptions import NotFoundError
 from flask_sqlalchemy.model import Model
 
 T = TypeVar('T', bound=Model)
@@ -12,10 +13,9 @@ class BaseRepository(Generic[T]):
         return db.session.get(self.model, id)
 
     def get_or_404(self, id: Any) -> T:
-        entity = db.session.get(self.model, id)
+        entity = self.get_by_id(id)
         if entity is None:
-            from flask import abort
-            abort(404)
+            raise NotFoundError(f"{self.model.__name__} com id={id!r} não encontrado.")
         return entity
 
     def find_one_by(self, **kwargs) -> Optional[T]:
@@ -24,10 +24,8 @@ class BaseRepository(Generic[T]):
     def find_one_or_404(self, **kwargs) -> T:
         entity = self.find_one_by(**kwargs)
         if entity is None:
-            from flask import abort
-            abort(404)
+            raise NotFoundError(f"{self.model.__name__} não encontrado para {kwargs!r}.")
         return entity
-
 
     def list_all(self, order_by: Any = None, options: List[Any] = None) -> List[T]:
         """
@@ -52,13 +50,12 @@ class BaseRepository(Generic[T]):
     def commit(self) -> None:
         try:
             db.session.commit()
-        except Exception as e:
+        except Exception:
             db.session.rollback()
-            raise e
+            raise
 
     def flush(self) -> None:
         db.session.flush()
 
     def rollback(self) -> None:
         db.session.rollback()
-

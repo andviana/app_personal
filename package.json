@@ -1,7 +1,7 @@
 {
   "name": "daylog",
   "version": "1.0.0",
-  "description": "Discord-style Task and List Manager",
+  "description": "Personal task, list and content manager",
   "scripts": {
     "build:css": "tailwindcss -i ./app/static/css/input.css -o ./app/static/css/output.css --minify",
     "watch:css": "tailwindcss -i ./app/static/css/input.css -o ./app/static/css/output.css --watch"

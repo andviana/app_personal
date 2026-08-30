@@ -1,87 +1,69 @@
 {% extends 'base.html' %}
+{% from 'macros/components.html' import page_header, empty_state %}
 
 {% block title %}Tarefas - AppPessoal{% endblock %}
 
 {% block content %}
-{% set cat_colors = {
-'0': 'blue', '1': 'green', '2': 'purple', '3': 'yellow', '4': 'pink',
-'5': 'indigo', '6': 'orange', '7': 'red', '8': 'cyan', '9': 'teal'
-} %}
+{% if view == 'detail' or view == 'all' or is_archived_view %}
+<a href="{{ url_for('tasks.index') }}" class="btn-back group mb-4">
+    <i class="ph-bold ph-arrow-left btn-back-icon"></i>
+    Voltar
+</a>
+{% endif %}
 
-<!-- Header Section -->
-<div class="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-    <div class="flex flex-col gap-4">
-        {% if view == 'detail' or view == 'all' or is_archived_view %}
-        <a href="{{ url_for('tasks.index') }}" class="btn-back group">
-            <i class="ph-bold ph-arrow-left btn-back-icon"></i>
-            Voltar
-        </a>
-        {% endif %}
+{% call page_header('Tarefas', icon='ph-list-checks', badge=('Arquivados' if is_archived_view else none)) %}
+    {% if is_archived_view %}
+    <a href="{{ url_for('tasks.index') }}" class="btn-secondary btn-md flex-1 md:flex-initial" data-tooltip="Ver Tarefas Ativas">
+        <i class="ph-bold ph-check-circle text-lg"></i> <span class="text-xs font-medium">Ver Ativos</span>
+    </a>
+    {% else %}
+    <a href="{{ url_for('tasks.index', archived='true') }}" class="btn-ghost btn-md flex-1 md:flex-initial" data-tooltip="Ver Tarefas Desativadas/Arquivadas">
+        <i class="ph-bold ph-archive text-lg"></i> <span class="text-xs font-medium">Arquivados</span>
+    </a>
+    {% endif %}
 
-        <div class="flex flex-col gap-1">
-            <h1 class="text-2xl md:text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
-                <i class="ph-bold ph-list-checks text-success"></i> Tarefas {% if is_archived_view %}<span class="text-xs bg-danger/20 text-danger px-3 py-1 rounded-full uppercase tracking-widest font-bold">(Arquivados)</span>{% endif %}
-            </h1>
-        </div>
-    </div>
+    {% if view == 'all' or view == 'detail' %}
+    <button id="toggleModeBtn" onclick="togglePanel()" class="btn-secondary btn-md flex-1 md:flex-initial"
+        data-tooltip="Pesquisar/Filtrar" data-tooltip-pos="top">
+        <i class="ph-bold ph-magnifying-glass text-lg"></i> <span class="hidden md:inline">Pesquisar</span>
+    </button>
+    {% endif %}
 
-    <div class="flex flex-wrap gap-2 w-full md:w-auto">
-        {% if is_archived_view %}
-        <a href="{{ url_for('tasks.index') }}" class="btn-secondary btn-md flex-1 md:flex-initial opacity-80 hover:opacity-100" data-tooltip="Ver Tarefas Ativas">
-            <i class="ph-bold ph-check-circle text-lg text-success"></i> <span class="text-xs font-bold uppercase">Ver Ativos</span>
-        </a>
-        {% else %}
-        <a href="{{ url_for('tasks.index', archived='true') }}" class="btn-secondary btn-md flex-1 md:flex-initial opacity-70 hover:opacity-100 border-dashed" data-tooltip="Ver Tarefas Desativadas/Arquivadas">
-            <i class="ph-bold ph-archive text-lg text-text-muted"></i> <span class="text-xs font-bold uppercase">Ver Arquivados/Desativados</span>
-        </a>
-        {% endif %}
+    {% if not is_archived_view %}
+    <button onclick="document.getElementById('modalNovoGrupo').classList.remove('hidden')"
+        class="btn-secondary btn-md flex-1 md:flex-initial"
+        data-tooltip="Novo Grupo" data-tooltip-pos="top">
+        <i class="ph-bold ph-folder-plus text-lg"></i>
+    </button>
+    {% endif %}
 
-        {% if view == 'all' or view == 'detail' %}
-        <button id="toggleModeBtn" onclick="togglePanel()" class="btn-secondary btn-md flex-1 md:flex-initial"
-            data-tooltip="Pesquisar/Filtrar" data-tooltip-pos="top">
-            <i class="ph-bold ph-magnifying-glass text-lg"></i> <span class="hidden md:inline">Pesquisar</span>
-        </button>
-        {% endif %}
-
-        {% if not is_archived_view %}
-        <button onclick="document.getElementById('modalNovoGrupo').classList.remove('hidden')"
-            class="btn-secondary btn-md flex-1 md:flex-initial group hover:!border-success/50"
-            data-tooltip="Novo Grupo" data-tooltip-pos="top">
-            <i class="ph-bold ph-folder-plus text-lg text-success"></i>
-        </button>
-        {% endif %}
-
-        <a href="{{ url_for('tasks.export_pdf') }}" class="btn-success btn-md flex-1 md:flex-initial"
-            data-tooltip="Exportar PDF" data-tooltip-pos="top">
-            <i class="ph-bold ph-file-pdf text-lg"></i>
-        </a>
-    </div>
-</div>
+    <a href="{{ url_for('tasks.export_pdf') }}" class="btn-primary btn-md flex-1 md:flex-initial"
+        data-tooltip="Exportar PDF" data-tooltip-pos="top">
+        <i class="ph-bold ph-file-pdf text-lg"></i>
+    </a>
+{% endcall %}
 
 {% if view == 'groups' %}
     <!-- GROUPS VIEW (Hierarchical) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
         {% if not is_archived_view %}
         <!-- "Todos" Card -->
-        <div class="group card-container !border-discord-100/10 hover:!border-success flex items-center gap-4 relative overflow-hidden cursor-pointer"
+        <div class="group card-container hover:!border-primary/40 flex items-center gap-4 cursor-pointer"
             onclick="window.location.href='{{ url_for('tasks.index', view='all') }}';">
-            <div class="absolute top-0 left-0 w-1 h-full bg-success opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="bg-discord-400 text-success p-3 rounded-xl group-hover:bg-success group-hover:text-black transition-all duration-200">
+            <div class="bg-surface-sunken text-text-muted p-3 rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-200">
                 <i class="ph-fill ph-squares-four text-2xl"></i>
             </div>
             <div class="flex-1">
-                <h3 class="text-base font-black text-text-heading uppercase tracking-tight">TODAS AS TAREFAS</h3>
-                <p class="text-[11px] font-bold text-text-muted mt-1 uppercase tracking-widest">Visualização Global</p>
+                <h3 class="text-base font-semibold text-text-heading">Todas as tarefas</h3>
+                <p class="text-xs text-text-muted mt-0.5">Visualização global</p>
             </div>
         </div>
         {% endif %}
 
         {% for g in grupos %}
-        {% set c_name = cat_colors[(g.id % 10)|string] %}
-        <div class="group card-container !border-discord-100/10 hover:!border-{{ c_name }}-500 flex items-center gap-4 relative overflow-hidden cursor-pointer {% if is_archived_view %}opacity-60 grayscale bg-discord-200{% endif %}"
+        <div class="group card-container hover:!border-primary/40 flex items-center gap-4 cursor-pointer {% if is_archived_view %}opacity-60 grayscale{% endif %}"
             onclick="window.location.href='{{ url_for('tasks.index', grupo_id=g.id) }}';">
-            <div class="absolute top-0 left-0 w-1 h-full bg-{{ c_name }}-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="bg-discord-400 text-{{ c_name }}-500 p-3 rounded-xl group-hover:bg-{{ c_name }}-500 group-hover:text-white transition-all duration-200">
+            <div class="bg-surface-sunken text-text-muted p-3 rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-200">
                 <i class="ph-fill ph-folder text-2xl"></i>
             </div>
             <div class="flex-1 min-w-0">
@@ -89,13 +71,13 @@
                     {% if not is_archived_view and g.owner_id and g.owner_id != current_user.id %}
                     <i class="ph-bold ph-users text-primary text-base" data-tooltip="Categoria compartilhada com você"></i>
                     {% endif %}
-                    <h3 class="text-base font-black text-text-heading truncate uppercase tracking-tight">{{ g.denominacao }}</h3>
+                    <h3 class="text-base font-semibold text-text-heading truncate">{{ g.denominacao }}</h3>
                 </div>
                 <div class="flex items-center gap-2 mt-1">
                     {% if is_archived_view %}
-                    <span class="bg-gray-600/60 text-gray-200 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded">Desativada</span>
+                    <span class="badge-neutral">Desativada</span>
                     {% endif %}
-                    <p class="text-[11px] font-bold text-text-muted uppercase tracking-widest">{{ g.tarefas_filtradas|length }} tarefas</p>
+                    <p class="text-xs text-text-muted">{{ g.tarefas_filtradas|length }} tarefas</p>
                 </div>
             </div>
             <div class="flex items-center gap-1" onclick="event.stopPropagation()">
@@ -103,7 +85,7 @@
                     {% if g.owner_id == current_user.id %}
                     <form action="{{ url_for('tasks.reactivate_grupo', id=g.id) }}" method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="w-8 h-8 flex items-center justify-center text-success hover:text-white transition-all" data-tooltip="Reativar Categoria">
+                        <button type="submit" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center rounded-lg text-success hover:bg-success hover:text-white transition-all" data-tooltip="Reativar Categoria">
                             <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i>
                         </button>
                     </form>
@@ -112,25 +94,25 @@
                     {% if g.owner_id == current_user.id %}
                     <!-- Compartilhar Grupo -->
                     <button type="button" onclick="openShareModalGroup({{ g.id }}, {{ g.shared_users|map(attribute='id')|list|tojson }})"
-                        class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-primary transition-all" data-tooltip="Compartilhar Categoria">
+                        class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center rounded-lg text-text-muted hover:bg-surface-sunken hover:text-primary transition-all" data-tooltip="Compartilhar Categoria">
                         <i class="ph-bold ph-share-network text-lg"></i>
                     </button>
                     <!-- Arquivar Grupo -->
                     <form action="{{ url_for('tasks.archive_grupo', id=g.id) }}" method="POST" class="inline">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-warning transition-all" data-tooltip="Desativar Categoria">
+                        <button type="submit" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center rounded-lg text-text-muted hover:bg-surface-sunken hover:text-warning transition-all" data-tooltip="Desativar Categoria">
                             <i class="ph-bold ph-archive text-lg"></i>
                         </button>
                     </form>
                     <!-- Excluir Grupo -->
                     <form action="{{ url_for('tasks.delete_grupo', id=g.id) }}" method="POST" onsubmit="return confirm('Deseja realmente excluir este grupo e todas as suas tarefas?')" class="inline">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-danger transition-all" data-tooltip="Excluir Categoria">
+                        <button type="submit" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center rounded-lg text-text-muted hover:bg-surface-sunken hover:text-danger transition-all" data-tooltip="Excluir Categoria">
                             <i class="ph-bold ph-trash text-lg"></i>
                         </button>
                     </form>
                     {% endif %}
-                    <a href="{{ url_for('tasks.index', grupo_id=g.id) }}" class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-{{ c_name }}-500 transition-all duration-200">
+                    <a href="{{ url_for('tasks.index', grupo_id=g.id) }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center rounded-lg text-text-muted hover:bg-surface-sunken hover:text-primary transition-all duration-200">
                         <i class="ph-bold ph-arrow-square-out text-lg"></i>
                     </a>
                 {% endif %}
@@ -144,7 +126,7 @@
     {% if not is_archived_view %}
     <!-- Barra de Filtros -->
     <div id="filterBar"
-        class="hidden bg-discord-200 p-4 border border-discord-100/10 rounded-xl mb-8 flex flex-col md:flex-row gap-3 transition-standard animate-in fade-in slide-in-from-top-2 shadow-md">
+        class="hidden bg-surface p-4 border border-slate-200 rounded-xl mb-8 flex flex-col md:flex-row gap-3 transition-standard animate-in fade-in slide-in-from-top-2 shadow-md">
         <div class="relative flex-grow">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
                 <i class="ph-bold ph-magnifying-glass text-lg"></i>
@@ -186,14 +168,14 @@
             </div>
         </div>
         <div class="md:self-center flex justify-end">
-            <button onclick="clearFilters()" class="btn-ghost btn-sm w-full md:w-auto uppercase font-black" style="font-size: 10px; letter-spacing: 0.1em;">
+            <button onclick="clearFilters()" class="btn-ghost btn-sm w-full md:w-auto">
                 <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i> Limpar
             </button>
         </div>
     </div>
 
     <!-- Cadastro Inline -->
-    <div id="taskFormArea" class="bg-discord-200 p-5 border border-discord-100/10 rounded-xl mb-10 shadow-md">
+    <div id="taskFormArea" class="bg-surface p-5 border border-slate-200 rounded-xl mb-10 shadow-md">
         <form action="{{ url_for('tasks.add') }}" method="POST" class="flex flex-col lg:flex-row gap-4">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="relative flex-grow">
@@ -224,8 +206,8 @@
                         <i class="ph-bold ph-caret-down"></i>
                     </div>
                 </div>
-                <button type="submit" class="btn-success btn-lg w-full lg:w-auto lg:px-10 group">
-                    <span class="tracking-widest uppercase text-xs">ADICIONAR</span>
+                <button type="submit" class="btn-primary btn-lg w-full lg:w-auto lg:px-10 group">
+                    <span class="text-sm">Adicionar</span>
                     <i class="ph-bold ph-plus text-lg group-hover:rotate-90 transition-transform duration-300"></i>
                 </button>
             </div>
@@ -235,33 +217,32 @@
 
     <!-- DATA RENDERING -->
     {% set rendering_list = [grupo_selecionado] if view == 'detail' else grupos %}
-    
+
     {% for g in rendering_list %}
     {% if g.tarefas_filtradas %}
-    {% set c_name = cat_colors[(g.id % 10)|string] %}
-    <div class="task-group mb-12 p-1 rounded-2xl bg-{{ c_name }}-500/[0.03] border border-{{ c_name }}-500/5"
+    <div class="task-group mb-8 bg-surface border border-slate-200 rounded-xl overflow-hidden"
         data-grupo="{{ g.denominacao }}">
-        <div class="flex items-center justify-between mb-4 px-3 pt-3">
-            <div class="flex items-center gap-3">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
                 {% if not is_archived_view and g.owner_id and g.owner_id != current_user.id %}
                 <i class="ph-bold ph-users text-primary text-sm" data-tooltip="Categoria compartilhada com você"></i>
                 {% endif %}
-                <h2 class="text-[11px] font-black text-{{ c_name }}-400 tracking-[0.2em] uppercase">{{ g.denominacao }}</h2>
-                <span class="bg-{{ c_name }}-500/10 text-{{ c_name }}-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-{{ c_name }}-500/10">{{ g.tarefas_filtradas|length }}</span>
+                <h2 class="text-sm font-semibold text-text-heading">{{ g.denominacao }}</h2>
+                <span class="badge-neutral">{{ g.tarefas_filtradas|length }}</span>
             </div>
-            
+
             <div class="flex items-center gap-1">
                 {% if not is_archived_view and g.owner_id == current_user.id %}
                 <!-- Compartilhar Grupo no Cabeçalho -->
                 <button type="button" onclick="openShareModalGroup({{ g.id }}, {{ g.shared_users|map(attribute='id')|list|tojson }})"
-                    class="btn-ghost btn-sm !text-{{ c_name }}-400 hover:!text-white hover:!bg-{{ c_name }}-500/20"
+                    class="btn-ghost btn-sm"
                     data-tooltip="Compartilhar Categoria" data-tooltip-pos="left">
                     <i class="ph-bold ph-share-network text-sm"></i>
                 </button>
                 <!-- Desativar Grupo no Cabeçalho -->
                 <form action="{{ url_for('tasks.archive_grupo', id=g.id) }}" method="POST" class="inline">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="btn-ghost btn-sm !text-{{ c_name }}-400 hover:!text-warning hover:!bg-{{ c_name }}-500/20"
+                    <button type="submit" class="btn-ghost btn-sm hover:!text-warning"
                         data-tooltip="Desativar Categoria" data-tooltip-pos="left">
                         <i class="ph-bold ph-archive text-sm"></i>
                     </button>
@@ -270,7 +251,7 @@
 
                 {% if not is_archived_view %}
                 <button type="button" onclick="openAddTaskModal({{ g.id }}, '{{ g.denominacao }}')"
-                    class="btn-ghost btn-sm !text-{{ c_name }}-400 hover:!text-white hover:!bg-{{ c_name }}-500/20"
+                    class="btn-ghost btn-sm hover:!text-primary"
                     data-tooltip="Nova Tarefa" data-tooltip-pos="left">
                     <i class="ph-bold ph-plus text-sm"></i>
                     <span class="hidden sm:inline">Nova Tarefa</span>
@@ -279,16 +260,16 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-1.5 p-2">
+        <div class="grid grid-cols-1 divide-y divide-slate-100">
             {% for t in g.tarefas_filtradas %}
-            <div class="task-row group bg-discord-200/50 backdrop-blur-sm border border-discord-100/10 p-3 rounded-xl flex items-center justify-between hover:bg-{{ c_name }}-500/10 transition-all duration-200 {% if is_archived_view %}opacity-60 grayscale bg-discord-200{% endif %}"
+            <div class="task-row group px-4 py-3 flex items-center justify-between hover:bg-background transition-all duration-200 {% if is_archived_view %}opacity-60 grayscale{% endif %}"
                 data-desc="{{ t.descricao|lower }}" data-status="{{ t.status.denominacao if t.status else '' }}">
                 <div class="flex items-center gap-4 flex-grow min-w-0">
                     {% set status_name = t.status.denominacao if t.status else 'PENDENTE' %}
                     {% if not is_archived_view %}
                     <form action="{{ url_for('tasks.concluir' if status_name != 'FINALIZADO' else 'tasks.iniciar', id=t.id) }}" method="POST" data-ajax="true">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200
+                        <button type="submit" class="relative flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 after:absolute after:-inset-2.5 after:content-['']
                             {% if status_name == 'FINALIZADO' %}bg-success border-success text-white
                             {% elif status_name == 'INICIADO' %}bg-success border-success text-white animate-pulse
                             {% else %}border-text-muted hover:border-text-normal text-transparent hover:text-text-normal{% endif %}">
@@ -308,9 +289,9 @@
                         </div>
                         <div class="flex items-center gap-2 mt-1">
                             {% if is_archived_view %}
-                            <span class="bg-gray-600/60 text-gray-200 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded">Desativada</span>
+                            <span class="badge-neutral">Desativada</span>
                             {% else %}
-                            <span class="{% if status_name == 'PENDENTE' %}badge-warning{% elif status_name == 'INICIADO' %}badge-success{% else %}badge-neutral opacity-60{% endif %} text-[9px] tracking-widest px-2 py-0.5">
+                            <span class="{% if status_name == 'PENDENTE' %}badge-warning{% elif status_name == 'INICIADO' %}badge-success{% else %}badge-neutral opacity-60{% endif %}">
                                 {{ status_name }}
                             </span>
                             {% endif %}
@@ -323,7 +304,7 @@
                         {% if t.owner_id == current_user.id %}
                         <form action="{{ url_for('tasks.reactivate', id=t.id) }}" method="POST">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn-ghost btn-base p-2 text-success hover:bg-discord-400 rounded-md" data-tooltip="Reativar Tarefa">
+                            <button type="submit" class="btn-ghost btn-base p-2 text-success hover:bg-surface-hover rounded-md" data-tooltip="Reativar Tarefa">
                                 <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i>
                             </button>
                         </form>
@@ -331,7 +312,7 @@
                     {% else %}
                         <form action="{{ url_for('tasks.iniciar', id=t.id) }}" method="POST" class="play-btn-form {% if status_name != 'PENDENTE' %}hidden{% endif %}">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="p-2 text-success hover:bg-discord-400 rounded-md transition-standard" data-tooltip="Iniciar" data-tooltip-pos="top">
+                            <button type="submit" class="p-2 text-success hover:bg-surface-hover rounded-md transition-standard" data-tooltip="Iniciar" data-tooltip-pos="top">
                                 <i class="ph-bold ph-play text-base"></i>
                             </button>
                         </form>
@@ -370,8 +351,8 @@
     {% endfor %}
 
     {% if (view == 'detail' and not grupo_selecionado.tarefas_filtradas) or (view == 'all' and not grupos|map(attribute='tarefas_filtradas')|map('length')|sum) %}
-    <div class="flex flex-col items-center justify-center py-20 bg-discord-200 rounded-xl border border-discord-100/20 border-dashed text-center">
-        <div class="w-20 h-20 bg-discord-400 rounded-full flex items-center justify-center mb-6">
+    <div class="flex flex-col items-center justify-center py-20 bg-surface rounded-xl border border-slate-200 border-dashed text-center">
+        <div class="w-20 h-20 bg-surface-hover rounded-full flex items-center justify-center mb-6">
             <i class="ph-bold ph-wind text-4xl text-text-muted"></i>
         </div>
         <h3 class="text-xl font-bold text-text-heading">Tudo limpo por aqui!</h3>
@@ -383,17 +364,17 @@
 
 <!-- Modals -->
 <div id="modalNovoGrupo"
-    class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
-    <div class="bg-discord-modal rounded-2xl shadow-2xl w-full max-w-sm border border-discord-100/30 animate-in zoom-in-95">
+    class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-sm">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex flex-col gap-1">
-                    <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                        <i class="ph-bold ph-folder-plus text-success"></i> Nova Categoria
+                    <h2 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-folder-plus text-primary"></i> Nova Categoria
                     </h2>
                 </div>
                 <button type="button" onclick="document.getElementById('modalNovoGrupo').classList.add('hidden')"
-                    class="p-2 text-text-muted hover:bg-discord-400 hover:text-text-normal rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
+                    class="p-3 md:p-2 text-text-muted hover:bg-surface-hover hover:text-text-normal rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('tasks.add_grupo') }}" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -405,8 +386,8 @@
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button" onclick="document.getElementById('modalNovoGrupo').classList.add('hidden')"
-                        class="btn-secondary btn-md flex-1 uppercase tracking-widest text-[11px] font-black">CANCELAR</button>
-                    <button type="submit" class="btn-success btn-md flex-1 uppercase tracking-widest text-[11px] font-black">SALVAR</button>
+                        class="btn-secondary btn-md flex-1">Cancelar</button>
+                    <button type="submit" class="btn-primary btn-md flex-1">Salvar</button>
                 </div>
             </form>
         </div>
@@ -414,17 +395,17 @@
 </div>
 
 <div id="modalEditTarefa"
-    class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
-    <div class="bg-discord-modal rounded-2xl shadow-2xl w-full max-w-md border border-discord-100/30 animate-in zoom-in-95">
+    class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-md">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex flex-col gap-1">
-                    <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                        <i class="ph-bold ph-pencil-simple text-success"></i> Editar Tarefa
+                    <h2 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-pencil-simple text-primary"></i> Editar Tarefa
                     </h2>
                 </div>
                 <button type="button" onclick="document.getElementById('modalEditTarefa').classList.add('hidden')"
-                    class="p-2 text-text-muted hover:bg-discord-400 hover:text-text-normal rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
+                    class="p-3 md:p-2 text-text-muted hover:bg-surface-hover hover:text-text-normal rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
             </div>
             <form id="formEditTarefa" method="POST" class="space-y-6" data-ajax="true">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -464,8 +445,8 @@
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button" onclick="document.getElementById('modalEditTarefa').classList.add('hidden')"
-                        class="btn-secondary btn-md flex-1 uppercase tracking-widest text-[11px] font-black">CANCELAR</button>
-                    <button type="submit" class="btn-success btn-md flex-1 uppercase tracking-widest text-[11px] font-black">SALVAR</button>
+                        class="btn-secondary btn-md flex-1">Cancelar</button>
+                    <button type="submit" class="btn-primary btn-md flex-1">Salvar</button>
                 </div>
             </form>
         </div>
@@ -473,18 +454,18 @@
 </div>
 
 <div id="modalNovaTarefa"
-    class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
-    <div class="bg-discord-modal rounded-2xl shadow-2xl w-full max-w-md border border-discord-100/30 animate-in zoom-in-95">
+    class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-md">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex flex-col gap-1">
-                    <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                        <i class="ph-bold ph-plus text-success"></i> Nova Tarefa
+                    <h2 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-plus text-primary"></i> Nova Tarefa
                     </h2>
-                    <p id="modalNovaTarefaGrupo" class="text-[10px] font-bold text-text-muted/40 uppercase tracking-widest">Grupo: COMUM</p>
+                    <p id="modalNovaTarefaGrupo" class="text-xs text-text-muted">Grupo: COMUM</p>
                 </div>
                 <button type="button" onclick="document.getElementById('modalNovaTarefa').classList.add('hidden')"
-                    class="p-2 text-text-muted hover:bg-discord-400 hover:text-text-normal rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
+                    class="p-3 md:p-2 text-text-muted hover:bg-surface-hover hover:text-text-normal rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('tasks.add') }}" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -498,8 +479,8 @@
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button" onclick="document.getElementById('modalNovaTarefa').classList.add('hidden')"
-                        class="btn-secondary btn-md flex-1 uppercase tracking-widest text-[11px] font-black">CANCELAR</button>
-                    <button type="submit" class="btn-success btn-md flex-1 uppercase tracking-widest text-[11px] font-black">SALVAR</button>
+                        class="btn-secondary btn-md flex-1">Cancelar</button>
+                    <button type="submit" class="btn-primary btn-md flex-1">Salvar</button>
                 </div>
             </form>
         </div>
@@ -508,24 +489,24 @@
 
 <!-- Modal Compartilhar Tarefa -->
 <div id="modalCompartilharTarefa"
-    class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-discord-200 w-full max-w-md rounded-2xl shadow-2xl border border-discord-400 overflow-hidden animate-in zoom-in-95 duration-200">
+    class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-md">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-black text-text-heading flex items-center gap-2 uppercase tracking-tight">
+                <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
                     <i class="ph-bold ph-share-network text-primary"></i> Compartilhar Tarefa
                 </h3>
-                <button onclick="document.getElementById('modalCompartilharTarefa').classList.add('hidden')" class="text-text-muted hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="document.getElementById('modalCompartilharTarefa').classList.add('hidden')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form id="formCompartilharTarefa" action="" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-3">Selecione os usuários com acesso:</label>
-                    <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-discord-100 rounded-xl border border-discord-400">
+                    <label class="form-label mb-3">Selecione os usuários com acesso:</label>
+                    <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-surface-sunken rounded-xl border border-slate-200">
                         {% for u in users %}
                         {% if u.id != current_user.id %}
-                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-discord-300 cursor-pointer">
-                            <input type="checkbox" name="user_ids" value="{{ u.id }}" class="task-user-checkbox w-4 h-4 rounded text-primary focus:ring-primary bg-discord-400 border-discord-400">
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-background cursor-pointer">
+                            <input type="checkbox" name="user_ids" value="{{ u.id }}" class="task-user-checkbox w-4 h-4 rounded text-primary focus:ring-primary bg-surface-hover border-slate-200">
                             <span class="text-sm font-semibold text-text-heading">{{ u.username }}</span>
                         </label>
                         {% endif %}
@@ -533,8 +514,8 @@
                     </div>
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="document.getElementById('modalCompartilharTarefa').classList.add('hidden')" class="btn-secondary btn-md flex-1 uppercase tracking-widest text-[11px] font-black">CANCELAR</button>
-                    <button type="submit" class="btn-primary btn-md flex-1 uppercase tracking-widest text-[11px] font-black !bg-primary">SALVAR</button>
+                    <button type="button" onclick="document.getElementById('modalCompartilharTarefa').classList.add('hidden')" class="btn-secondary btn-md flex-1">Cancelar</button>
+                    <button type="submit" class="btn-primary btn-md flex-1">Salvar</button>
                 </div>
             </form>
         </div>
@@ -543,24 +524,24 @@
 
 <!-- Modal Compartilhar Grupo de Tarefas -->
 <div id="modalCompartilharGrupo"
-    class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-discord-200 w-full max-w-md rounded-2xl shadow-2xl border border-discord-400 overflow-hidden animate-in zoom-in-95 duration-200">
+    class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-md">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-black text-text-heading flex items-center gap-2 uppercase tracking-tight">
+                <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
                     <i class="ph-bold ph-share-network text-primary"></i> Compartilhar Categoria
                 </h3>
-                <button onclick="document.getElementById('modalCompartilharGrupo').classList.add('hidden')" class="text-text-muted hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="document.getElementById('modalCompartilharGrupo').classList.add('hidden')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form id="formCompartilharGrupo" action="" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-3">Selecione os usuários com acesso a este grupo:</label>
-                    <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-discord-100 rounded-xl border border-discord-400">
+                    <label class="form-label mb-3">Selecione os usuários com acesso a este grupo:</label>
+                    <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-surface-sunken rounded-xl border border-slate-200">
                         {% for u in users %}
                         {% if u.id != current_user.id %}
-                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-discord-300 cursor-pointer">
-                            <input type="checkbox" name="user_ids" value="{{ u.id }}" class="group-user-checkbox w-4 h-4 rounded text-primary focus:ring-primary bg-discord-400 border-discord-400">
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-background cursor-pointer">
+                            <input type="checkbox" name="user_ids" value="{{ u.id }}" class="group-user-checkbox w-4 h-4 rounded text-primary focus:ring-primary bg-surface-hover border-slate-200">
                             <span class="text-sm font-semibold text-text-heading">{{ u.username }}</span>
                         </label>
                         {% endif %}
@@ -568,8 +549,8 @@
                     </div>
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="document.getElementById('modalCompartilharGrupo').classList.add('hidden')" class="btn-secondary btn-md flex-1 uppercase tracking-widest text-[11px] font-black">CANCELAR</button>
-                    <button type="submit" class="btn-primary btn-md flex-1 uppercase tracking-widest text-[11px] font-black !bg-primary">SALVAR</button>
+                    <button type="button" onclick="document.getElementById('modalCompartilharGrupo').classList.add('hidden')" class="btn-secondary btn-md flex-1">Cancelar</button>
+                    <button type="submit" class="btn-primary btn-md flex-1">Salvar</button>
                 </div>
             </form>
         </div>

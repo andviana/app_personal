@@ -1,11 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
-from app.models import Bookmark, BookmarkCategory
-from app.repositories.bookmark_repository import BookmarkRepository, BookmarkCategoryRepository
-from sqlalchemy.exc import SQLAlchemyError
-
 from app.models import Bookmark, BookmarkCategory, User
+from app.repositories.bookmark_repository import BookmarkRepository, BookmarkCategoryRepository
 from app.services.log_service import LogService
+from app.services.url_safety import is_safe_external_url
 
 class BookmarkService:
     @staticmethod
@@ -29,6 +27,8 @@ class BookmarkService:
     @staticmethod
     def scrape_url(url):
         """Extrai título e descrição de uma URL."""
+        if not is_safe_external_url(url):
+            return {'success': False, 'error': 'URL inválida ou não permitida.'}
         try:
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -126,7 +126,8 @@ class BookmarkService:
                 result = response.json()
                 translated_chunks = [chunk[0] for chunk in result[0] if chunk[0]]
                 return "".join(translated_chunks)
-        except Exception as e:
+        except (requests.RequestException, ValueError, KeyError, IndexError):
+            # Tradução é um "melhor esforço": se falhar, devolve o texto original.
             pass
         return text
 

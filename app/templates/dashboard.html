@@ -19,80 +19,103 @@
 {% block content %}
 <div class="mb-8">
     <div class="flex flex-col gap-1">
-        <h1 class="text-2xl md:text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
+        <h1 class="text-2xl md:text-3xl font-bold text-text-heading tracking-tight flex items-center gap-3">
             <i class="ph-bold ph-squares-four text-primary"></i> DayLog
         </h1>
     </div>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
     <!-- Tasks Summary Card -->
-    <div
-        class="group bg-discord-200 rounded-xl p-6 md:p-8 border border-discord-100/10 shadow-md hover:bg-discord-400/30 transition-all duration-200 flex flex-col justify-between relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-1 bg-success opacity-0 group-hover:opacity-100 transition-opacity">
-        </div>
+    <a href="{{ url_for('tasks.index') }}"
+        class="group bg-surface rounded-xl p-6 md:p-8 border border-slate-200 shadow-md hover:bg-surface-hover/30 transition-all duration-200 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-success opacity-0 group-hover:opacity-100 transition-opacity"></div>
         <div class="flex items-start justify-between">
             <div>
-                <span class="form-label !mb-0">Pendentes</span>
-                <h2 class="mt-2 text-5xl font-black text-text-heading leading-none">{{ tarefas_pendentes }}</h2>
+                <span class="form-label !mb-0">Tarefas</span>
+                <h2 class="mt-2 text-5xl font-black text-text-heading leading-none">{{ tasks.total }}</h2>
+                <p class="mt-2 text-xs text-text-muted leading-relaxed">
+                    {{ tasks.pendentes }} pendentes · {{ tasks.iniciadas }} iniciadas · {{ tasks.finalizadas }} finalizadas
+                </p>
             </div>
-            <div class="p-4 bg-discord-400 text-success rounded-full group-hover:bg-success group-hover:text-white transition-all duration-200"
-                data-tooltip="Ir para Tarefas" data-tooltip-pos="top">
-                <a href="{{ url_for('tasks.index') }}"><i class="ph-fill ph-list-dashes text-3xl"></i></a>
+            <div class="p-4 bg-surface-hover text-success rounded-full group-hover:bg-success group-hover:text-white transition-all duration-200 shrink-0">
+                <i class="ph-fill ph-list-checks text-3xl"></i>
             </div>
         </div>
-    </div>
+    </a>
 
-    <!-- Lists Summary Card -->
-    <div
-        class="group bg-discord-200 rounded-xl p-6 md:p-8 border border-discord-100/10 shadow-md hover:bg-discord-400/30 transition-all duration-200 flex flex-col justify-between relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-1 bg-[#ffb000] opacity-0 group-hover:opacity-100 transition-opacity">
-        </div>
+    <!-- Task Groups Card -->
+    <a href="{{ url_for('tasks.index') }}"
+        class="group bg-surface rounded-xl p-6 md:p-8 border border-slate-200 shadow-md hover:bg-surface-hover/30 transition-all duration-200 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-success opacity-0 group-hover:opacity-100 transition-opacity"></div>
         <div class="flex items-start justify-between">
             <div>
-                <span class="form-label !mb-0">Ativas</span>
-                <h2 class="mt-2 text-5xl font-black text-text-heading leading-none">{{ listas_ativas }}</h2>
+                <span class="form-label !mb-0">Grupos de Tarefas</span>
+                <h2 class="mt-2 text-5xl font-black text-text-heading leading-none">{{ grupos_count }}</h2>
             </div>
-            <div class="p-4 bg-discord-400 text-[#ffb000] rounded-full group-hover:bg-[#ffb000] group-hover:text-white transition-all duration-200"
-                data-tooltip="Gerenciar Listas" data-tooltip-pos="top">
-                <a href="{{ url_for('lists.index') }}"><i class="ph-fill ph-shopping-bag text-3xl"></i></a>
+            <div class="p-4 bg-surface-hover text-success rounded-full group-hover:bg-success group-hover:text-white transition-all duration-200 shrink-0">
+                <i class="ph-fill ph-folder-open text-3xl"></i>
             </div>
         </div>
-    </div>
+    </a>
 
-    <!-- Shopping Finance Summary Card -->
-    <div
-        class="group bg-discord-200 rounded-xl p-6 md:p-8 border border-discord-100/10 shadow-md hover:bg-discord-400/30 transition-all duration-200 flex flex-col justify-between relative overflow-hidden">
-        <div
-            class="absolute top-0 left-0 w-full h-1 bg-primary opacity-0 group-hover:opacity-100 transition-opacity">
-        </div>
+    <!-- Shopping Lists Card -->
+    <a href="{{ url_for('lists.index') }}"
+        class="group bg-surface rounded-xl p-6 md:p-8 border border-slate-200 shadow-md hover:bg-surface-hover/30 transition-all duration-200 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
         <div class="flex items-start justify-between">
             <div>
-                <span class="form-label !mb-0">Resumo de Valores</span>
-                <div class="mt-2 space-y-1">
-                    <div class="flex items-baseline gap-2">
-                        <span class="text-xs text-text-muted">Estimado:</span>
-                        <h3 class="text-2xl font-black text-text-heading">R$ {{
-                            "%.2f"|format(shopping_metrics.total_estimated) }}</h3>
-                    </div>
-                    <div class="flex items-baseline gap-2">
-                        <span class="text-xs text-text-muted">Comprado:</span>
-                        <h3 class="text-2xl font-black text-success">R$ {{
-                            "%.2f"|format(shopping_metrics.total_purchased) }}</h3>
-                    </div>
-                </div>
+                <span class="form-label !mb-0">Listas de Compras</span>
+                <h2 class="mt-2 text-5xl font-black text-text-heading leading-none">{{ shopping.total_listas }}</h2>
             </div>
-            <div
-                class="p-4 bg-discord-400 text-primary rounded-full group-hover:bg-primary group-hover:text-white transition-all duration-200">
+            <div class="p-4 bg-surface-hover text-primary rounded-full group-hover:bg-primary group-hover:text-white transition-all duration-200 shrink-0">
+                <i class="ph-fill ph-shopping-bag text-3xl"></i>
+            </div>
+        </div>
+    </a>
+
+    <!-- Shopping Items Card -->
+    <a href="{{ url_for('lists.index') }}"
+        class="group bg-surface rounded-xl p-6 md:p-8 border border-slate-200 shadow-md hover:bg-surface-hover/30 transition-all duration-200 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="flex items-start justify-between">
+            <div>
+                <span class="form-label !mb-0">Itens de Compras</span>
+                <h2 class="mt-2 text-5xl font-black text-text-heading leading-none">{{ shopping.itens_total }}</h2>
+                <p class="mt-2 text-xs text-text-muted leading-relaxed">
+                    {{ shopping.itens_comprados }} comprados · {{ shopping.itens_pendentes }} pendentes
+                </p>
+            </div>
+            <div class="p-4 bg-surface-hover text-primary rounded-full group-hover:bg-primary group-hover:text-white transition-all duration-200 shrink-0">
                 <i class="ph-fill ph-package text-3xl"></i>
             </div>
         </div>
+    </a>
+</div>
+
+<!-- Items per List Breakdown -->
+{% if shopping.por_lista %}
+<div class="mt-8 bg-surface border border-slate-200 rounded-xl p-6 md:p-8 shadow-md">
+    <span class="form-label !mb-0">Itens por Lista</span>
+    <h3 class="text-lg font-bold text-text-heading mb-4">Suas listas de compras ativas</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {% for lista in shopping.por_lista %}
+        <a href="{{ url_for('lists.detail', id=lista.id) }}"
+            class="flex items-center justify-between gap-3 p-4 rounded-lg bg-surface-sunken hover:bg-surface-hover transition-colors duration-200 border border-slate-200">
+            <div class="min-w-0">
+                <p class="text-sm font-semibold text-text-heading truncate">{{ lista.denominacao }}</p>
+                <p class="text-xs text-text-muted">{{ lista.comprados }}/{{ lista.total }} comprados</p>
+            </div>
+            <span class="text-lg font-black text-primary shrink-0">{{ lista.total }}</span>
+        </a>
+        {% endfor %}
     </div>
 </div>
+{% endif %}
 
 <!-- Contribution Calendar Panel -->
 <div
-    class="mt-8 bg-discord-200 border border-discord-100/10 rounded-xl p-6 md:p-8 flex flex-col lg:flex-row lg:items-start lg:gap-10 shadow-md">
+    class="mt-8 bg-surface border border-slate-200 rounded-xl p-6 md:p-8 flex flex-col lg:flex-row lg:items-start lg:gap-10 shadow-md">
     <div class="flex flex-col gap-4 mb-8 lg:mb-0 lg:w-60 lg:shrink-0">
         <div>
             <span class="form-label !mb-0">Contribuições</span>
@@ -102,12 +125,12 @@
         <div class="flex items-center gap-2 text-[10px] text-text-muted font-bold uppercase tracking-widest">
             <span>Less</span>
             <div class="flex gap-1">
-                <div class="w-3 h-3 rounded-sm bg-discord-400/50" data-tooltip="Sem contribuições"
+                <div class="w-3 h-3 rounded-sm bg-surface-sunken" data-tooltip="Sem contribuições"
                     data-tooltip-pos="top"></div>
-                <div class="w-3 h-3 rounded-sm bg-[#0e4429]" data-tooltip="Baixo" data-tooltip-pos="top"></div>
-                <div class="w-3 h-3 rounded-sm bg-[#006d32]" data-tooltip="Médio" data-tooltip-pos="top"></div>
-                <div class="w-3 h-3 rounded-sm bg-[#26a641]" data-tooltip="Alto" data-tooltip-pos="top"></div>
-                <div class="w-3 h-3 rounded-sm bg-[#39d353]" data-tooltip="Muito Alto" data-tooltip-pos="top"></div>
+                <div class="w-3 h-3 rounded-sm bg-primary/25" data-tooltip="Baixo" data-tooltip-pos="top"></div>
+                <div class="w-3 h-3 rounded-sm bg-primary/50" data-tooltip="Médio" data-tooltip-pos="top"></div>
+                <div class="w-3 h-3 rounded-sm bg-primary/75" data-tooltip="Alto" data-tooltip-pos="top"></div>
+                <div class="w-3 h-3 rounded-sm bg-primary" data-tooltip="Muito Alto" data-tooltip-pos="top"></div>
             </div>
             <span>More</span>
         </div>
@@ -115,7 +138,7 @@
 
     <!-- Calendar Container -->
     <div
-        class="ml-4 overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 scrollbar-hide calendar-wrapper flex-1 lg:pl-10 lg:border-l lg:border-discord-400">
+        class="ml-4 overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 scrollbar-hide calendar-wrapper flex-1 lg:pl-10 lg:border-l lg:border-slate-200">
         <div class="flex gap-4 md:gap-6 min-w-max lg:min-w-0 lg:justify-center items-start">
             <!-- Y-Axis (Day Labels) -->
             <div class="grid grid-rows-7 h-fit leading-none mt-[20px]"
@@ -162,59 +185,103 @@
     </div>
 </div>
 
-<!-- Collection Totals Grid -->
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-8">
-    <!-- Total Itens -->
-    <div
-        class="card-container hover:bg-discord-400/30 transition-all duration-200 group flex flex-col justify-between h-32">
-        <div class="flex items-center justify-between mb-2">
-            <div
-                class="w-10 h-10 bg-[#ffb000]/10 text-[#ffb000] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
-                <i class="ph-fill ph-package"></i>
+<!-- Shared With Me Section -->
+<div class="mt-8">
+    <span class="form-label !mb-0">Compartilhados comigo</span>
+    <h3 class="text-lg font-bold text-text-heading mb-4">Itens que outras pessoas compartilharam com você</h3>
+
+    {% if shared_with_me %}
+    {% set icon_classes = {
+        'success': 'bg-success/10 text-success',
+        'primary': 'bg-primary/10 text-primary',
+        'warning': 'bg-warning/10 text-warning'
+    } %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {% for item in shared_with_me %}
+        <a href="{{ item.url }}"
+            class="flex items-center gap-4 p-4 bg-surface border border-slate-200 rounded-xl shadow-sm hover:bg-surface-hover/30 transition-colors duration-200">
+            <div class="w-11 h-11 shrink-0 rounded-full flex items-center justify-center text-lg {{ icon_classes.get(item.cor, icon_classes['primary']) }}">
+                <i class="ph-fill {{ item.icon }}"></i>
             </div>
-            <span class="text-2xl font-black text-text-heading">{{ itens_count }}</span>
-        </div>
-        <p class="form-label !mb-0">Itens nas Listas</p>
+            <div class="min-w-0">
+                <p class="text-sm font-semibold text-text-heading truncate">{{ item.titulo }}</p>
+                <p class="text-xs text-text-muted">{{ item.tipo }} · compartilhado por {{ item.owner }}</p>
+            </div>
+        </a>
+        {% endfor %}
     </div>
+    {% else %}
+    <div class="flex flex-col items-center justify-center py-16 bg-surface rounded-xl border border-dashed border-slate-200 text-center">
+        <div class="w-16 h-16 bg-surface-sunken rounded-full flex items-center justify-center mb-5 text-text-muted">
+            <i class="ph-bold ph-share-network text-3xl"></i>
+        </div>
+        <h3 class="text-base font-semibold text-text-heading">Nada foi compartilhado com você ainda</h3>
+        <p class="text-sm text-text-muted mt-1.5">Tarefas, listas e favoritos compartilhados por outras pessoas aparecem aqui.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Collection Totals Grid -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mt-8">
+    <!-- Listas Simples -->
+    <a href="{{ url_for('simple_lists.index') }}"
+        class="card-container hover:bg-surface-hover/30 transition-all duration-200 group flex flex-col justify-between h-32">
+        <div class="flex items-center justify-between mb-2">
+            <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
+                <i class="ph-fill ph-list-bullets"></i>
+            </div>
+            <span class="text-2xl font-black text-text-heading">{{ listas_simples_count }}</span>
+        </div>
+        <p class="form-label !mb-0">Listas Simples</p>
+    </a>
+
+    <!-- Total Bookmarks -->
+    <a href="{{ url_for('bookmarks.index') }}"
+        class="card-container hover:bg-surface-hover/30 transition-all duration-200 group flex flex-col justify-between h-32">
+        <div class="flex items-center justify-between mb-2">
+            <div class="w-10 h-10 bg-warning/10 text-warning rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
+                <i class="ph-fill ph-bookmark-simple"></i>
+            </div>
+            <span class="text-2xl font-black text-text-heading">{{ bookmarks_count }}</span>
+        </div>
+        <p class="form-label !mb-0">Favoritos</p>
+    </a>
 
     <!-- Total Snippets -->
-    <div
-        class="card-container hover:bg-discord-400/30 transition-all duration-200 group flex flex-col justify-between h-32">
+    <a href="{{ url_for('snippets.index') }}"
+        class="card-container hover:bg-surface-hover/30 transition-all duration-200 group flex flex-col justify-between h-32">
         <div class="flex items-center justify-between mb-2">
-            <div
-                class="w-10 h-10 bg-[#9a55f3]/10 text-[#9a55f3] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
+            <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
                 <i class="ph-fill ph-code"></i>
             </div>
             <span class="text-2xl font-black text-text-heading">{{ snippets_count }}</span>
         </div>
         <p class="form-label !mb-0">Snippets Salvos</p>
-    </div>
+    </a>
 
     <!-- Total Perfumes -->
-    <div
-        class="card-container hover:bg-discord-400/30 transition-all duration-200 group flex flex-col justify-between h-32">
+    <a href="{{ url_for('perfumes.index') }}"
+        class="card-container hover:bg-surface-hover/30 transition-all duration-200 group flex flex-col justify-between h-32">
         <div class="flex items-center justify-between mb-2">
-            <div
-                class="w-10 h-10 bg-[#ffb000]/10 text-[#ffb000] rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
+            <div class="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
                 <i class="ph-fill ph-drop"></i>
             </div>
             <span class="text-2xl font-black text-text-heading">{{ perfumes_count }}</span>
         </div>
         <p class="form-label !mb-0">Perfumes Coleção</p>
-    </div>
+    </a>
 
     <!-- Total Pessoas -->
-    <div
-        class="card-container hover:bg-discord-400/30 transition-all duration-200 group flex flex-col justify-between h-32">
+    <a href="{{ url_for('pessoas.index') }}"
+        class="card-container hover:bg-surface-hover/30 transition-all duration-200 group flex flex-col justify-between h-32">
         <div class="flex items-center justify-between mb-2">
-            <div
-                class="w-10 h-10 bg-success/10 text-success rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
+            <div class="w-10 h-10 bg-success/10 text-success rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-200">
                 <i class="ph-fill ph-users"></i>
             </div>
             <span class="text-2xl font-black text-text-heading">{{ pessoas_count }}</span>
         </div>
         <p class="form-label !mb-0">Pessoas Registradas</p>
-    </div>
+    </a>
 </div>
 
 <!-- Quick Actions Section -->
@@ -222,25 +289,25 @@
     <h3 class="form-label mb-4">Ações Rápidas</h3>
     <div class="flex flex-wrap gap-4">
         <a href="{{ url_for('tasks.index', action='new') }}"
-            class="w-14 h-14 bg-discord-200 border border-discord-100/10 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-success hover:text-white transition-all duration-300 active:scale-95"
+            class="w-14 h-14 bg-surface border border-slate-200 rounded-2xl hover:rounded-xl flex items-center justify-center text-text-normal hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 active:scale-95"
             data-tooltip="Nova Tarefa" data-tooltip-pos="top">
-            <i class="ph-bold ph-check-square-offset text-2xl"></i>
+            <i class="ph-bold ph-list-checks text-2xl"></i>
         </a>
 
         <a href="{{ url_for('lists.index', action='new') }}"
-            class="w-14 h-14 bg-discord-200 border border-discord-100/10 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#ffb000] hover:text-white transition-all duration-300 active:scale-95"
+            class="w-14 h-14 bg-surface border border-slate-200 rounded-2xl hover:rounded-xl flex items-center justify-center text-text-normal hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 active:scale-95"
             data-tooltip="Nova Lista" data-tooltip-pos="top">
             <i class="ph-bold ph-list-plus text-2xl"></i>
         </a>
 
         <a href="{{ url_for('pessoas.add') }}"
-            class="w-14 h-14 bg-discord-200 border border-discord-100/10 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-success hover:text-white transition-all duration-300 active:scale-95"
+            class="w-14 h-14 bg-surface border border-slate-200 rounded-2xl hover:rounded-xl flex items-center justify-center text-text-normal hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 active:scale-95"
             data-tooltip="Nova Pessoa" data-tooltip-pos="top">
             <i class="ph-bold ph-user-plus text-2xl"></i>
         </a>
 
         <a href="{{ url_for('snippets.novo') }}"
-            class="w-14 h-14 bg-discord-200 border border-discord-100/10 rounded-[16px] hover:rounded-[8px] flex items-center justify-center text-text-normal hover:bg-[#9a55f3] hover:text-white transition-all duration-300 active:scale-95"
+            class="w-14 h-14 bg-surface border border-slate-200 rounded-2xl hover:rounded-xl flex items-center justify-center text-text-normal hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 active:scale-95"
             data-tooltip="Novo Snippet" data-tooltip-pos="top">
             <i class="ph-bold ph-code text-2xl"></i>
         </a>

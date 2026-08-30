@@ -39,7 +39,7 @@
         padding: 12px !important;
     }
     .EasyMDEContainer .CodeMirror-cursor {
-        border-left: 1px solid #9a55f3 !important;
+        border-left: 1px solid #4f46e5 !important;
     }
     .EasyMDEContainer .editor-preview-side,
     .EasyMDEContainer .editor-preview {
@@ -51,7 +51,7 @@
     .editor-preview h1, .editor-preview h2, .editor-preview h3 { color: #f2f3f5; font-weight: 800; margin-top: 1em; margin-bottom: 0.5em; }
     .editor-preview h1 { font-size: 1.5em; border-bottom: 1px solid #3f4147; padding-bottom: 0.3em; }
     .editor-preview h2 { font-size: 1.3em; }
-    .editor-preview code { background: #1e1f22; padding: 2px 4px; border-radius: 4px; color: #9a55f3; font-family: monospace; }
+    .editor-preview code { background: #1e1f22; padding: 2px 4px; border-radius: 4px; color: #4f46e5; font-family: monospace; }
     .editor-preview pre { background: #1e1f22; padding: 16px; border-radius: 8px; border: 1px solid #3f4147; overflow-x: auto; }
     .editor-preview blockquote { border-left: 4px solid #4e5058; padding-left: 16px; color: #b5bac1; font-style: italic; }
     .editor-preview a { color: #00a8fc; text-decoration: none; }
@@ -62,58 +62,56 @@
 {% block content %}
 <div class="max-w-4xl mx-auto flex flex-col gap-8">
     <div class="flex items-center gap-4">
-        <a href="{{ url_for('snippets.index') }}" class="w-11 h-11 flex items-center justify-center bg-[#313338] text-text-muted hover:text-[#9a55f3] rounded-xl transition-standard shadow-sm border border-discord-400 hover:border-[#9a55f3]/50">
+        <a href="{{ url_for('snippets.index') }}" class="w-11 h-11 flex items-center justify-center bg-surface text-text-muted hover:text-primary rounded-xl transition-standard shadow-sm border border-slate-200 hover:border-primary/50">
             <i class="ph-bold ph-arrow-left text-xl"></i>
         </a>
         <div class="flex flex-col gap-1">
-            <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
-                <i class="ph-bold ph-code text-[#9a55f3]"></i> Editar Snippet
+            <h1 class="text-2xl md:text-3xl font-bold text-text-heading tracking-tight flex items-center gap-3">
+                <i class="ph-bold ph-code text-primary"></i> Editar Snippet
             </h1>
         </div>
     </div>
 
-    <form action="{{ url_for('snippets.edit', id=snippet.id) }}" method="POST" class="bg-discord-200 border border-discord-400 rounded-3xl p-8 md:p-10 shadow-sm flex flex-col gap-6">
+    <form action="{{ url_for('snippets.edit', id=snippet.id) }}" method="POST" class="bg-surface border border-slate-200 rounded-3xl p-8 md:p-10 shadow-sm flex flex-col gap-6">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <!-- Título -->
         <div class="flex flex-col gap-2">
-            <label for="titulo" class="text-xs font-bold uppercase tracking-widest text-text-muted">Título do Snippet <span class="text-danger">*</span></label>
+            <label for="titulo" class="form-label">Título do Snippet <span class="text-danger">*</span></label>
             <input type="text" id="titulo" name="titulo" required value="{{ snippet.titulo }}"
-                   class="w-full px-4 h-12 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#9a55f3] text-text-normal font-semibold placeholder:text-text-muted transition-standard"
+                   class="w-full px-4 h-12 bg-surface-sunken border-none rounded-xl focus:ring-2 focus:ring-primary text-text-normal font-semibold placeholder:text-text-muted transition-standard"
                    placeholder="Ex: Conexão com Banco em Python">
         </div>
 
         <!-- Descrição -->
         <div class="flex flex-col gap-2">
-            <label for="descricao" class="text-xs font-bold uppercase tracking-widest text-text-muted">Descrição (Opcional)</label>
+            <label for="descricao" class="form-label">Descrição (Opcional)</label>
             <input type="text" id="descricao" name="descricao" value="{{ snippet.descricao or '' }}"
-                   class="w-full px-4 h-12 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#9a55f3] text-text-normal font-semibold placeholder:text-text-muted transition-standard"
+                   class="w-full px-4 h-12 bg-surface-sunken border-none rounded-xl focus:ring-2 focus:ring-primary text-text-normal font-semibold placeholder:text-text-muted transition-standard"
                    placeholder="Breve resumo sobre o que este snippet faz">
         </div>
 
         <!-- Conteúdo Markdown -->
         <div class="flex flex-col gap-2">
             <div class="flex justify-between items-center mb-1">
-                <label for="conteudo" class="text-xs font-bold uppercase tracking-widest text-text-muted">Conteúdo Markdown <span class="text-danger">*</span></label>
+                <label for="conteudo" class="form-label">Conteúdo Markdown <span class="text-danger">*</span></label>
                 <div class="flex gap-4">
-                    <span class="text-[10px] font-bold text-[#9a55f3] uppercase tracking-widest flex items-center gap-1">
+                    <span class="text-xs font-semibold text-primary flex items-center gap-1">
                         <i class="ph-bold ph-info"></i> Use ```linguagem para código
                     </span>
                 </div>
             </div>
             <textarea id="conteudo" name="conteudo" rows="12"
-                      class="w-full p-4 bg-[#1e1f22] border-none rounded-xl focus:ring-2 focus:ring-[#9a55f3] text-text-normal font-mono text-sm leading-relaxed placeholder:text-text-muted transition-standard"
+                      class="w-full p-4 bg-surface-sunken border-none rounded-xl focus:ring-2 focus:ring-primary text-text-normal font-mono text-sm leading-relaxed placeholder:text-text-muted transition-standard"
                       placeholder="# Exemplo\n\n```python\nprint('Olá Mundo')\n```">{{ snippet.conteudo }}</textarea>
         </div>
 
         <!-- Actions -->
         <div class="flex flex-col md:flex-row gap-4 pt-6 justify-end">
-            <a href="{{ url_for('snippets.index') }}"
-                class="btn-secondary btn-md font-black tracking-widest text-[11px] h-12 px-8 flex items-center justify-center gap-2 opacity-70 hover:opacity-100 transition-all w-full md:w-auto order-2 md:order-1">
-                <i class="ph-bold ph-x"></i> CANCELAR
+            <a href="{{ url_for('snippets.index') }}" class="btn-secondary btn-lg w-full md:w-auto order-2 md:order-1">
+                <i class="ph-bold ph-x"></i> Cancelar
             </a>
-            <button type="submit"
-                class="btn-primary btn-md group !bg-[#9a55f3] !text-white !shadow-[#9a55f3]/20 font-black tracking-widest text-[11px] h-12 px-10 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto order-1 md:order-2">
-                <i class="ph-bold ph-check"></i> SALVAR
+            <button type="submit" class="btn-primary btn-lg w-full md:w-auto order-1 md:order-2">
+                <i class="ph-bold ph-check"></i> Salvar
             </button>
         </div>
 

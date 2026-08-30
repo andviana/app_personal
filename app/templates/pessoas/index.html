@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'macros/components.html' import page_header %}
 
 {% block title %}Pessoas - AppPessoal{% endblock %}
 
@@ -14,47 +15,41 @@
 {% endblock %}
 
 {% block content %}
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
-    <div class="flex flex-col gap-1">
-        <h1 class="text-2xl md:text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
-            <i class="ph-bold ph-users text-[#8a05be]"></i> Pessoas
-        </h1>
-    </div>
-    <a href="{{ url_for('pessoas.add') }}"
-        class="w-full md:w-auto h-11 px-6 bg-[#8a05be] hover:brightness-110 active:scale-95 text-white font-black tracking-widest text-[11px] rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#8a05be]/20 uppercase">
-        ADICIONAR
+{% call page_header('Pessoas', icon='ph-users') %}
+    <a href="{{ url_for('pessoas.add') }}" class="btn-primary btn-md w-full md:w-auto group">
+        Adicionar
         <i class="ph-bold ph-plus text-lg transition-transform duration-300 group-hover:rotate-90"></i>
     </a>
-</div>
+{% endcall %}
 
 <!-- Search Bar -->
 <div class="mb-8 relative group">
     <div
-        class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-text-muted group-focus-within:text-[#8a05be] transition-colors">
+        class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-text-muted group-focus-within:text-primary transition-colors">
         <i class="ph-bold ph-magnifying-glass text-xl"></i>
     </div>
     <form action="{{ url_for('pessoas.index') }}" method="GET">
         <input type="text" name="search" value="{{ search }}" placeholder="Buscar por nome..."
-            class="w-full h-12 pl-12 pr-4 bg-discord-200 border border-discord-100/30 rounded-xl focus:ring-2 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-sm font-semibold transition-all">
+            class="w-full h-12 pl-12 pr-4 bg-surface border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-text-normal text-sm font-semibold transition-all">
     </form>
 </div>
 
 <!-- People Grid -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for p in pessoas %}
-    <div class="pessoa-card group flex flex-col bg-discord-200 border border-discord-100/10 rounded-xl overflow-hidden shadow-md">
+    <div class="pessoa-card group flex flex-col bg-surface border border-slate-200 rounded-xl overflow-hidden shadow-md">
         <!-- Profile Banner -->
-        <div class="h-16 bg-gradient-to-r from-[#8a05be]/80 to-pink-600/80 relative flex-shrink-0">
+        <div class="h-16 bg-primary relative flex-shrink-0">
             <!-- Edit/Delete Actions -->
             <div class="absolute top-3 right-3 flex gap-1.5 z-10">
                 <a href="{{ url_for('pessoas.edit', id=p.id) }}" 
-                   class="w-7 h-7 flex items-center justify-center bg-black/40 hover:bg-black/60 text-white rounded-lg transition-all"
+                   class="w-11 h-11 md:w-7 md:h-7 flex items-center justify-center bg-black/40 hover:bg-black/60 text-white rounded-lg transition-all"
                    data-tooltip="Editar">
                     <i class="ph-bold ph-pencil-simple text-sm"></i>
                 </a>
                 <button type="button" data-id="{{ p.id }}" data-nome="{{ p.nome_completo }}"
                     onclick="confirmDelete(this.dataset.id, this.dataset.nome, '{{ url_for('pessoas.delete', id=0) }}')"
-                    class="w-7 h-7 flex items-center justify-center bg-black/40 hover:bg-[#da373c] text-white rounded-lg transition-all" 
+                    class="w-11 h-11 md:w-7 md:h-7 flex items-center justify-center bg-black/40 hover:bg-danger text-white rounded-lg transition-all" 
                     data-tooltip="Excluir">
                     <i class="ph-bold ph-trash text-sm"></i>
                 </button>
@@ -64,8 +59,8 @@
         <!-- Avatar and Identity -->
         <div class="px-6 pb-6 relative flex-grow flex flex-col">
             <!-- Overlapping Avatar -->
-            <div class="absolute -top-8 left-6 p-1 bg-discord-200 rounded-2xl shadow-lg">
-                <div class="w-16 h-16 bg-discord-300 rounded-xl flex items-center justify-center text-[#8a05be] overflow-hidden border border-discord-100/10">
+            <div class="absolute -top-8 left-6 p-1 bg-surface rounded-2xl shadow-lg">
+                <div class="w-16 h-16 bg-background rounded-xl flex items-center justify-center text-primary overflow-hidden border border-slate-200">
                     {% if p.foto_url %}
                     <img src="{{ p.foto_url }}" alt="{{ p.nome_completo }}" class="w-full h-full object-cover">
                     {% else %}
@@ -76,36 +71,36 @@
             
             <div class="pt-10 flex-grow">
                 <!-- Name -->
-                <h3 class="text-base font-extrabold text-text-heading uppercase tracking-tight mb-2 truncate" title="{{ p.nome_completo }}">
+                <h3 class="text-base font-semibold text-text-heading mb-2 truncate" title="{{ p.nome_completo }}">
                     {{ p.nome_completo }}
                 </h3>
                 
                 <!-- Short Badges (Age/Birthday/CPF) -->
                 <div class="flex flex-wrap gap-1.5 mb-4">
                     {% if p.idade %}
-                    <span class="px-2 py-0.5 bg-[#8a05be]/10 text-[#8a05be] text-[9px] font-black rounded uppercase tracking-wider border border-[#8a05be]/20">
+                    <span class="badge-primary">
                         {{ p.idade }} anos
                     </span>
                     {% endif %}
                     {% if p.cpf %}
-                    <span class="px-2 py-0.5 bg-discord-300 text-text-muted text-[9px] font-bold rounded uppercase tracking-wider border border-discord-100/10">
+                    <span class="badge-neutral">
                         CPF: {{ p.cpf }}
                     </span>
                     {% endif %}
                 </div>
                 
                 <!-- Quick Info Lines (Phone & Address) -->
-                <div class="space-y-3 pt-3 border-t border-discord-100/10">
+                <div class="space-y-3 pt-3 border-t border-slate-200">
                     {% if p.telefones %}
                     <div class="flex items-center gap-2 text-xs text-text-normal">
-                        <i class="ph-bold ph-phone text-[#8a05be] text-sm"></i>
+                        <i class="ph-bold ph-phone text-primary text-sm"></i>
                         <span class="truncate font-semibold">{{ p.telefones[0].numero }}</span>
                     </div>
                     {% endif %}
                     
                     {% if p.enderecos %}
                     <div class="flex items-start gap-2 text-xs text-text-muted">
-                        <i class="ph-bold ph-map-pin text-[#8a05be] text-sm mt-0.5"></i>
+                        <i class="ph-bold ph-map-pin text-primary text-sm mt-0.5"></i>
                         <span class="line-clamp-2 leading-snug">{{ p.enderecos[0].descricao }}</span>
                     </div>
                     {% endif %}
@@ -114,32 +109,29 @@
         </div>
         
         <!-- Footer / Card Actions -->
-        <div class="px-6 py-4 bg-discord-300 border-t border-discord-100/10 flex justify-between items-center mt-auto">
-            <span class="text-[9px] text-text-muted/60 font-bold uppercase tracking-widest italic">
+        <div class="px-6 py-4 bg-background border-t border-slate-200 flex justify-between items-center mt-auto">
+            <span class="text-xs text-text-muted">
                 Desde {{ p.data_cadastro.strftime('%d/%m/%Y') }}
             </span>
             <button onclick="toggleModal('modal-pessoa-{{ p.id }}')"
-                class="px-3 py-1.5 bg-gradient-to-r from-[#8a05be] to-pink-600 hover:brightness-110 active:scale-95 rounded-lg text-white font-black uppercase tracking-wider text-[9px] flex items-center transition-all shadow-sm">
+                class="btn-secondary btn-sm">
                 Mostrar ficha <i class="ph-bold ph-caret-right ml-1"></i>
             </button>
         </div>
     </div>
 
     <!-- Modal Digital Profile -->
-    <div id="modal-pessoa-{{ p.id }}" class="hidden fixed inset-0 z-[999] flex items-center justify-center p-4">
-        <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/75 backdrop-blur-sm" onclick="toggleModal('modal-pessoa-{{ p.id }}')"></div>
-        
+    <div id="modal-pessoa-{{ p.id }}" class="hidden modal-overlay z-[999]" onclick="toggleModal('modal-pessoa-{{ p.id }}')">
         <!-- Container -->
-        <div class="relative bg-discord-modal w-full max-w-2xl rounded-xl border border-discord-100/30 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+        <div class="modal-sheet md:max-w-2xl flex flex-col overflow-hidden max-h-[90vh]" onclick="event.stopPropagation()">
             <!-- Header Banner -->
-            <div class="relative h-20 bg-gradient-to-r from-[#8a05be] to-pink-600 flex-shrink-0">
+            <div class="relative h-20 bg-primary flex-shrink-0">
                 <button onclick="toggleModal('modal-pessoa-{{ p.id }}')"
-                    class="absolute top-4 right-4 w-8 h-8 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center transition-all z-10">
+                    class="absolute top-4 right-4 w-11 h-11 md:w-8 md:h-8 bg-black/20 hover:bg-black/40 text-white rounded-full flex items-center justify-center transition-all z-10">
                     <i class="ph-bold ph-x text-base"></i>
                 </button>
-                <div class="absolute -bottom-8 left-8 p-1 bg-discord-200 rounded-2xl shadow-xl">
-                    <div class="w-20 h-20 bg-discord-300 rounded-xl flex items-center justify-center text-[#8a05be] overflow-hidden border border-discord-100/10">
+                <div class="absolute -bottom-8 left-8 p-1 bg-surface rounded-2xl shadow-xl">
+                    <div class="w-20 h-20 bg-background rounded-xl flex items-center justify-center text-primary overflow-hidden border border-slate-200">
                         {% if p.foto_url %}
                         <img src="{{ p.foto_url }}" alt="{{ p.nome_completo }}" class="w-full h-full object-cover">
                         {% else %}
@@ -152,21 +144,21 @@
             <!-- Scrollable Body -->
             <div class="pt-12 pb-6 px-8 overflow-y-auto custom-scrollbar flex-grow space-y-6">
                 <div>
-                    <h2 class="text-2xl font-black text-text-heading uppercase tracking-tight leading-tight">
+                    <h2 class="text-xl font-semibold text-text-heading">
                         {{ p.nome_completo }}
                     </h2>
                 </div>
 
                 <div class="flex flex-col gap-6">
                     <!-- Section 1: Personal Data -->
-                    <div class="bg-discord-300/30 p-5 rounded-xl border border-discord-100/10">
-                        <h3 class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4">
-                            <i class="ph-bold ph-identification-card text-base text-[#8a05be]"></i> Dados Pessoais
+                    <div class="bg-background/30 p-5 rounded-xl border border-slate-200">
+                        <h3 class="flex items-center gap-2 text-xs font-semibold text-text-muted mb-4">
+                            <i class="ph-bold ph-identification-card text-base text-primary"></i> Dados Pessoais
                         </h3>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             {% if p.cpf %}
-                            <div class="bg-discord-100/40 p-3 rounded-lg border border-discord-100/20 flex flex-col group/item relative">
-                                <span class="text-[9px] font-black text-text-muted uppercase tracking-widest flex items-center gap-1.5">
+                            <div class="bg-surface-sunken/40 p-3 rounded-lg border border-slate-200 flex flex-col group/item relative">
+                                <span class="text-xs font-medium text-text-muted flex items-center gap-1.5">
                                     CPF
                                     <button onclick="copyToClipboard('{{ p.cpf }}', 'numbers', 'CPF')"
                                         class="text-text-muted hover:text-text-normal p-0.5 rounded transition-all"
@@ -179,8 +171,8 @@
                             {% endif %}
                             
                             {% if p.data_nascimento %}
-                            <div class="bg-discord-100/40 p-3 rounded-lg border border-discord-100/20 flex flex-col group/item relative">
-                                <span class="text-[9px] font-black text-text-muted uppercase tracking-widest flex items-center gap-1.5">
+                            <div class="bg-surface-sunken/40 p-3 rounded-lg border border-slate-200 flex flex-col group/item relative">
+                                <span class="text-xs font-medium text-text-muted flex items-center gap-1.5">
                                     Nascimento
                                     <button onclick="copyToClipboard('{{ p.data_nascimento.strftime('%d/%m/%Y') }}', 'date', 'Nascimento')"
                                         class="text-text-muted hover:text-text-normal p-0.5 rounded transition-all"
@@ -191,7 +183,7 @@
                                 <div class="flex items-center gap-2 mt-1">
                                     <span class="text-sm font-bold text-text-heading">{{ p.data_nascimento.strftime('%d/%m/%Y') }}</span>
                                     {% if p.idade %}
-                                    <span class="px-1.5 py-0.5 bg-[#8a05be]/10 text-[#8a05be] text-[9px] font-black rounded border border-[#8a05be]/20">
+                                    <span class="badge-primary">
                                         {{ p.idade }} anos
                                     </span>
                                     {% endif %}
@@ -200,8 +192,8 @@
                             {% endif %}
 
                             {% if p.rg_numero %}
-                            <div class="bg-discord-100/40 p-3 rounded-lg border border-discord-100/20 flex flex-col group/item relative">
-                                <span class="text-[9px] font-black text-text-muted uppercase tracking-widest flex items-center gap-1.5">
+                            <div class="bg-surface-sunken/40 p-3 rounded-lg border border-slate-200 flex flex-col group/item relative">
+                                <span class="text-xs font-medium text-text-muted flex items-center gap-1.5">
                                     RG
                                     <button onclick="copyToClipboard('{{ p.rg_numero }}', 'numbers', 'RG')"
                                         class="text-text-muted hover:text-text-normal p-0.5 rounded transition-all"
@@ -219,8 +211,8 @@
                             {% endif %}
 
                             {% if p.pis %}
-                            <div class="bg-discord-100/40 p-3 rounded-lg border border-discord-100/20 flex flex-col group/item relative">
-                                <span class="text-[9px] font-black text-text-muted uppercase tracking-widest flex items-center gap-1.5">
+                            <div class="bg-surface-sunken/40 p-3 rounded-lg border border-slate-200 flex flex-col group/item relative">
+                                <span class="text-xs font-medium text-text-muted flex items-center gap-1.5">
                                     PIS
                                     <button onclick="copyToClipboard('{{ p.pis }}', 'numbers', 'PIS')"
                                         class="text-text-muted hover:text-text-normal p-0.5 rounded transition-all"
@@ -236,15 +228,15 @@
 
                     <!-- Section 2: Contact Methods -->
                     {% if p.telefones %}
-                    <div class="bg-discord-300/30 p-5 rounded-xl border border-discord-100/10">
-                        <h3 class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4">
-                            <i class="ph-bold ph-phone text-base text-[#8a05be]"></i> Telefones
+                    <div class="bg-background/30 p-5 rounded-xl border border-slate-200">
+                        <h3 class="flex items-center gap-2 text-xs font-semibold text-text-muted mb-4">
+                            <i class="ph-bold ph-phone text-base text-primary"></i> Telefones
                         </h3>
                         <div class="flex flex-wrap gap-2">
                             {% for t in p.telefones %}
-                            <div class="px-3 py-2 bg-discord-100/50 rounded-lg text-xs font-bold text-text-normal flex items-center gap-3 border border-discord-100/20 transition-all hover:border-[#8a05be]/30">
+                            <div class="px-3 py-2 bg-surface-sunken/50 rounded-lg text-xs font-bold text-text-normal flex items-center gap-3 border border-slate-200 transition-all hover:border-primary/30">
                                 <span class="flex items-center gap-2">
-                                    <i class="ph-fill ph-phone-call text-[#8a05be] text-sm"></i> {{ t.numero }}
+                                    <i class="ph-fill ph-phone-call text-primary text-sm"></i> {{ t.numero }}
                                 </span>
                                 <button onclick="copyToClipboard('{{ t.numero }}', 'numbers', 'Telefone')"
                                     class="text-text-muted hover:text-text-normal p-0.5 rounded" title="Copiar apenas números">
@@ -258,18 +250,18 @@
 
                     <!-- Section 3: Addresses -->
                     {% if p.enderecos %}
-                    <div class="bg-discord-300/30 p-5 rounded-xl border border-discord-100/10">
-                        <h3 class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4">
-                            <i class="ph-bold ph-map-pin text-base text-[#8a05be]"></i> Endereços
+                    <div class="bg-background/30 p-5 rounded-xl border border-slate-200">
+                        <h3 class="flex items-center gap-2 text-xs font-semibold text-text-muted mb-4">
+                            <i class="ph-bold ph-map-pin text-base text-primary"></i> Endereços
                         </h3>
                         <div class="space-y-2.5">
                             {% for e in p.enderecos %}
-                            <div class="flex items-center justify-between p-3 bg-discord-100/40 rounded-lg border border-discord-100/20">
+                            <div class="flex items-center justify-between p-3 bg-surface-sunken/40 rounded-lg border border-slate-200">
                                 <span class="text-xs font-semibold text-text-normal leading-relaxed pr-4">
                                     {{ e.descricao }}
                                 </span>
                                 <button onclick="copyToClipboard('{{ e.descricao }}')"
-                                    class="w-7 h-7 flex-shrink-0 flex items-center justify-center bg-discord-400 hover:bg-[#4e5058] text-text-heading rounded transition-all" 
+                                    class="w-11 h-11 md:w-7 md:h-7 flex-shrink-0 flex items-center justify-center bg-surface-hover hover:bg-slate-200 text-text-heading rounded transition-all" 
                                     data-tooltip="Copiar Endereço">
                                     <i class="ph-bold ph-copy text-sm"></i>
                                 </button>
@@ -281,22 +273,22 @@
 
                     <!-- Section 4: Documentation -->
                     {% if p.arquivos %}
-                    <div class="bg-discord-300/30 p-5 rounded-xl border border-discord-100/10">
-                        <h3 class="flex items-center gap-2 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4">
-                            <i class="ph-bold ph-files text-base text-[#8a05be]"></i> Documentação
+                    <div class="bg-background/30 p-5 rounded-xl border border-slate-200">
+                        <h3 class="flex items-center gap-2 text-xs font-semibold text-text-muted mb-4">
+                            <i class="ph-bold ph-files text-base text-primary"></i> Documentação
                         </h3>
                         <div class="space-y-2.5">
                             {% for f in p.arquivos %}
-                            <div class="flex items-center justify-between p-3 bg-discord-100/40 rounded-lg border border-discord-100/20">
+                            <div class="flex items-center justify-between p-3 bg-surface-sunken/40 rounded-lg border border-slate-200">
                                 <span class="text-xs font-bold text-text-normal truncate pr-2">{{ f.titulo }}</span>
                                 <div class="flex items-center gap-1.5">
                                     <a href="{{ f.url }}" target="_blank"
-                                        class="w-7 h-7 flex items-center justify-center bg-discord-400 hover:bg-[#4e5058] text-text-heading rounded transition-all"
+                                        class="w-11 h-11 md:w-7 md:h-7 flex items-center justify-center bg-surface-hover hover:bg-slate-200 text-text-heading rounded transition-all"
                                         data-tooltip="Abrir em Nova Aba">
                                         <i class="ph-bold ph-arrow-square-out text-sm"></i>
                                     </a>
                                     <button onclick="copyToClipboard('{{ f.url }}')"
-                                        class="w-7 h-7 flex items-center justify-center bg-discord-400 hover:bg-[#4e5058] text-text-heading rounded transition-all" 
+                                        class="w-11 h-11 md:w-7 md:h-7 flex items-center justify-center bg-surface-hover hover:bg-slate-200 text-text-heading rounded transition-all" 
                                         data-tooltip="Copiar URL">
                                         <i class="ph-bold ph-copy text-sm"></i>
                                     </button>
@@ -310,14 +302,13 @@
             </div>
 
             <!-- Footer -->
-            <div class="p-6 bg-discord-200 border-t border-discord-100/10 flex justify-end gap-3 flex-shrink-0">
-                <button onclick="toggleModal('modal-pessoa-{{ p.id }}')" 
-                        class="px-4 h-10 bg-discord-400 hover:bg-[#4e5058] active:bg-[#6d6f78] text-text-heading font-black tracking-widest text-[11px] rounded-lg transition-all uppercase">
-                    FECHAR
+            <div class="p-6 bg-surface border-t border-slate-200 flex justify-end gap-3 flex-shrink-0">
+                <button onclick="toggleModal('modal-pessoa-{{ p.id }}')"
+                        class="btn-secondary btn-md">
+                    Fechar
                 </button>
-                <a href="{{ url_for('pessoas.edit', id=p.id) }}"
-                    class="px-4 h-10 bg-[#8a05be] hover:brightness-110 active:scale-95 text-white font-black tracking-widest text-[11px] rounded-lg transition-all uppercase flex items-center justify-center shadow-md shadow-[#8a05be]/20">
-                    EDITAR
+                <a href="{{ url_for('pessoas.edit', id=p.id) }}" class="btn-primary btn-md">
+                    Editar
                 </a>
             </div>
         </div>
@@ -328,10 +319,10 @@
         <p class="text-lg font-medium">Nenhuma pessoa encontrada.</p>
         {% if search %}
         <a href="{{ url_for('pessoas.index') }}"
-            class="text-[#8a05be] hover:underline font-bold mt-2 inline-block">Limpar busca</a>
+            class="text-primary hover:underline font-bold mt-2 inline-block">Limpar busca</a>
         {% else %}
         <a href="{{ url_for('pessoas.add') }}"
-            class="text-[#8a05be] hover:underline font-bold mt-2 inline-block">Cadastrar primeira pessoa</a>
+            class="text-primary hover:underline font-bold mt-2 inline-block">Cadastrar primeira pessoa</a>
         {% endif %}
     </div>
     {% endfor %}

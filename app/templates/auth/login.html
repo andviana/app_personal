@@ -5,13 +5,13 @@
 
 {% block content %}
 <div class="min-h-[70vh] flex items-center justify-center py-12 px-4 md:px-8">
-    <div class="max-w-md w-full space-y-8 bg-discord-200 border border-discord-100/20 rounded-2xl p-8 md:p-10 shadow-2xl">
+    <div class="max-w-md w-full space-y-8 bg-surface border border-slate-200 rounded-2xl p-8 md:p-10 shadow-2xl">
         <div class="flex flex-col items-center gap-1">
             <div
                 class="mx-auto h-16 w-16 bg-primary rounded-3xl flex items-center justify-center shadow-lg shadow-primary/20 mb-2">
                 <i class="ph-fill ph-lock-key text-white text-3xl"></i>
             </div>
-            <h2 class="text-center text-3xl font-black text-text-heading tracking-tight">DayLog</h2>
+            <h2 class="text-center text-3xl font-bold text-text-heading tracking-tight">DayLog</h2>
         </div>
 
         <form class="mt-8 space-y-6" action="{{ url_for('auth.login', next=request.args.get('next')) }}" method="POST">
@@ -40,7 +40,7 @@
             </div>
 
             <div class="pt-2">
-                {% call c.btn_primary("ENTRAR", type="submit", size="lg", class="w-full tracking-widest text-xs uppercase hover:scale-[1.01] active:scale-[0.99] transition-all duration-200") %}
+                {% call c.btn_primary("Entrar", type="submit", size="lg", class="w-full hover:scale-[1.01] active:scale-[0.99] transition-all duration-200") %}
                     <i class="ph-bold ph-sign-in"></i>
                 {% endcall %}
             </div>

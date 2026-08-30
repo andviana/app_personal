@@ -61,26 +61,26 @@ function addRow(containerId) {
     const div = document.createElement('div');
 
     if (containerId === 'files-container') {
-        div.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 items-center animate-in fade-in slide-in-from-left-2 duration-300 bg-discord-300/30 p-3 rounded-xl border border-discord-100/10';
+        div.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 items-center bg-background/30 p-3 rounded-xl border border-slate-200';
         div.innerHTML = `
         <input type="text" name="arquivo_titulos[]" placeholder="Título do Documento"
-               class="h-10 px-3 bg-discord-100 border border-discord-100 focus:ring-1 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-xs font-semibold rounded-xl transition-all">
+               class="h-10 px-3 bg-surface-sunken border border-slate-200 focus:ring-1 focus:ring-primary focus:border-transparent text-text-normal text-xs font-semibold rounded-xl transition-all">
         <div class="flex gap-2">
             <input type="text" name="arquivo_urls[]" placeholder="URL (Google Drive, OneDrive, etc)"
-                   class="flex-1 h-10 px-3 bg-discord-100 border border-discord-100 focus:ring-1 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-xs font-semibold rounded-xl transition-all">
-            <button type="button" onclick="this.closest('.grid').remove()" class="p-2 text-text-muted hover:text-white hover:bg-danger/20 rounded-xl transition-all"><i class="ph-bold ph-trash"></i></button>
+                   class="flex-1 h-10 px-3 bg-surface-sunken border border-slate-200 focus:ring-1 focus:ring-primary focus:border-transparent text-text-normal text-xs font-semibold rounded-xl transition-all">
+            <button type="button" onclick="this.closest('.grid').remove()" class="p-3 md:p-2 -m-1 md:m-0 text-text-muted hover:text-text-heading hover:bg-danger/20 rounded-xl transition-all"><i class="ph-bold ph-trash"></i></button>
         </div>
     `;
     } else {
-        div.className = 'flex gap-2 animate-in fade-in slide-in-from-left-2 duration-300';
+        div.className = 'flex gap-2';
         const name = containerId === 'addresses-container' ? 'enderecos[]' : 'telefones[]';
         const placeholder = containerId === 'addresses-container' ? 'Endereço completo...' : '(XX) XXXXX-XXXX';
         const mask = containerId === 'phones-container' ? 'oninput="maskPhone(this)" maxlength="15"' : '';
 
         div.innerHTML = `
         <input type="text" name="${name}" placeholder="${placeholder}" ${mask}
-               class="flex-1 h-10 px-3 bg-discord-100 border border-discord-100 focus:ring-1 focus:ring-[#8a05be] focus:border-transparent text-text-normal text-xs font-semibold rounded-xl transition-all">
-        <button type="button" onclick="this.parentElement.remove()" class="p-2 text-text-muted hover:text-white hover:bg-danger/20 rounded-xl transition-all"><i class="ph-bold ph-x"></i></button>
+               class="flex-1 h-10 px-3 bg-surface-sunken border border-slate-200 focus:ring-1 focus:ring-primary focus:border-transparent text-text-normal text-xs font-semibold rounded-xl transition-all">
+        <button type="button" onclick="this.parentElement.remove()" class="p-3 md:p-2 -m-1 md:m-0 text-text-muted hover:text-text-heading hover:bg-danger/20 rounded-xl transition-all"><i class="ph-bold ph-x"></i></button>
     `;
     }
     container.appendChild(div);
@@ -155,8 +155,6 @@ function confirmDelete(id, nome, deleteUrl) {
         text: `Deseja realmente remover "${nome}"? Esta ação não pode ser desfeita.`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#da373c',
-        cancelButtonColor: '#4e5058',
         confirmButtonText: 'Sim, remover!',
         cancelButtonText: 'Cancelar',
         reverseButtons: true,

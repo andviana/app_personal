@@ -7,24 +7,24 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div class="flex items-center gap-4">
             <a href="{{ url_for('snippets.index') }}"
-                class="w-11 h-11 flex items-center justify-center bg-[#313338] text-text-muted hover:text-text-normal rounded-xl transition-standard shadow-sm border border-discord-400"
+                class="w-11 h-11 flex items-center justify-center bg-surface text-text-muted hover:text-text-normal rounded-xl transition-standard shadow-sm border border-slate-200"
                 title="Voltar para a lista">
                 <i class="ph-bold ph-arrow-left text-xl"></i>
             </a>
             <div class="flex flex-col gap-1">
-                <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
-                    <i class="ph-bold ph-code text-[#9a55f3]"></i> {{ snippet.titulo }}
+                <h1 class="text-2xl md:text-3xl font-bold text-text-heading tracking-tight flex items-center gap-3">
+                    <i class="ph-bold ph-code text-primary"></i> {{ snippet.titulo }}
                 </h1>
             </div>
         </div>
         <div class="flex items-center gap-2">
             <button data-raw="{{ snippet.conteudo }}" onclick="copyRawContent(this.dataset.raw)"
-                class="w-11 h-11 flex items-center justify-center bg-[#313338] text-text-muted hover:text-text-normal rounded-xl transition-standard shadow-sm border border-discord-400"
+                class="w-11 h-11 flex items-center justify-center bg-surface text-text-muted hover:text-text-normal rounded-xl transition-standard shadow-sm border border-slate-200"
                 data-tooltip="Copiar Markdown" data-tooltip-pos="top">
                 <i class="ph-bold ph-copy text-xl"></i>
             </button>
             <button id="detail-share" onclick="copySnippetLink('{{ url_for('snippets.shared', uuid=snippet.uuid, _external=True) }}')"
-                class="w-11 h-11 flex items-center justify-center bg-[#313338] text-text-muted hover:text-text-normal rounded-xl transition-standard shadow-sm border border-discord-400"
+                class="w-11 h-11 flex items-center justify-center bg-surface text-text-muted hover:text-text-normal rounded-xl transition-standard shadow-sm border border-slate-200"
                 data-tooltip="Copiar Link Público" data-tooltip-pos="top">
                 <i class="ph-bold ph-share-network text-xl"></i>
             </button>
@@ -39,10 +39,10 @@
     </div>
 
     <div
-        class="flex justify-between items-center text-[10px] font-bold text-text-muted uppercase tracking-widest px-6 pb-12">
-        <span>Criado em: {{ snippet.data_criacao.strftime('%d/%m/%Y às %H:%M') if snippet.data_criacao else 'Recém
+        class="flex justify-between items-center text-xs text-text-muted px-6 pb-12">
+        <span>Criado em {{ snippet.data_criacao.strftime('%d/%m/%Y às %H:%M') if snippet.data_criacao else 'Recém
             criado' }}</span>
-        <a href="{{ url_for('snippets.index') }}" class="text-primary-DEFAULT hover:underline"></a>
+        <a href="{{ url_for('snippets.index') }}" class="text-primary hover:underline"></a>
     </div>
 </div>
 {% endblock %}

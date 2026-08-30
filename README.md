@@ -1,6 +1,6 @@
 # DayLog - AppPessoal
 
-Sistema de gerenciamento pessoal para tarefas, listas, pessoas, perfumes e snippets. Desenvolvido com Flask e um design moderno inspirado no Discord.
+Sistema de gerenciamento pessoal para tarefas, listas, pessoas, perfumes e snippets. Desenvolvido com Flask, seguindo uma arquitetura em camadas (Blueprints → Services → Repositories → Models) e uma interface minimalista, responsiva e mobile-first construída com Tailwind CSS.
 
 ## 🚀 Funcionalidades
 
@@ -19,16 +19,15 @@ Sistema de gerenciamento pessoal para tarefas, listas, pessoas, perfumes e snipp
 - **Python 3.8+**
 - **Node.js 18+ & npm** (para processamento do CSS)
 
-##  Instale as dependências do sistema
-Você precisa instalar o libpq-dev (que fornece o pg_config) e os compiladores necessários. No seu terminal (fora do ambiente virtual ou dentro dele, tanto faz), execute:
+### Instale as dependências do sistema
+
+Para compilar `psycopg2-binary` e demais dependências nativas, instale o `libpq-dev` (que fornece o `pg_config`) e os compiladores necessários:
+
 ```bash
-sudo apt update && sudo apt install -y libpq-dev build-essential python3.14-dev
-``
+sudo apt update && sudo apt install -y libpq-dev build-essential python3-dev
+```
 
-## 💻 Instalação Local##  Instale as dependências do sistema
-Você precisa instalar o libpq-dev (que fornece o pg_config) e os compiladores necessários. No seu terminal (fora do ambiente virtual ou dentro dele, tanto faz), execute:
-sudo apt update && sudo apt install -y libpq-dev build-essential
-
+## 💻 Instalação Local
 
 1. **Clone o repositório**:
    ```bash
@@ -52,15 +51,28 @@ sudo apt update && sudo apt install -y libpq-dev build-essential
 4. **Configure as variáveis de ambiente**:
    Crie um arquivo `.env` baseado no arquivo `.env.example`.
 
-4. **Inicie o banco de dados**:
+5. **Inicie o banco de dados**:
    ```bash
    flask db upgrade
    ```
 
-5. **Execute a aplicação**:
+6. **Execute a aplicação**:
    ```bash
    python run.py
    ```
+
+---
+
+## 🏗️ Arquitetura
+
+O back-end segue uma arquitetura em camadas para manter regras de negócio, acesso a dados e rotas HTTP desacoplados:
+
+- **Blueprints (`app/blueprints/`)**: rotas Flask — validam entrada, chamam a camada de serviço e traduzem o resultado em respostas HTTP (redirect, JSON, template).
+- **Services (`app/services/`)**: regras de negócio, autorização (multi-tenant, compartilhamento, arquivamento) e orquestração entre repositórios.
+- **Repositories (`app/repositories/`)**: acesso a dados via SQLAlchemy, através de um `BaseRepository` genérico reutilizado por todos os módulos.
+- **Models (`app/models/`)**: entidades SQLAlchemy.
+
+Erros de autorização são sinalizados pelos services com `PermissionError` e centralizados nas rotas por decorators reutilizáveis (`app/decorators.py`); registros não encontrados na camada de repositório levantam `NotFoundError` (`app/exceptions.py`), traduzida para HTTP 404 por um error handler global — mantendo a camada de dados independente do Flask. Requisições a URLs externas (scraper de links) passam por uma verificação de segurança (`app/services/url_safety.py`) que bloqueia acesso a endereços privados/internos (proteção contra SSRF).
 
 ---
 
@@ -130,11 +142,10 @@ A aplicação suporta 3 cenários configuráveis via variável `ENVIRONMENT` em 
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Backend**: Python, Flask, SQLAlchemy.
+- **Backend**: Python, Flask, SQLAlchemy, Flask-Migrate (Alembic).
 - **Frontend**: Jinja2, Tailwind CSS, Phosphor Icons, SweetAlert2.
-- **Database**: SQLite (local) / PostgreSQL (produção).
+- **Database**: SQLite (local) / PostgreSQL (homologação/produção via `psycopg2`).
 - **Scraper**: BeautifulSoup4, Requests.
-- **Segurança**: Flask-Login, Flask-WTF (CSRF).
-
-
+- **Segurança**: Flask-Login, Flask-WTF (CSRF), sanitização de HTML com Bleach, proteção contra SSRF no scraper.
+- **Outros**: Markdown + Pygments (highlight de snippets), ReportLab (exportação de PDF), Flask-Compress (compressão de respostas).
 

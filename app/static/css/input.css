@@ -10,114 +10,163 @@
 }
 
 @layer components {
-  /* Buttons & Actions Base */
+  /* ============================================================
+     BOTÕES
+     3 níveis: primary (preenchido), secondary (contorno sutil),
+     ghost (apenas texto). Todos compartilham base, transição,
+     arredondamento e foco.
+     ============================================================ */
   .btn-base {
-    @apply inline-flex items-center justify-center gap-2 font-bold transition-standard active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 font-semibold transition-standard active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-1 focus:ring-offset-surface;
   }
 
   .btn-primary {
-    @apply btn-base bg-primary text-white hover:bg-primary-hover active:bg-primary-active shadow-sm;
+    @apply btn-base bg-primary text-white hover:bg-primary-hover active:bg-primary-active shadow-sm shadow-primary/20;
   }
 
   .btn-secondary {
-    @apply btn-base bg-discord-400 text-text-heading hover:bg-[#4e5058] active:bg-[#6d6f78] shadow-sm;
+    @apply btn-base bg-surface text-text-heading border border-slate-200 hover:bg-surface-hover active:bg-slate-100 shadow-sm;
   }
 
   .btn-danger {
-    @apply btn-base bg-danger text-white hover:bg-[#a92b2f] active:bg-[#822023] shadow-sm;
+    @apply btn-base bg-danger text-white hover:bg-danger-hover shadow-sm;
   }
 
   .btn-success {
-    @apply btn-base bg-success text-white hover:bg-[#1a7f43] active:bg-[#156334] shadow-sm;
+    @apply btn-base bg-success text-white hover:bg-success-hover shadow-sm;
   }
 
   .btn-ghost {
-    @apply btn-base bg-transparent text-text-muted hover:text-text-heading hover:bg-discord-400/40;
+    @apply btn-base bg-transparent text-text-muted hover:text-text-heading hover:bg-surface-sunken;
   }
 
-  /* Sizing Variants */
-  .btn-md { @apply h-11 px-5 rounded-xl text-sm; }
-  .btn-lg { @apply h-12 px-6 rounded-xl text-base; }
-  .btn-sm { @apply h-8 px-3 rounded-lg text-xs tracking-wide; }
-  .btn-icon-md { @apply btn-base w-11 h-11 rounded-xl bg-discord-300 text-text-muted hover:text-text-heading border border-discord-400; }
-  .btn-icon-sm { @apply btn-base w-8 h-8 rounded-lg bg-discord-300 text-text-muted hover:text-text-normal border border-discord-400; }
+  /* Tamanhos
+     Mobile-first: toda ação tocável tem no mínimo 44x44px no celular
+     (área de toque recomendada). No desktop (md:), onde o cursor é
+     preciso, os controles podem encolher para uma densidade maior. */
+  .btn-md { @apply h-11 px-5 rounded-lg text-sm; }
+  .btn-lg { @apply h-12 px-6 rounded-lg text-base; }
+  .btn-sm { @apply h-11 px-4 md:h-8 md:px-3 rounded-md text-xs; }
 
-  /* Design System: Icon Buttons */
+  .btn-icon-md { @apply btn-base w-11 h-11 rounded-lg bg-surface text-text-muted hover:text-text-heading hover:bg-surface-hover border border-slate-200; }
+  .btn-icon-sm { @apply btn-base w-11 h-11 md:w-8 md:h-8 rounded-md bg-surface text-text-muted hover:text-text-heading hover:bg-surface-hover border border-slate-200; }
+
   .btn-icon {
-    @apply btn-base w-9 h-9 bg-discord-300 hover:bg-discord-400 text-text-muted hover:text-text-heading rounded-lg shadow-sm;
+    @apply btn-base w-11 h-11 md:w-9 md:h-9 bg-surface hover:bg-surface-hover text-text-muted hover:text-text-heading rounded-lg border border-slate-200;
   }
-  
+
   .btn-icon-danger {
-    @apply btn-base w-9 h-9 bg-discord-300 hover:bg-danger text-text-muted hover:text-white rounded-lg shadow-sm;
+    @apply btn-base w-11 h-11 md:w-9 md:h-9 bg-surface hover:bg-danger text-text-muted hover:text-white rounded-lg border border-slate-200 hover:border-danger;
   }
 
-  /* Design System: Formulários e Inputs */
-  .form-label {
-    @apply text-[10px] md:text-xs font-black uppercase tracking-widest text-text-muted mb-2 block;
+  /* Ícone tocável "nu" (sem fundo/borda), usado em ações dentro de
+     linhas de card — ex: editar/excluir/compartilhar. Mantém o glifo
+     pequeno mas garante os 44x44px de área de toque ao redor dele. */
+  .tap-icon {
+    @apply inline-flex items-center justify-center w-11 h-11 md:w-9 md:h-9 rounded-lg flex-shrink-0 transition-standard;
   }
 
-  .form-input {
-    @apply w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal placeholder:text-text-muted/40 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200;
-  }
-
-  .form-textarea {
-    @apply w-full p-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal placeholder:text-text-muted/40 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 min-h-[100px];
-  }
-
-  .form-checkbox {
-    @apply w-5 h-5 bg-discord-100 border border-discord-400 text-primary rounded focus:ring-primary focus:ring-2 focus:ring-offset-0 transition-all duration-200 cursor-pointer;
-  }
-
-  .form-input-error {
-    @apply border-danger focus:ring-danger text-text-heading;
-  }
-
-  .form-error-msg {
-    @apply text-xs font-semibold text-danger mt-1.5 block;
-  }
-
-  /* Design System: Superfícies e Cards */
-  .card-container {
-    @apply bg-discord-200 border border-discord-100/10 rounded-xl p-5 hover:bg-discord-400/30 transition-all duration-200 shadow-md;
-  }
-
-  /* Design System: Navegação Interna */
-  .tabs-container {
-    @apply flex items-center gap-1.5 bg-discord-100 p-1.5 rounded-lg w-max max-w-full overflow-x-auto;
-  }
-
-  .tab-item-active {
-    @apply px-4 py-2 bg-discord-400 text-text-heading font-bold text-xs md:text-sm rounded-md transition-all duration-200 shadow-sm;
-  }
-
-  .tab-item-inactive {
-    @apply px-4 py-2 text-text-muted hover:bg-discord-200/50 hover:text-text-normal font-bold text-xs md:text-sm rounded-md transition-all duration-200;
-  }
-
-  /* Design System: Botão Voltar para Rotas Internas */
+  /* Botão de Voltar para rotas internas */
   .btn-back {
-    @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-text-muted hover:text-success transition-all duration-200 w-fit cursor-pointer;
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-muted hover:text-primary transition-all duration-200 w-fit cursor-pointer;
   }
 
   .btn-back-icon {
-    @apply flex items-center justify-center p-1 rounded-md border border-text-muted/30 group-hover:border-success group-hover:-translate-x-0.5 transition-all duration-200;
+    @apply flex items-center justify-center p-1 rounded-md border border-slate-200 group-hover:border-primary group-hover:-translate-x-0.5 transition-all duration-200;
   }
 
-  /* Design System: Feedback Visual (Badges) */
+  /* ============================================================
+     FORMULÁRIOS
+     Fundo levemente acinzentado, sem bordas pesadas, foco claro.
+     ============================================================ */
+  .form-label {
+    @apply text-xs font-medium text-text-muted mb-1.5 block;
+  }
+
+  .form-input {
+    @apply w-full h-11 px-4 bg-surface-sunken border border-transparent text-text-heading placeholder:text-text-muted/60 text-sm rounded-lg transition-all duration-200 focus:outline-none focus:bg-surface focus:border-primary/40 focus:ring-2 focus:ring-primary/20;
+  }
+
+  .form-textarea {
+    @apply w-full p-4 bg-surface-sunken border border-transparent text-text-heading placeholder:text-text-muted/60 text-sm rounded-lg transition-all duration-200 min-h-[100px] focus:outline-none focus:bg-surface focus:border-primary/40 focus:ring-2 focus:ring-primary/20;
+  }
+
+  .form-select {
+    @apply form-input appearance-none pr-10 cursor-pointer;
+  }
+
+  .form-checkbox {
+    @apply w-5 h-5 bg-surface-sunken border border-slate-300 text-primary rounded focus:ring-primary/40 focus:ring-2 focus:ring-offset-0 transition-all duration-200 cursor-pointer;
+  }
+
+  .form-input-error {
+    @apply border-danger/50 bg-danger/5 focus:border-danger focus:ring-danger/20 text-text-heading;
+  }
+
+  .form-error-msg {
+    @apply text-xs font-medium text-danger mt-1.5 block;
+  }
+
+  /* ============================================================
+     SUPERFÍCIES E CARDS
+     Fundo branco sobre background cinza claro, separação por
+     sombra leve — sem bordas pesadas.
+     ============================================================ */
+  .card-container {
+    @apply bg-surface border border-slate-200/70 rounded-xl p-5 hover:border-slate-300 transition-all duration-200 shadow-sm;
+  }
+
+  /* ============================================================
+     MODAIS — Bottom Sheet no celular, diálogo centralizado no desktop.
+     Uso: <div class="hidden modal-overlay"> > <div class="modal-sheet md:max-w-{sm|md|lg}">
+     Alternar visibilidade com a classe utilitária `hidden` (JS já faz
+     isso em toda a aplicação) — o resto do comportamento responsivo
+     vem de graça destas duas classes.
+     ============================================================ */
+  .modal-overlay {
+    @apply fixed inset-0 z-[100] bg-slate-900/50 backdrop-blur-sm flex items-end md:items-center justify-center;
+  }
+
+  .modal-sheet {
+    @apply w-full md:max-w-sm md:m-4 bg-surface rounded-t-2xl md:rounded-2xl shadow-2xl border border-slate-200 max-h-[85vh] overflow-y-auto;
+  }
+
+  /* ============================================================
+     NAVEGAÇÃO INTERNA (abas)
+     ============================================================ */
+  .tabs-container {
+    @apply flex items-center gap-1.5 bg-surface-sunken p-1.5 rounded-lg w-max max-w-full overflow-x-auto;
+  }
+
+  .tab-item-active {
+    @apply px-4 py-2 bg-surface text-text-heading font-semibold text-xs md:text-sm rounded-md transition-all duration-200 shadow-sm;
+  }
+
+  .tab-item-inactive {
+    @apply px-4 py-2 text-text-muted hover:text-text-normal font-semibold text-xs md:text-sm rounded-md transition-all duration-200;
+  }
+
+  /* ============================================================
+     BADGES
+     ============================================================ */
   .badge-success {
-    @apply px-2 py-0.5 bg-success/15 text-success border border-success/25 rounded text-[10px] md:text-[11px] font-extrabold uppercase tracking-wider;
+    @apply px-2 py-0.5 bg-success/10 text-success rounded-full text-[11px] font-semibold uppercase tracking-wide;
   }
 
   .badge-warning {
-    @apply px-2 py-0.5 bg-[#f0b232]/15 text-[#f0b232] border border-[#f0b232]/25 rounded text-[10px] md:text-[11px] font-extrabold uppercase tracking-wider;
+    @apply px-2 py-0.5 bg-warning/10 text-warning rounded-full text-[11px] font-semibold uppercase tracking-wide;
   }
 
   .badge-danger {
-    @apply px-2 py-0.5 bg-danger/15 text-danger border border-danger/25 rounded text-[10px] md:text-[11px] font-extrabold uppercase tracking-wider;
+    @apply px-2 py-0.5 bg-danger/10 text-danger rounded-full text-[11px] font-semibold uppercase tracking-wide;
+  }
+
+  .badge-primary {
+    @apply px-2 py-0.5 bg-primary/10 text-primary rounded-full text-[11px] font-semibold uppercase tracking-wide;
   }
 
   .badge-neutral {
-    @apply px-2 py-0.5 bg-discord-400 text-text-normal border border-discord-400/50 rounded text-[10px] md:text-[11px] font-extrabold uppercase tracking-wider;
+    @apply px-2 py-0.5 bg-surface-sunken text-text-muted rounded-full text-[11px] font-semibold uppercase tracking-wide;
   }
 
   .transition-standard {
@@ -128,15 +177,15 @@
     @apply rounded-[2px] transition-all duration-300;
   }
 
-  .calendar-square.level-0 { @apply bg-discord-400/50 hover:bg-discord-400; }
-  .calendar-square.level-1 { @apply bg-[#0e4429] hover:brightness-125; }
-  .calendar-square.level-2 { @apply bg-[#006d32] hover:brightness-125; }
-  .calendar-square.level-3 { @apply bg-[#26a641] hover:brightness-125; }
-  .calendar-square.level-4 { @apply bg-[#39d353] hover:brightness-125; }
+  .calendar-square.level-0 { @apply bg-surface-sunken hover:bg-slate-200; }
+  .calendar-square.level-1 { @apply bg-primary/25 hover:brightness-110; }
+  .calendar-square.level-2 { @apply bg-primary/50 hover:brightness-110; }
+  .calendar-square.level-3 { @apply bg-primary/75 hover:brightness-110; }
+  .calendar-square.level-4 { @apply bg-primary hover:brightness-110; }
 }
 
-/* Pygments Default Style */
-.codehilite { background: #f8f8f8; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.875rem; border: 1px border-slate-200; }
+/* Pygments Default Style (blocos de código — mantém tema claro próprio) */
+.codehilite { background: #f8f8f8; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; font-size: 0.875rem; border: 1px solid #e2e8f0; }
 .codehilite .hll { background-color: #ffffcc }
 .codehilite .c { color: #3D7B7B; font-style: italic } /* Comment */
 .codehilite .err { border: 1px solid #FF0000 } /* Error */
@@ -207,7 +256,7 @@
 .codehilite .il { color: #666 } /* Literal.Number.Integer.Long */
 
 /* Markdown Styling (GitHub-like) */
-.markdown-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.5; word-wrap: break-word; }
+.markdown-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.5; word-wrap: break-word; color: #334155; }
 .markdown-body h1 { font-size: 2em; border-bottom: 1px solid #eaecef; padding-bottom: .3em; margin-top: 24px; margin-bottom: 16px; font-weight: 600; }
 .markdown-body h2 { font-size: 1.5em; border-bottom: 1px solid #eaecef; padding-bottom: .3em; margin-top: 24px; margin-bottom: 16px; font-weight: 600; }
 .markdown-body h3 { font-size: 1.25em; margin-top: 24px; margin-bottom: 16px; font-weight: 600; }
@@ -217,7 +266,7 @@
 .markdown-body li { margin-top: .25em; }
 .markdown-body code:not(.codehilite code) { padding: .2em .4em; margin: 0; font-size: 85%; background-color: rgba(27,31,35,.05); border-radius: 3px; font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace; }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar (tema claro) */
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -226,11 +275,11 @@
     background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #4f545c;
+    background: #cbd5e1;
     border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #9a55f3;
+    background: #94a3b8;
 }
 
 @keyframes modal-appear {
@@ -240,4 +289,38 @@
 
 .animate-modal-appear {
     animation: modal-appear 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Entrada dos modais: sobe do rodapé no celular (bottom sheet nativo),
+   aparece com fade+escala no desktop (diálogo centralizado). */
+@keyframes sheet-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes dialog-in {
+    from { opacity: 0; transform: scale(0.96) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-sheet {
+    animation: sheet-up 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (min-width: 768px) {
+    .modal-sheet {
+        animation: dialog-in 0.2s ease-out;
+        padding-bottom: 0;
+    }
+}
+
+/* Fade simples para o backdrop do modal. */
+@keyframes overlay-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-overlay {
+    animation: overlay-in 0.15s ease-out;
 }

@@ -4,19 +4,19 @@
 
 {% block content %}
 <div class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-    <div class="mb-6 text-[#ed4245]">
-        <i class="ph-bold ph-lock-key text-6xl"></i>
+    <div class="mb-6 w-16 h-16 rounded-2xl bg-danger/10 flex items-center justify-center text-danger">
+        <i class="ph-bold ph-lock-key text-3xl"></i>
     </div>
 
     <h1 class="text-6xl font-black text-text-heading mb-2 tracking-tighter">403</h1>
-    <h2 class="text-lg md:text-xl font-extrabold text-text-heading tracking-wide mb-10 uppercase">ACESSO NEGADO</h2>
+    <h2 class="text-lg font-semibold text-text-heading mb-10">Acesso negado</h2>
 
     <div class="flex flex-col sm:flex-row gap-3">
-        <a href="{{ url_for('main.index') }}" class="btn-primary btn-md uppercase tracking-widest text-[11px] font-black h-11 px-6 flex items-center justify-center gap-2">
-            <i class="ph-bold ph-house text-base"></i> INÍCIO
+        <a href="{{ url_for('main.index') }}" class="btn-primary btn-md">
+            <i class="ph-bold ph-house text-base"></i> Início
         </a>
-        <button onclick="window.history.back()" class="btn-secondary btn-md uppercase tracking-widest text-[11px] font-black h-11 px-6 flex items-center justify-center gap-2">
-            <i class="ph-bold ph-arrow-left text-base"></i> VOLTAR
+        <button onclick="window.history.back()" class="btn-secondary btn-md">
+            <i class="ph-bold ph-arrow-left text-base"></i> Voltar
         </button>
     </div>
 </div>

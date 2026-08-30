@@ -12,15 +12,13 @@ function togglePanel() {
     if (filterBar.classList.contains('hidden')) {
         filterBar.classList.remove('hidden');
         taskForm.classList.add('hidden');
-        toggleBtn.innerHTML = '<i class="ph-bold ph-plus text-lg text-primary-DEFAULT"></i>';
-        toggleBtn.classList.replace('bg-discord-100', 'bg-discord-200');
-        toggleBtn.classList.add('border-discord-400');
+        toggleBtn.innerHTML = '<i class="ph-bold ph-plus text-lg"></i>';
+        toggleBtn.classList.add('!bg-primary-light', '!text-primary', '!border-primary/30');
     } else {
         filterBar.classList.add('hidden');
         taskForm.classList.remove('hidden');
         toggleBtn.innerHTML = '<i class="ph-bold ph-magnifying-glass text-lg"></i> <span class="hidden md:inline">Pesquisar</span>';
-        toggleBtn.classList.replace('bg-discord-200', 'bg-discord-100');
-        toggleBtn.classList.remove('border-discord-400');
+        toggleBtn.classList.remove('!bg-primary-light', '!text-primary', '!border-primary/30');
     }
 }
 
@@ -166,11 +164,11 @@ function updateTaskRowStatus(row, status) {
     if (badge) {
         badge.className = ''; // Reset classes
         if (status === 'PENDENTE') {
-            badge.className = 'badge-warning text-[9px] tracking-widest px-2 py-0.5';
+            badge.className = 'badge-warning';
         } else if (status === 'INICIADO') {
-            badge.className = 'badge-success text-[9px] tracking-widest px-2 py-0.5';
+            badge.className = 'badge-success';
         } else {
-            badge.className = 'badge-neutral opacity-60 text-[9px] tracking-widest px-2 py-0.5';
+            badge.className = 'badge-neutral opacity-60';
         }
         badge.textContent = status;
     }
@@ -194,15 +192,15 @@ function updateTaskRowStatus(row, status) {
         const taskId = checkForm.action.split('/').pop();
         if (status === 'FINALIZADO') {
             checkForm.action = "/tasks/iniciar/" + taskId;
-            checkBtn.className = 'flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 bg-success border-success text-white';
+            checkBtn.className = "relative flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 after:absolute after:-inset-2.5 after:content-[''] bg-success border-success text-white";
             checkBtn.innerHTML = '<i class="ph-bold ph-check"></i>';
         } else if (status === 'INICIADO') {
             checkForm.action = "/tasks/concluir/" + taskId;
-            checkBtn.className = 'flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 bg-success border-success text-white animate-pulse';
+            checkBtn.className = "relative flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 after:absolute after:-inset-2.5 after:content-[''] bg-success border-success text-white animate-pulse";
             checkBtn.innerHTML = '<i class="ph-bold ph-play"></i>';
         } else {
             checkForm.action = "/tasks/concluir/" + taskId;
-            checkBtn.className = 'flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 border-text-muted hover:border-text-normal text-transparent hover:text-text-normal';
+            checkBtn.className = "relative flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 after:absolute after:-inset-2.5 after:content-[''] border-text-muted hover:border-text-normal text-transparent hover:text-text-normal";
             checkBtn.innerHTML = '<i class="ph-bold ph-check"></i>';
         }
     }

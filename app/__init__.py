@@ -133,9 +133,16 @@ def create_app(config_class=Config):
         origin = request.headers.get('Origin')
         allowed_origins = app.config.get('CORS_ALLOWED_ORIGINS', [])
 
-        if origin and ('*' in allowed_origins or origin in allowed_origins):
+        if origin and origin in allowed_origins:
+            # Origem explicitamente confiável: pode receber cookies de sessão.
             response.headers['Access-Control-Allow-Origin'] = origin
             response.headers['Access-Control-Allow-Credentials'] = 'true'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With, X-CSRFToken'
+        elif origin and '*' in allowed_origins:
+            # Curinga: nunca combinar com credentials, senão qualquer site
+            # poderia ler respostas autenticadas do usuário via fetch/XHR.
+            response.headers['Access-Control-Allow-Origin'] = '*'
             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With, X-CSRFToken'
 

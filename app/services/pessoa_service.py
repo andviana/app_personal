@@ -20,111 +20,105 @@ class PessoaService:
         return repo.list_all(order_by=Pessoa.nome_completo)
 
     @staticmethod
-    def create_pessoa(form_data, current_user_username):
+    def create_pessoa(form_data, current_user):
         repo = PessoaRepository()
-        try:
-            rg_data = form_data.get('rg_data_expedicao')
-            nasc_data = form_data.get('data_nascimento')
-            
-            pessoa = Pessoa(
-                nome_completo=form_data.get('nome_completo', '').strip(),
-                rg_numero=form_data.get('rg_numero', '').strip() or None,
-                rg_orgao=form_data.get('rg_orgao', '').strip() or None,
-                rg_data_expedicao=datetime.strptime(rg_data, '%Y-%m-%d') if rg_data else None,
-                cpf=form_data.get('cpf', '').strip() or None,
-                pis=form_data.get('pis', '').strip() or None,
-                data_nascimento=datetime.strptime(nasc_data, '%Y-%m-%d') if nasc_data else None,
-                foto_url=form_data.get('foto_url', '').strip() or None
-            )
-            repo.add(pessoa)
-            repo.flush()
+        rg_data = form_data.get('rg_data_expedicao')
+        nasc_data = form_data.get('data_nascimento')
 
-            # Endereços
-            enderecos = form_data.getlist('enderecos[]')
-            for end in enderecos:
-                if end.strip():
-                    repo.add(Endereco(pessoa_id=pessoa.id, descricao=end.strip()))
+        pessoa = Pessoa(
+            nome_completo=form_data.get('nome_completo', '').strip(),
+            rg_numero=form_data.get('rg_numero', '').strip() or None,
+            rg_orgao=form_data.get('rg_orgao', '').strip() or None,
+            rg_data_expedicao=datetime.strptime(rg_data, '%Y-%m-%d') if rg_data else None,
+            cpf=form_data.get('cpf', '').strip() or None,
+            pis=form_data.get('pis', '').strip() or None,
+            data_nascimento=datetime.strptime(nasc_data, '%Y-%m-%d') if nasc_data else None,
+            foto_url=form_data.get('foto_url', '').strip() or None
+        )
+        repo.add(pessoa)
+        repo.flush()
 
-            # Telefones
-            telefones = form_data.getlist('telefones[]')
-            for tel in telefones:
-                if tel.strip():
-                    repo.add(Telefone(pessoa_id=pessoa.id, numero=tel.strip()))
+        # Endereços
+        enderecos = form_data.getlist('enderecos[]')
+        for end in enderecos:
+            if end.strip():
+                repo.add(Endereco(pessoa_id=pessoa.id, descricao=end.strip()))
 
-            # Arquivos/Links
-            titulos = form_data.getlist('arquivo_titulos[]')
-            urls = form_data.getlist('arquivo_urls[]')
-            for t, u in zip(titulos, urls):
-                if t.strip() and u.strip():
-                    repo.add(PessoaArquivo(
-                        pessoa_id=pessoa.id, 
-                        titulo=t.strip(), 
-                        url=PessoaService.sanitize_url(u.strip())
-                    ))
+        # Telefones
+        telefones = form_data.getlist('telefones[]')
+        for tel in telefones:
+            if tel.strip():
+                repo.add(Telefone(pessoa_id=pessoa.id, numero=tel.strip()))
 
-            repo.commit()
-            LogService.log_action(current_user_username, "PESSOA_CREATED", f"NOME: {pessoa.nome_completo}")
-            return pessoa
-        except Exception as e:
-            raise e
+        # Arquivos/Links
+        titulos = form_data.getlist('arquivo_titulos[]')
+        urls = form_data.getlist('arquivo_urls[]')
+        for t, u in zip(titulos, urls):
+            if t.strip() and u.strip():
+                repo.add(PessoaArquivo(
+                    pessoa_id=pessoa.id,
+                    titulo=t.strip(),
+                    url=PessoaService.sanitize_url(u.strip())
+                ))
+
+        repo.commit()
+        LogService.log_action(current_user.username, "PESSOA_CREATED", f"NOME: {pessoa.nome_completo}")
+        return pessoa
 
     @staticmethod
-    def update_pessoa(id, form_data, current_user_username):
+    def update_pessoa(id, form_data, current_user):
         repo = PessoaRepository()
         pessoa = repo.get_or_404(id)
-        try:
-            rg_data = form_data.get('rg_data_expedicao')
-            nasc_data = form_data.get('data_nascimento')
-            
-            pessoa.nome_completo = form_data.get('nome_completo', '').strip()
-            pessoa.rg_numero = form_data.get('rg_numero', '').strip() or None
-            pessoa.rg_orgao = form_data.get('rg_orgao', '').strip() or None
-            pessoa.rg_data_expedicao = datetime.strptime(rg_data, '%Y-%m-%d') if rg_data else None
-            pessoa.cpf = form_data.get('cpf', '').strip() or None
-            pessoa.pis = form_data.get('pis', '').strip() or None
-            pessoa.data_nascimento = datetime.strptime(nasc_data, '%Y-%m-%d') if nasc_data else None
-            pessoa.foto_url = form_data.get('foto_url', '').strip() or None
+        rg_data = form_data.get('rg_data_expedicao')
+        nasc_data = form_data.get('data_nascimento')
 
-            # Limpar relacionados para reinserir
-            repo.delete_related(id)
+        pessoa.nome_completo = form_data.get('nome_completo', '').strip()
+        pessoa.rg_numero = form_data.get('rg_numero', '').strip() or None
+        pessoa.rg_orgao = form_data.get('rg_orgao', '').strip() or None
+        pessoa.rg_data_expedicao = datetime.strptime(rg_data, '%Y-%m-%d') if rg_data else None
+        pessoa.cpf = form_data.get('cpf', '').strip() or None
+        pessoa.pis = form_data.get('pis', '').strip() or None
+        pessoa.data_nascimento = datetime.strptime(nasc_data, '%Y-%m-%d') if nasc_data else None
+        pessoa.foto_url = form_data.get('foto_url', '').strip() or None
 
-            # Endereços
-            enderecos = form_data.getlist('enderecos[]')
-            for end in enderecos:
-                if end.strip():
-                    repo.add(Endereco(pessoa_id=pessoa.id, descricao=end.strip()))
+        # Limpar relacionados para reinserir
+        repo.delete_related(id)
 
-            # Telefones
-            telefones = form_data.getlist('telefones[]')
-            for tel in telefones:
-                if tel.strip():
-                    repo.add(Telefone(pessoa_id=pessoa.id, numero=tel.strip()))
+        # Endereços
+        enderecos = form_data.getlist('enderecos[]')
+        for end in enderecos:
+            if end.strip():
+                repo.add(Endereco(pessoa_id=pessoa.id, descricao=end.strip()))
 
-            # Arquivos/Links
-            titulos = form_data.getlist('arquivo_titulos[]')
-            urls = form_data.getlist('arquivo_urls[]')
-            for t, u in zip(titulos, urls):
-                if t.strip() and u.strip():
-                    repo.add(PessoaArquivo(
-                        pessoa_id=pessoa.id, 
-                        titulo=t.strip(), 
-                        url=PessoaService.sanitize_url(u.strip())
-                    ))
+        # Telefones
+        telefones = form_data.getlist('telefones[]')
+        for tel in telefones:
+            if tel.strip():
+                repo.add(Telefone(pessoa_id=pessoa.id, numero=tel.strip()))
 
-            repo.commit()
-            LogService.log_action(current_user_username, "PESSOA_UPDATED", f"NOME: {pessoa.nome_completo}")
-            return pessoa
-        except Exception as e:
-            raise e
+        # Arquivos/Links
+        titulos = form_data.getlist('arquivo_titulos[]')
+        urls = form_data.getlist('arquivo_urls[]')
+        for t, u in zip(titulos, urls):
+            if t.strip() and u.strip():
+                repo.add(PessoaArquivo(
+                    pessoa_id=pessoa.id,
+                    titulo=t.strip(),
+                    url=PessoaService.sanitize_url(u.strip())
+                ))
+
+        repo.commit()
+        LogService.log_action(current_user.username, "PESSOA_UPDATED", f"NOME: {pessoa.nome_completo}")
+        return pessoa
 
     @staticmethod
-    def delete_pessoa(id, current_user_username):
+    def delete_pessoa(id, current_user):
         repo = PessoaRepository()
         pessoa = repo.get_or_404(id)
         nome = pessoa.nome_completo
         repo.delete(pessoa)
         repo.commit()
-        LogService.log_action(current_user_username, "PESSOA_DELETED", f"NOME: {nome}")
+        LogService.log_action(current_user.username, "PESSOA_DELETED", f"NOME: {nome}")
         return nome
 
     @staticmethod

@@ -1,59 +1,44 @@
 {% extends 'base.html' %}
+{% from 'macros/components.html' import page_header %}
 
 {% block title %}Listas - AppPessoal{% endblock %}
 
 {% block content %}
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-    <div class="flex flex-col gap-1">
-        <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
-            <i class="ph-bold ph-shopping-bag text-[#ff4700]"></i> Listas {% if is_archived_view %}<span class="text-xs bg-danger/20 text-danger px-3 py-1 rounded-full uppercase tracking-widest font-bold">(Arquivados)</span>{% endif %}
-        </h1>
-    </div>
+{% call page_header('Listas', icon='ph-shopping-bag', badge=('Arquivados' if is_archived_view else none)) %}
+    {% if is_archived_view %}
+    <a href="{{ url_for('lists.index') }}" class="btn-secondary btn-md" data-tooltip="Ver Listas Ativas">
+        <i class="ph-bold ph-check-circle text-lg"></i>
+        <span class="text-xs">Ver Ativos</span>
+    </a>
+    {% else %}
+    <a href="{{ url_for('lists.index', archived='true') }}" class="btn-ghost btn-md" data-tooltip="Ver Listas Desativadas/Arquivadas">
+        <i class="ph-bold ph-archive text-lg"></i>
+        <span class="text-xs">Desativados</span>
+    </a>
 
-    <div class="flex flex-wrap gap-2 w-full md:w-auto">
-        {% if is_archived_view %}
-        <a href="{{ url_for('lists.index') }}"
-            class="btn-secondary btn-md w-full md:w-auto opacity-80 hover:opacity-100 flex items-center justify-center gap-2"
-            data-tooltip="Ver Listas Ativas">
-            <i class="ph-bold ph-check-circle text-lg text-success"></i>
-            <span class="font-bold uppercase tracking-widest text-[10px]">Ver Ativos</span>
-        </a>
-        {% else %}
-        <a href="{{ url_for('lists.index', archived='true') }}"
-            class="btn-secondary btn-md w-full md:w-auto opacity-70 hover:opacity-100 border-dashed flex items-center justify-center gap-2"
-            data-tooltip="Ver Listas Desativadas/Arquivadas">
-            <i class="ph-bold ph-archive text-lg text-text-muted"></i>
-            <span class="font-bold uppercase tracking-widest text-[10px]">Ver Arquivados/Desativados</span>
-        </a>
+    <button onclick="document.getElementById('modalNovoTipoLista').classList.remove('hidden')"
+        class="btn-secondary btn-md" data-tooltip="Novo Tipo" data-tooltip-pos="top">
+        <i class="ph-bold ph-tag text-lg"></i> <span class="hidden md:inline text-xs">Tipo</span>
+    </button>
 
-        <button onclick="document.getElementById('modalNovaLista').classList.remove('hidden')"
-            class="btn-primary btn-md w-full md:w-auto group !bg-[#ff4700] !text-white !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2"
-            data-tooltip="Nova Lista" data-tooltip-pos="top">
-            ADICIONAR
-            <i class="ph-bold ph-plus text-xl transition-transform duration-300 group-hover:rotate-90"></i>
-        </button>
-
-        <button onclick="document.getElementById('modalNovoTipoLista').classList.remove('hidden')"
-            class="btn-secondary btn-md w-11 md:w-auto group hover:!border-[#ff4700]/50 !bg-gray-300 !text-black shadow-sm"
-            data-tooltip="Novo Tipo" data-tooltip-pos="top">
-            <i class="ph-bold ph-tag text-[#ff4700] text-xl"></i> <span
-                class="hidden md:inline ml-2 font-black uppercase tracking-widest text-[10px]">Tipo</span>
-        </button>
-        {% endif %}
-    </div>
-</div>
+    <button onclick="document.getElementById('modalNovaLista').classList.remove('hidden')" class="btn-primary btn-md group">
+        Adicionar
+        <i class="ph-bold ph-plus text-lg transition-transform duration-300 group-hover:rotate-90"></i>
+    </button>
+    {% endif %}
+{% endcall %}
 
 <div class="grid grid-cols-1 gap-4 mt-8">
     {% for l in listas %}
-    <div class="group bg-discord-200 border border-discord-400 rounded-[16px] p-4 hover:border-text-muted transition-all duration-300 flex items-center gap-4 relative overflow-hidden shadow-sm cursor-pointer {% if is_archived_view %}opacity-60 grayscale bg-discord-200{% endif %}"
+    <div class="group bg-surface border border-slate-200 rounded-[16px] p-4 hover:border-text-muted transition-all duration-300 flex items-center gap-4 relative overflow-hidden shadow-sm cursor-pointer {% if is_archived_view %}opacity-60 grayscale bg-surface{% endif %}"
         onclick="window.location.href='{{ url_for('lists.detail', id=l.id) }}';">
         <!-- Visual Accent -->
-        <div class="absolute top-0 left-0 w-1 h-full bg-[#ff4700] opacity-0 group-hover:opacity-100 transition-opacity">
+        <div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity">
         </div>
 
         <!-- Icon -->
         <div
-            class="bg-gray-200 flex-shrink-0 p-3 bg-discord-400 text-[#ff4700] rounded-xl group-hover:bg-[#ff4700] group-hover:text-white transition-standard">
+            class="flex-shrink-0 p-3 bg-surface-hover text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-standard">
             <i class="ph-fill ph-shopping-bag text-2xl"></i>
         </div>
 
@@ -62,11 +47,11 @@
             <div class="flex flex-col gap-0.5">
                 <div class="flex items-center gap-2">
                     <span
-                        class="text-[9px] font-black tracking-widest uppercase py-0.5 px-2 bg-discord-400 text-text-muted rounded-full w-fit">
+                        class="badge-neutral">
                         {{ l.tipo.denominacao if l.tipo else 'Genérica' }}
                     </span>
                     {% if is_archived_view %}
-                    <span class="text-[9px] font-black tracking-widest uppercase py-0.5 px-2 bg-gray-600/60 text-gray-200 rounded-full w-fit">
+                    <span class="badge-neutral">
                         Desativada
                     </span>
                     {% endif %}
@@ -74,9 +59,9 @@
                 
                 <div class="flex items-center gap-2 mt-1">
                     {% if not is_archived_view and l.owner_id != current_user.id %}
-                    <i class="ph-bold ph-users text-[#ff4700] text-lg" data-tooltip="Compartilhado com você"></i>
+                    <i class="ph-bold ph-users text-primary text-lg" data-tooltip="Compartilhado com você"></i>
                     {% endif %}
-                    <h3 class="text-base font-black text-text-heading truncate">{{ l.denominacao }}</h3>
+                    <h3 class="text-base font-semibold text-text-heading truncate">{{ l.denominacao }}</h3>
                 </div>
             </div>
             <div class="flex items-center gap-4 text-text-muted mt-1">
@@ -88,7 +73,7 @@
         <!-- Actions -->
         <div class="flex items-center gap-2" onclick="event.stopPropagation()">
             <a href="{{ url_for('lists.detail', id=l.id) }}"
-                class="w-10 h-10 flex items-center justify-center text-text-muted hover:text-[#ff4700] transition-standard"
+                class="w-11 h-11 md:w-10 md:h-10 flex items-center justify-center text-text-muted hover:text-primary transition-standard"
                 data-tooltip="Abrir Lista" data-tooltip-pos="top">
                 <i class="ph-bold ph-arrow-square-out text-xl"></i>
             </a>
@@ -97,7 +82,7 @@
                 {% if l.owner_id == current_user.id %}
                 <form action="{{ url_for('lists.reactivate', id=l.id) }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="w-10 h-10 flex items-center justify-center text-success hover:text-white transition-standard"
+                    <button type="submit" class="w-11 h-11 md:w-10 md:h-10 flex items-center justify-center text-success hover:bg-success hover:text-white transition-standard"
                         data-tooltip="Reativar Lista" data-tooltip-pos="top">
                         <i class="ph-bold ph-arrow-counter-clockwise text-xl"></i>
                     </button>
@@ -107,7 +92,7 @@
                 {% if l.owner_id == current_user.id %}
                 <!-- Compartilhar -->
                 <button onclick="openShareModalList({{ l.id }}, {{ l.shared_users|map(attribute='id')|list|tojson }})"
-                    class="w-10 h-10 flex items-center justify-center text-text-muted hover:text-[#ff4700] transition-standard"
+                    class="w-11 h-11 md:w-10 md:h-10 flex items-center justify-center text-text-muted hover:text-primary transition-standard"
                     data-tooltip="Compartilhar" data-tooltip-pos="top">
                     <i class="ph-bold ph-share-network text-xl"></i>
                 </button>
@@ -115,7 +100,7 @@
                 <!-- Arquivar -->
                 <form action="{{ url_for('lists.archive', id=l.id) }}" method="POST" class="flex-shrink-0">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="w-10 h-10 flex items-center justify-center text-text-muted hover:text-warning transition-standard"
+                    <button type="submit" class="w-11 h-11 md:w-10 md:h-10 flex items-center justify-center text-text-muted hover:text-warning transition-standard"
                         data-tooltip="Arquivar" data-tooltip-pos="top">
                         <i class="ph-bold ph-archive text-xl"></i>
                     </button>
@@ -136,8 +121,8 @@
     </div>
     {% else %}
     <div
-        class="col-span-full flex flex-col items-center justify-center py-20 bg-discord-200 rounded-[16px] border border-discord-400 border-dashed text-center">
-        <div class="w-20 h-20 bg-discord-400 rounded-full flex items-center justify-center mb-6 text-text-muted">
+        class="col-span-full flex flex-col items-center justify-center py-20 bg-surface rounded-[16px] border border-slate-200 border-dashed text-center">
+        <div class="w-20 h-20 bg-surface-hover rounded-full flex items-center justify-center mb-6 text-text-muted">
             <i class="ph-bold ph-shopping-bag text-4xl"></i>
         </div>
         <h3 class="text-xl font-bold text-text-heading tracking-tight">Nenhuma lista encontrada</h3>
@@ -148,34 +133,34 @@
 
 <!-- Modais -->
 <div id="modalNovaLista"
-    class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
-    <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
+    class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-sm">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex flex-col gap-1">
-                    <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                        <i class="ph-bold ph-plus text-[#ff4700]"></i> Criar Lista
+                    <h2 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-plus text-primary"></i> Criar Lista
                     </h2>
                 </div>
                 <button type="button" onclick="document.getElementById('modalNovaLista').classList.add('hidden')"
-                    class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
+                    class="p-3 md:p-2 text-text-muted hover:text-text-normal hover:bg-surface-hover rounded-full transition-standard"><i
                         class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('lists.add') }}" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Nome da
+                    <label class="form-label">Nome da
                         Lista</label>
                     <input type="text" name="denominacao" placeholder="Ex: Mercado Mensal"
-                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-semibold rounded-xl transition-all"
+                        class="form-input"
                         required autofocus>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Tipo de
+                    <label class="form-label">Tipo de
                         Lista</label>
                     <select name="tipo_id"
-                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-semibold rounded-xl transition-all"
+                        class="form-input"
                         required>
                         <option value="" disabled selected>Escolha um tipo...</option>
                         {% for t in tipos %}
@@ -185,12 +170,12 @@
                 </div>
                 <div class="flex flex-col md:flex-row gap-4 pt-6 justify-end">
                     <button type="button" onclick="document.getElementById('modalNovaLista').classList.add('hidden')"
-                        class="btn-secondary btn-md font-black tracking-widest text-[11px] h-12 px-8 flex items-center justify-center gap-2 opacity-70 hover:opacity-100 transition-all w-full md:w-auto order-2 md:order-1">
-                        <i class="ph-bold ph-x"></i> CANCELAR
+                        class="btn-secondary btn-lg w-full md:w-auto order-2 md:order-1">
+                        <i class="ph-bold ph-x"></i> Cancelar
                     </button>
                     <button type="submit"
-                        class="btn-primary btn-md group !bg-[#ff4700] !text-white !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-12 px-10 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto order-1 md:order-2">
-                        <i class="ph-bold ph-check"></i> SALVAR
+                        class="btn-primary btn-lg w-full md:w-auto order-1 md:order-2">
+                        <i class="ph-bold ph-check"></i> Salvar
                     </button>
                 </div>
 
@@ -200,36 +185,36 @@
 </div>
 
 <div id="modalNovoTipoLista"
-    class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
-    <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
+    class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-sm">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                    <i class="ph-bold ph-tag text-[#ff4700]"></i> Novo Tipo
+                <h2 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                    <i class="ph-bold ph-tag text-primary"></i> Novo Tipo
                 </h2>
                 <button type="button" onclick="document.getElementById('modalNovoTipoLista').classList.add('hidden')"
-                    class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
+                    class="p-3 md:p-2 text-text-muted hover:text-text-normal hover:bg-surface-hover rounded-full transition-standard"><i
                         class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('lists.add_tipo') }}" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Nome do
+                    <label class="form-label">Nome do
                         Tipo</label>
                     <input type="text" name="denominacao" placeholder="Ex: VIAGEM, MERCADO..."
-                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-semibold rounded-xl transition-all"
+                        class="form-input"
                         required autofocus>
                 </div>
                 <div class="flex flex-col md:flex-row gap-4 pt-6 justify-end">
                     <button type="button"
                         onclick="document.getElementById('modalNovoTipoLista').classList.add('hidden')"
-                        class="btn-secondary btn-md font-black tracking-widest text-[11px] h-12 px-8 flex items-center justify-center gap-2 opacity-70 hover:opacity-100 transition-all w-full md:w-auto order-2 md:order-1">
-                        <i class="ph-bold ph-x"></i> CANCELAR
+                        class="btn-secondary btn-lg w-full md:w-auto order-2 md:order-1">
+                        <i class="ph-bold ph-x"></i> Cancelar
                     </button>
                     <button type="submit"
-                        class="btn-primary btn-md group !bg-[#ff4700] !text-white !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-12 px-10 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto order-1 md:order-2">
-                        <i class="ph-bold ph-check"></i> SALVAR
+                        class="btn-primary btn-lg w-full md:w-auto order-1 md:order-2">
+                        <i class="ph-bold ph-check"></i> Salvar
                     </button>
                 </div>
 
@@ -240,25 +225,25 @@
 
 <!-- Modal Compartilhar Lista -->
 <div id="modalCompartilharLista"
-    class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
-    <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
+    class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-sm">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                    <i class="ph-bold ph-share-network text-[#ff4700]"></i> Compartilhar Lista
+                <h2 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                    <i class="ph-bold ph-share-network text-primary"></i> Compartilhar Lista
                 </h2>
                 <button type="button" onclick="document.getElementById('modalCompartilharLista').classList.add('hidden')"
-                    class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
+                    class="p-3 md:p-2 text-text-muted hover:text-text-normal hover:bg-surface-hover rounded-full transition-standard"><i class="ph-bold ph-x"></i></button>
             </div>
             <form id="formCompartilharLista" action="" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-3">Selecione os usuários com acesso:</label>
-                    <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-discord-100 rounded-xl border border-discord-400">
+                    <label class="form-label mb-3">Selecione os usuários com acesso:</label>
+                    <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-surface-sunken rounded-xl border border-slate-200">
                         {% for u in users %}
                         {% if u.id != current_user.id %}
-                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-discord-300 cursor-pointer">
-                            <input type="checkbox" name="user_ids" value="{{ u.id }}" class="list-user-checkbox w-4 h-4 rounded text-[#ff4700] focus:ring-[#ff4700] bg-discord-400 border-discord-400">
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-background cursor-pointer">
+                            <input type="checkbox" name="user_ids" value="{{ u.id }}" class="list-user-checkbox w-4 h-4 rounded text-primary focus:ring-primary bg-surface-hover border-slate-200">
                             <span class="text-sm font-semibold text-text-heading">{{ u.username }}</span>
                         </label>
                         {% endif %}
@@ -267,12 +252,12 @@
                 </div>
                 <div class="flex flex-col md:flex-row gap-4 pt-4 justify-end">
                     <button type="button" onclick="document.getElementById('modalCompartilharLista').classList.add('hidden')"
-                        class="btn-secondary btn-md font-black tracking-widest text-[11px] h-12 px-8 flex items-center justify-center gap-2 opacity-70 hover:opacity-100 transition-all w-full md:w-auto order-2 md:order-1">
-                        <i class="ph-bold ph-x"></i> CANCELAR
+                        class="btn-secondary btn-lg w-full md:w-auto order-2 md:order-1">
+                        <i class="ph-bold ph-x"></i> Cancelar
                     </button>
                     <button type="submit"
-                        class="btn-primary btn-md group !bg-[#ff4700] !text-white !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-12 px-10 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto order-1 md:order-2">
-                        <i class="ph-bold ph-check"></i> SALVAR
+                        class="btn-primary btn-lg w-full md:w-auto order-1 md:order-2">
+                        <i class="ph-bold ph-check"></i> Salvar
                     </button>
                 </div>
             </form>
@@ -307,7 +292,7 @@
             customClass: {
                 popup: 'discord-theme',
                 confirmButton: 'bg-danger text-white px-4 py-2 rounded-md hover:bg-danger/80 border-none ml-2',
-                cancelButton: 'bg-discord-400 text-text-normal px-4 py-2 rounded-md hover:bg-discord-500 border-none'
+                cancelButton: 'bg-surface-sunken text-text-normal px-4 py-2 rounded-md hover:bg-slate-200 border-none'
             },
             buttonsStyling: false
         }).then((result) => {

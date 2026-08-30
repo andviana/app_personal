@@ -1,50 +1,38 @@
 {% extends 'base.html' %}
+{% from 'macros/components.html' import page_header %}
 
 {% block title %}Listas Simples - DayLog{% endblock %}
 
 {% block content %}
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-    <div class="flex flex-col gap-1">
-        <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
-            <i class="ph-bold ph-list-bullets text-[#00d1ff]"></i> Listas Simples {% if is_archived_view %}<span class="text-xs bg-danger/20 text-danger px-3 py-1 rounded-full uppercase tracking-widest font-bold">(Arquivados)</span>{% endif %}
-        </h1>
-    </div>
+{% call page_header('Listas Simples', icon='ph-list-bullets', badge=('Arquivados' if is_archived_view else none)) %}
+    {% if is_archived_view %}
+    <a href="{{ url_for('simple_lists.index') }}" class="btn-secondary btn-md" data-tooltip="Ver Listas Ativas">
+        <i class="ph-bold ph-check-circle text-lg"></i>
+        <span class="text-xs">Ver Ativos</span>
+    </a>
+    {% else %}
+    <a href="{{ url_for('simple_lists.index', archived='true') }}" class="btn-ghost btn-md" data-tooltip="Ver Listas Desativadas/Arquivadas">
+        <i class="ph-bold ph-archive text-lg"></i>
+        <span class="text-xs">Desativados</span>
+    </a>
 
-    <div class="flex flex-wrap gap-2 w-full md:w-auto">
-        {% if is_archived_view %}
-        <a href="{{ url_for('simple_lists.index') }}"
-            class="btn-secondary btn-md w-full md:w-auto opacity-80 hover:opacity-100 flex items-center justify-center gap-2"
-            data-tooltip="Ver Listas Ativas">
-            <i class="ph-bold ph-check-circle text-lg text-success"></i>
-            <span class="font-bold uppercase tracking-widest text-[10px]">Ver Ativos</span>
-        </a>
-        {% else %}
-        <a href="{{ url_for('simple_lists.index', archived='true') }}"
-            class="btn-secondary btn-md w-full md:w-auto opacity-70 hover:opacity-100 border-dashed flex items-center justify-center gap-2"
-            data-tooltip="Ver Listas Desativadas/Arquivadas">
-            <i class="ph-bold ph-archive text-lg text-text-muted"></i>
-            <span class="font-bold uppercase tracking-widest text-[10px]">Ver Arquivados/Desativados</span>
-        </a>
-
-        <button onclick="openModal('modalNovaLista')"
-            class="btn-primary btn-md w-full md:w-auto group !bg-[#00d1ff] !text-black !shadow-[#00d1ff]/20 font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2">
-            ADICIONAR
-            <i class="ph-bold ph-plus text-xl transition-transform duration-300 group-hover:rotate-90"></i>
-        </button>
-        {% endif %}
-    </div>
-</div>
+    <button onclick="openModal('modalNovaLista')" class="btn-primary btn-md group">
+        Adicionar
+        <i class="ph-bold ph-plus text-lg transition-transform duration-300 group-hover:rotate-90"></i>
+    </button>
+    {% endif %}
+{% endcall %}
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
     {% for lista in listas %}
-    <div class="group bg-discord-200 border border-discord-400 rounded-2xl p-5 hover:border-[#00d1ff]/50 transition-all duration-300 relative overflow-hidden shadow-sm flex flex-col justify-between h-52 cursor-pointer {% if is_archived_view %}opacity-60 grayscale bg-discord-200{% endif %}"
+    <div class="group bg-surface border border-slate-200 rounded-2xl p-5 hover:border-primary/50 transition-all duration-300 relative overflow-hidden shadow-sm flex flex-col justify-between h-52 cursor-pointer {% if is_archived_view %}opacity-60 grayscale bg-surface{% endif %}"
         onclick="window.location.href='{{ url_for('simple_lists.detail', id=lista.id) }}'">
         
-        <div class="absolute top-0 left-0 w-1 h-full bg-[#00d1ff] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
         
         <div>
             <div class="flex justify-between items-start mb-4">
-                <div class="p-3 bg-discord-400 text-[#00d1ff] rounded-xl group-hover:bg-[#00d1ff] group-hover:text-black transition-all">
+                <div class="p-3 bg-surface-hover text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-all">
                     <i class="ph-fill ph-list-bullets text-2xl"></i>
                 </div>
                 <div class="flex gap-1 items-center" onclick="event.stopPropagation()">
@@ -52,28 +40,28 @@
                         {% if lista.owner_id == current_user.id %}
                         <form action="{{ url_for('simple_lists.reactivate', id=lista.id) }}" method="POST">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="p-2 text-success hover:text-white transition-colors" data-tooltip="Reativar Lista">
+                            <button type="submit" class="p-2 text-success hover:bg-success hover:text-white transition-colors" data-tooltip="Reativar Lista">
                                 <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i>
                             </button>
                         </form>
                         {% endif %}
                     {% else %}
                         <button onclick="openEditModal('{{ lista.id }}', '{{ lista.denominacao }}')" 
-                            class="p-2 text-text-muted hover:text-[#00d1ff] transition-colors" data-tooltip="Editar">
+                            class="p-3 md:p-2 text-text-muted hover:text-primary transition-colors" data-tooltip="Editar">
                             <i class="ph-bold ph-pencil-simple text-lg"></i>
                         </button>
 
                         {% if lista.owner_id == current_user.id %}
                         <!-- Compartilhar -->
                         <button onclick="openShareModalSimpleList({{ lista.id }}, {{ lista.shared_simple_users|map(attribute='id')|list|tojson }})"
-                            class="p-2 text-text-muted hover:text-[#00d1ff] transition-colors" data-tooltip="Compartilhar">
+                            class="p-3 md:p-2 text-text-muted hover:text-primary transition-colors" data-tooltip="Compartilhar">
                             <i class="ph-bold ph-share-network text-lg"></i>
                         </button>
 
                         <!-- Arquivar -->
                         <form action="{{ url_for('simple_lists.archive', id=lista.id) }}" method="POST" class="inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="p-2 text-text-muted hover:text-warning transition-colors" data-tooltip="Arquivar">
+                            <button type="submit" class="p-3 md:p-2 text-text-muted hover:text-warning transition-colors" data-tooltip="Arquivar">
                                 <i class="ph-bold ph-archive text-lg"></i>
                             </button>
                         </form>
@@ -81,7 +69,7 @@
                         <!-- Excluir -->
                         <form action="{{ url_for('simple_lists.delete', id=lista.id) }}" method="POST" onsubmit="return confirm('Deseja realmente excluir esta lista?')">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="p-2 text-text-muted hover:text-danger transition-colors" data-tooltip="Excluir">
+                            <button type="submit" class="p-3 md:p-2 text-text-muted hover:text-danger transition-colors" data-tooltip="Excluir">
                                 <i class="ph-bold ph-trash text-lg"></i>
                             </button>
                         </form>
@@ -92,32 +80,32 @@
             
             <div class="flex items-center gap-2">
                 {% if not is_archived_view and lista.owner_id != current_user.id %}
-                <i class="ph-bold ph-users text-[#00d1ff] text-lg" data-tooltip="Compartilhado com você"></i>
+                <i class="ph-bold ph-users text-primary text-lg" data-tooltip="Compartilhado com você"></i>
                 {% endif %}
-                <h3 class="text-xl font-black text-text-heading group-hover:text-white transition-colors truncate uppercase">{{ lista.denominacao }}</h3>
+                <h3 class="text-lg font-semibold text-text-heading truncate">{{ lista.denominacao }}</h3>
             </div>
-            
+
             <div class="flex items-center gap-2 mt-1">
                 {% if is_archived_view %}
-                <span class="text-[9px] font-black uppercase py-0.5 px-2 bg-gray-600/60 text-gray-200 rounded-full w-fit">Desativada</span>
+                <span class="badge-neutral">Desativada</span>
                 {% endif %}
-                <p class="text-text-muted text-xs font-bold uppercase tracking-wider">{{ lista.itens|length }} ITENS</p>
+                <p class="text-text-muted text-xs">{{ lista.itens|length }} itens</p>
             </div>
         </div>
 
         <div class="flex items-center gap-2 mt-4">
-            <div class="flex-1 h-1.5 bg-discord-400 rounded-full overflow-hidden">
+            <div class="flex-1 h-1.5 bg-surface-hover rounded-full overflow-hidden">
                 {% set total = lista.itens|length %}
                 {% set concluidos = lista.itens|selectattr('status', 'equalto', True)|list|length %}
                 {% set percent = (concluidos / total * 100) if total > 0 else 0 %}
-                <div class="h-full bg-[#00d1ff] transition-all duration-500" style="width: {{ percent }}%"></div>
+                <div class="h-full bg-primary transition-all duration-500" style="width: {{ percent }}%"></div>
             </div>
-            <span class="text-[10px] font-black text-text-muted">{{ percent|round|int }}%</span>
+            <span class="text-xs font-semibold text-text-muted">{{ percent|round|int }}%</span>
         </div>
     </div>
     {% else %}
-    <div class="col-span-full flex flex-col items-center justify-center py-20 bg-discord-200 rounded-3xl border-2 border-discord-400 border-dashed text-center">
-        <div class="w-20 h-20 bg-discord-400 rounded-full flex items-center justify-center mb-6 text-text-muted">
+    <div class="col-span-full flex flex-col items-center justify-center py-20 bg-surface rounded-3xl border-2 border-slate-200 border-dashed text-center">
+        <div class="w-20 h-20 bg-surface-hover rounded-full flex items-center justify-center mb-6 text-text-muted">
             <i class="ph-bold ph-list-bullets text-4xl"></i>
         </div>
         <h3 class="text-xl font-bold text-text-heading tracking-tight">Nenhuma lista encontrada</h3>
@@ -127,25 +115,25 @@
 </div>
 
 <!-- Modal Nova Lista -->
-<div id="modalNovaLista" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-discord-200 w-full max-w-md rounded-2xl shadow-2xl border border-discord-400 overflow-hidden animate-in zoom-in-95 duration-200">
+<div id="modalNovaLista" class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-md">
         <div class="p-8">
             <div class="flex items-center justify-between mb-8">
-                <h3 class="text-xl font-black text-text-heading flex items-center gap-2 uppercase tracking-tight">
-                    <i class="ph-bold ph-plus text-[#00d1ff]"></i> Nova Lista
+                <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                    <i class="ph-bold ph-plus text-primary"></i> Nova Lista
                 </h3>
-                <button onclick="closeModal('modalNovaLista')" class="text-text-muted hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeModal('modalNovaLista')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form action="{{ url_for('simple_lists.add') }}" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div>
-                    <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">NOME DA LISTA</label>
-                    <input type="text" name="nome" required placeholder="EX: MINHAS METAS, FILMES PARA VER..."
-                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase rounded-xl transition-all">
+                    <label class="form-label mb-3">Nome da lista</label>
+                    <input type="text" name="nome" required placeholder="Ex: Minhas metas, Filmes para ver..."
+                        class="form-input">
                 </div>
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeModal('modalNovaLista')" class="flex-1 h-12 bg-discord-400 hover:bg-discord-500 text-text-normal font-black uppercase tracking-widest text-[11px] rounded-xl transition-all">CANCELAR</button>
-                    <button type="submit" class="flex-1 h-12 bg-[#00d1ff] hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-xl shadow-lg shadow-[#00d1ff]/20 transition-all">SALVAR</button>
+                    <button type="button" onclick="closeModal('modalNovaLista')" class="btn-secondary btn-lg flex-1">Cancelar</button>
+                    <button type="submit" class="btn-primary btn-lg flex-1">Salvar</button>
                 </div>
             </form>
         </div>
@@ -153,25 +141,25 @@
 </div>
 
 <!-- Modal Editar Lista -->
-<div id="modalEditarLista" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-discord-200 w-full max-w-md rounded-2xl shadow-2xl border border-discord-400 overflow-hidden animate-in zoom-in-95 duration-200">
+<div id="modalEditarLista" class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-md">
         <div class="p-8">
             <div class="flex items-center justify-between mb-8">
-                <h3 class="text-xl font-black text-text-heading flex items-center gap-2 uppercase tracking-tight">
-                    <i class="ph-bold ph-pencil-simple text-[#00d1ff]"></i> Editar Lista
+                <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                    <i class="ph-bold ph-pencil-simple text-primary"></i> Editar Lista
                 </h3>
-                <button onclick="closeModal('modalEditarLista')" class="text-text-muted hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeModal('modalEditarLista')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form id="formEditarLista" action="" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div>
-                    <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">NOME DA LISTA</label>
+                    <label class="form-label mb-3">Nome da lista</label>
                     <input type="text" id="edit_nome" name="nome" required
-                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase rounded-xl transition-all">
+                        class="form-input">
                 </div>
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeModal('modalEditarLista')" class="flex-1 h-12 bg-discord-400 hover:bg-discord-500 text-text-normal font-black uppercase tracking-widest text-[11px] rounded-xl transition-all">CANCELAR</button>
-                    <button type="submit" class="flex-1 h-12 bg-[#00d1ff] hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-xl shadow-lg shadow-[#00d1ff]/20 transition-all">SALVAR</button>
+                    <button type="button" onclick="closeModal('modalEditarLista')" class="btn-secondary btn-lg flex-1">Cancelar</button>
+                    <button type="submit" class="btn-primary btn-lg flex-1">Salvar</button>
                 </div>
             </form>
         </div>
@@ -179,24 +167,24 @@
 </div>
 
 <!-- Modal Compartilhar Lista Simples -->
-<div id="modalCompartilharSimpleLista" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-discord-200 w-full max-w-md rounded-2xl shadow-2xl border border-discord-400 overflow-hidden animate-in zoom-in-95 duration-200">
+<div id="modalCompartilharSimpleLista" class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-md">
         <div class="p-8">
             <div class="flex items-center justify-between mb-8">
-                <h3 class="text-xl font-black text-text-heading flex items-center gap-2 uppercase tracking-tight">
-                    <i class="ph-bold ph-share-network text-[#00d1ff]"></i> Compartilhar Lista
+                <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                    <i class="ph-bold ph-share-network text-primary"></i> Compartilhar Lista
                 </h3>
-                <button onclick="closeModal('modalCompartilharSimpleLista')" class="text-text-muted hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeModal('modalCompartilharSimpleLista')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form id="formCompartilharSimpleLista" action="" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-3">Selecione os usuários com acesso:</label>
-                    <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-discord-100 rounded-xl border border-discord-400">
+                    <label class="form-label mb-3">Selecione os usuários com acesso:</label>
+                    <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-surface-sunken rounded-xl border border-slate-200">
                         {% for u in users %}
                         {% if u.id != current_user.id %}
-                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-discord-300 cursor-pointer">
-                            <input type="checkbox" name="user_ids" value="{{ u.id }}" class="simple-list-user-checkbox w-4 h-4 rounded text-[#00d1ff] focus:ring-[#00d1ff] bg-discord-400 border-discord-400">
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-background cursor-pointer">
+                            <input type="checkbox" name="user_ids" value="{{ u.id }}" class="simple-list-user-checkbox w-4 h-4 rounded text-primary focus:ring-primary bg-surface-hover border-slate-200">
                             <span class="text-sm font-semibold text-text-heading">{{ u.username }}</span>
                         </label>
                         {% endif %}
@@ -204,8 +192,8 @@
                     </div>
                 </div>
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeModal('modalCompartilharSimpleLista')" class="flex-1 h-12 bg-discord-400 hover:bg-discord-500 text-text-normal font-black uppercase tracking-widest text-[11px] rounded-xl transition-all">CANCELAR</button>
-                    <button type="submit" class="flex-1 h-12 bg-[#00d1ff] hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-xl shadow-lg shadow-[#00d1ff]/20 transition-all">SALVAR</button>
+                    <button type="button" onclick="closeModal('modalCompartilharSimpleLista')" class="btn-secondary btn-lg flex-1">Cancelar</button>
+                    <button type="submit" class="btn-primary btn-lg flex-1">Salvar</button>
                 </div>
             </form>
         </div>

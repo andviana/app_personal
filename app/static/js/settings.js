@@ -9,14 +9,14 @@ function switchTab(tabId) {
     if (targetTab) targetTab.classList.remove('hidden');
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-discord-400', 'text-[#747f8d]');
-        btn.classList.add('text-text-muted', 'hover:bg-discord-400');
+        btn.classList.remove('bg-primary-light', 'text-primary');
+        btn.classList.add('text-text-muted', 'hover:bg-surface-hover');
     });
 
     const activeBtn = document.getElementById('tab-btn-' + tabId);
     if (activeBtn) {
-        activeBtn.classList.add('bg-discord-400', 'text-[#747f8d]');
-        activeBtn.classList.remove('text-text-muted', 'hover:bg-discord-400');
+        activeBtn.classList.add('bg-primary-light', 'text-primary');
+        activeBtn.classList.remove('text-text-muted', 'hover:bg-surface-hover');
     }
 
     localStorage.setItem('activeSettingsTab', tabId);

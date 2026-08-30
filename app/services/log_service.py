@@ -1,8 +1,6 @@
 import logging
 import sys
 import os
-from datetime import datetime
-from flask import current_app
 
 class LogService:
     _logger = None

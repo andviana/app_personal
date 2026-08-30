@@ -110,7 +110,7 @@ const AppUI = {
             timer: 4000,
             timerProgressBar: true,
             customClass: {
-                popup: 'discord-theme rounded-xl border border-white/5 shadow-2xl'
+                popup: 'discord-theme rounded-xl border border-slate-200 shadow-2xl'
             },
             didOpen: (toast) => {
                 toast.addEventListener('mouseenter', Swal.stopTimer)
@@ -138,8 +138,6 @@ const AppUI = {
             text: text,
             icon: icon,
             showCancelButton: true,
-            confirmButtonColor: '#da373c',
-            cancelButtonColor: '#4e5058',
             confirmButtonText: confirmText,
             cancelButtonText: 'Cancelar',
             reverseButtons: true,

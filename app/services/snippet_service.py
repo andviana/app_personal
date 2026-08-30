@@ -1,5 +1,5 @@
 from app.repositories.snippet_repository import SnippetRepository, TagRepository, SnippetTagRepository
-from app.models import Snippet, Tag, SnippetTag
+from app.models import Snippet, Tag
 from app.services.log_service import LogService
 
 class SnippetService:

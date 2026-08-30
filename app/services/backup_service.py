@@ -1,15 +1,17 @@
-import json
 import sqlalchemy
 from datetime import datetime, date
 from app import db
 from app.repositories.base_repository import BaseRepository
 from app.models import (
     User, GrupoTarefas, StatusTarefas, Tarefa,
-    TipoLista, GrupoItem, Lista, ItemLista, 
-    Snippet, Perfume, Pessoa, Endereco, 
+    TipoLista, GrupoItem, Lista, ItemLista,
+    Snippet, Perfume, Pessoa, Endereco,
     Telefone, PessoaArquivo, Tag, SnippetTag,
     Bookmark, BookmarkCategory, BookmarkAssociation
 )
+from app.models.tasks import shared_tasks, shared_task_groups
+from app.models.lists import shared_lists, shared_simple_lists
+from app.models.bookmarks import shared_bookmarks
 
 # Ordem de restauração (respeitando chaves estrangeiras)
 MODELS_ORDER = [
@@ -34,42 +36,67 @@ MODELS_ORDER = [
     BookmarkAssociation
 ]
 
+# Tabelas de associação Muitos-para-Muitos que NÃO possuem um Model mapeado
+# (compartilhamento de tarefas, grupos, listas e favoritos). Precisam ser
+# tratadas separadamente via SQLAlchemy Core, pois BaseRepository só opera
+# sobre Models. A ordem aqui não importa para exportação, mas para a
+# restauração elas são sempre inseridas por último, depois que User,
+# Tarefa, GrupoTarefas, Lista e Bookmark (suas dependências de FK) já
+# existem no banco.
+ASSOCIATION_TABLES = [
+    shared_tasks,
+    shared_task_groups,
+    shared_lists,
+    shared_simple_lists,
+    shared_bookmarks,
+]
+
 def export_data():
     """Exporta todos os dados do banco para um dicionário JSON"""
     data = {}
-    
+
     for model in MODELS_ORDER:
         table_name = model.__tablename__
         repo = BaseRepository(model)
         records = repo.list_all()
-        
+
         data[table_name] = []
         for record in records:
             # Converte o objeto do modelo para dicionário
             record_dict = {}
             for column in record.__table__.columns:
                 value = getattr(record, column.name)
-                
+
                 # Trata campos de data e data/hora
                 if isinstance(value, (datetime, date)):
                     value = value.isoformat()
-                
+
                 record_dict[column.name] = value
-            
+
             data[table_name].append(record_dict)
-            
+
+    # Tabelas de associação de compartilhamento (sem Model próprio)
+    for table in ASSOCIATION_TABLES:
+        rows = db.session.execute(table.select()).mappings().all()
+        data[table.name] = [dict(row) for row in rows]
+
     return data
 
 def import_data(json_data):
     """Restaura dados a partir de um dicionário JSON (Limpa antes de inserir)"""
     try:
-        # 1. Limpa os dados em ordem inversa para evitar erros de FK
+        # 1. Limpa as tabelas de associação primeiro (dependem de User, Tarefa,
+        #    GrupoTarefas, Lista e Bookmark via FK) e só então os models em
+        #    ordem inversa, para evitar erros de FK
+        for table in ASSOCIATION_TABLES:
+            db.session.execute(table.delete())
+
         for model in reversed(MODELS_ORDER):
             db.session.query(model).delete()
-        
+
         # Garante que as deleções sejam processadas antes de novas inserções
         db.session.flush()
-        
+
         # 2. Insere os dados na ordem correta
         for model in MODELS_ORDER:
             table_name = model.__tablename__
@@ -78,19 +105,19 @@ def import_data(json_data):
                     # Trata as datas na volta
                     for column in model.__table__.columns:
                         col_name = column.name
-                        
+
                         # Verifica de forma robusta se a coluna é do tipo datetime/date
                         is_datetime = False
                         if hasattr(column.type, 'python_type') and column.type.python_type in (datetime, date):
                             is_datetime = True
                         elif type(column.type).__name__.upper() in ('DATETIME', 'DATE'):
                             is_datetime = True
-                            
+
                         if col_name in row and row[col_name] and is_datetime:
                             try:
                                 # Tenta analisar o formato ISO
                                 dt_val = datetime.fromisoformat(str(row[col_name]).replace('Z', '+00:00'))
-                                
+
                                 # Se a coluna for apenas Date, converte o datetime para date
                                 if hasattr(column.type, 'python_type') and column.type.python_type == date:
                                     row[col_name] = dt_val.date()
@@ -100,23 +127,31 @@ def import_data(json_data):
                                     row[col_name] = dt_val
                             except (ValueError, TypeError):
                                 pass
-                    
+
                     obj = model(**row)
                     db.session.add(obj)
-                
-                # IMPORTANTE: Flush após cada tipo de modelo para garantir que 
+
+                # IMPORTANTE: Flush após cada tipo de modelo para garantir que
                 # as chaves estrangeiras existam antes de serem referenciadas
                 db.session.flush()
-        
+
+        # 3. Insere as tabelas de associação de compartilhamento por último,
+        #    já que dependem de User/Tarefa/GrupoTarefas/Lista/Bookmark existentes
+        for table in ASSOCIATION_TABLES:
+            rows = json_data.get(table.name)
+            if rows:
+                db.session.execute(table.insert(), rows)
+        db.session.flush()
+
         db.session.commit()
 
-        # 3. Sincroniza as sequências do Postgres (se aplicável)
+        # 4. Sincroniza as sequências do Postgres (se aplicável)
         try:
             reset_postgres_sequences()
         except Exception as seq_err:
             print(f"Aviso ao sincronizar sequências: {seq_err}")
             # Não falha a importação por causa das sequências, mas avisa no log
-            
+
         return True, "Restauração concluída com sucesso!"
     except Exception as e:
         db.session.rollback()
@@ -136,8 +171,8 @@ def reset_postgres_sequences():
             # SELECT setval(pg_get_serial_sequence('table', 'id'), coalesce(max(id), 1), max(id) IS NOT null) FROM table;
             sql = sqlalchemy.text(f"""
                 SELECT setval(
-                    pg_get_serial_sequence('{table_name}', 'id'), 
-                    COALESCE(MAX(id), 1), 
+                    pg_get_serial_sequence('{table_name}', 'id'),
+                    COALESCE(MAX(id), 1),
                     MAX(id) IS NOT NULL
                 ) FROM "{table_name}"
             """)
@@ -147,5 +182,5 @@ def reset_postgres_sequences():
                 # Algumas tabelas podem não ter sequências ou ter nomes diferentes
                 db.session.rollback()
                 continue
-    
+
     db.session.commit()

@@ -19,29 +19,9 @@ function openEditItemModal(btn) {
 }
 
 function openScrapeModal() {
-    console.log('[Lists] Opening Scrape Modal...');
     const modal = document.getElementById('modalImportarURL');
-    if (!modal) {
-        console.error('[Lists] Error: Modal element "modalImportarURL" not found!');
-        return;
-    }
-    
-    const content = modal.querySelector('.modal-content');
-    
-    // Explicitly show the modal container
+    if (!modal) return;
     modal.classList.remove('hidden');
-    modal.style.display = 'flex'; // Ensure flex display
-    
-    if (content) {
-        console.log('[Lists] Animating modal content...');
-        setTimeout(() => {
-            content.classList.remove('scale-95', 'opacity-0');
-            content.classList.add('scale-100', 'opacity-100');
-        }, 30);
-    } else {
-        console.warn('[Lists] Warning: ".modal-content" not found, showing modal without transition.');
-    }
-    
     const input = document.getElementById('urlInputScrape');
     if (input) input.focus();
 }
@@ -49,21 +29,13 @@ function openScrapeModal() {
 function closeScrapeModal() {
     const modal = document.getElementById('modalImportarURL');
     if (!modal) return;
-    const content = modal.querySelector('.modal-content');
-    if (content) {
-        content.classList.add('scale-95', 'opacity-0');
-        content.classList.remove('scale-100', 'opacity-100');
-    }
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        modal.style.display = ''; // Clear explicit flex
-    }, 300);
+    modal.classList.add('hidden');
 }
 
 function openViewItemModal(btn) {
     const modal = document.getElementById('modalVerItem');
     if (!modal) return;
-    const content = modal.querySelector('.bg-discord-200');
+    const content = modal.querySelector('.bg-surface');
 
     const id = btn.getAttribute('data-id');
     const nome = btn.getAttribute('data-nome').toUpperCase();

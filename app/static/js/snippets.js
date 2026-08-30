@@ -49,11 +49,11 @@ function toggleAccordion(id) {
     if (content.classList.contains('hidden')) {
         content.classList.remove('hidden');
         icon.classList.add('rotate-180');
-        parent.classList.add('ring-2', 'ring-primary-600', 'border-transparent');
+        parent.classList.add('ring-2', 'ring-primary', 'border-transparent');
     } else {
         content.classList.add('hidden');
         icon.classList.remove('rotate-180');
-        parent.classList.remove('ring-2', 'ring-primary-600', 'border-transparent');
+        parent.classList.remove('ring-2', 'ring-primary', 'border-transparent');
     }
 }
 
@@ -141,12 +141,12 @@ function loadTagsList() {
                 return;
             }
             container.innerHTML = tags.map(t => `
-                <div class="flex justify-between items-center bg-discord-300 p-3 rounded-xl border border-discord-400">
+                <div class="flex justify-between items-center bg-background p-3 rounded-xl border border-slate-200">
                     <div class="flex items-center gap-3">
                         <div class="w-4 h-4 rounded-full" style="background-color: ${t.cor}"></div>
                         <span class="text-sm font-bold text-text-heading">${t.denominacao}</span>
                     </div>
-                    <button onclick="deleteTag(${t.id}, '${t.denominacao}')" class="text-text-muted hover:text-danger hover:scale-110 transition-all p-2">
+                    <button onclick="deleteTag(${t.id}, '${t.denominacao}')" class="p-3 md:p-2 -m-1 md:m-0 text-text-muted hover:text-danger hover:scale-110 transition-all">
                         <i class="ph-bold ph-trash text-lg"></i>
                     </button>
                 </div>
@@ -202,14 +202,14 @@ function openSnippetTagsModal(snippetId) {
                         return;
                     }
                     container.innerHTML = allTags.map(t => `
-                        <label class="flex items-center justify-between bg-discord-200 p-4 rounded-xl border border-discord-400 cursor-pointer hover:bg-discord-300 transition-colors">
+                        <label class="flex items-center justify-between bg-surface p-4 rounded-xl border border-slate-200 cursor-pointer hover:bg-surface-hover transition-colors">
                             <div class="flex items-center gap-3">
                                 <div class="w-3 h-3 rounded-full" style="background-color: ${t.cor}"></div>
                                 <span class="text-sm font-bold text-text-heading">${t.denominacao}</span>
                             </div>
                             <input type="checkbox" onchange="toggleSnippetTag(this, ${t.id})" 
                                 ${activeTagIds.includes(t.id) ? 'checked' : ''}
-                                class="w-5 h-5 rounded border-discord-400 bg-discord-300 text-primary-600 focus:ring-primary-600">
+                                class="w-5 h-5 rounded border-slate-300 bg-surface-sunken text-primary focus:ring-primary">
                         </label>
                     `).join('');
                 });

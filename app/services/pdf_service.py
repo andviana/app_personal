@@ -92,32 +92,13 @@ def build_tasks_pdf(tarefas):
     colWidths = [40, 340, 90, 120, 89, 90]
     return generate_pdf_report("Relatório de Tarefas", headers, data, colWidths=colWidths)
 
-def build_lists_pdf(lista_obj):
-    headers = ["Item", "Grupo", "Status", "Valor (R$)"]
-    data = []
-    total = 0
-    for it in lista_obj.itens:
-        if it.valor:
-            total += it.valor
-        data.append([
-            it.item,
-            it.grupo.denominacao if it.grupo else "",
-            "Comprado" if it.status else "Pendente",
-            f"{it.valor:.2f}" if it.valor else ""
-        ])
-    
-    title = f"Lista: {lista_obj.denominacao} | Total est: R$ {total:.2f}"
-    colWidths = [360, 160, 120, 129]
-    return generate_pdf_report(title, headers, data, colWidths=colWidths)
-
 
 class PDFService:
     @staticmethod
-    def generate_list_pdf(lista_id):
-        # Retrieve list info using existing service
-        lista, grupos = ListService.get_list_detail(lista_id)
-        if not lista:
-            return None
+    def generate_list_pdf(lista_id, current_user):
+        # Retrieve list info using existing service (raises PermissionError/NotFoundError
+        # if the list doesn't exist or the user has no access to it)
+        lista, grupos = ListService.get_list_detail(lista_id, current_user)
 
         # Build PDF in memory with landscape layout and 36pt margins
         buffer = io.BytesIO()

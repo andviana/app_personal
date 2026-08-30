@@ -3,10 +3,6 @@
 {% block title %}{{ lista.denominacao }} - AppPessoal{% endblock %}
 
 {% block content %}
-{% set cat_colors = {
-'0': 'blue', '1': 'green', '2': 'purple', '3': 'yellow', '4': 'pink',
-'5': 'indigo', '6': 'orange', '7': 'red', '8': 'cyan', '9': 'teal'
-} %}
 <div class="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
     <div class="flex flex-col gap-4">
         <a href="{{ url_for('lists.index') }}" class="btn-back group">
@@ -15,16 +11,15 @@
         </a>
 
         <div class="flex flex-col gap-1">
-            <div class="flex flex-wrap items-center gap-4">
-                <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3">
-                    <i class="ph-bold ph-shopping-bag text-[#ff4700]"></i>
+            <div class="flex flex-wrap items-center gap-3">
+                <h1 class="text-2xl md:text-3xl font-bold text-text-heading tracking-tight flex items-center gap-3">
+                    <i class="ph-bold ph-shopping-bag text-primary"></i>
                     {% if lista.owner_id != current_user.id %}
-                    <i class="ph-bold ph-users text-[#ff4700] text-2xl" data-tooltip="Compartilhado por outro usuário"></i>
+                    <i class="ph-bold ph-users text-primary text-2xl" data-tooltip="Compartilhado por outro usuário"></i>
                     {% endif %}
                     {{ lista.denominacao }}
                 </h1>
-                <span
-                    class="bg-discord-400 text-text-muted text-[10px] px-3 py-1 rounded-full font-black tracking-widest uppercase shadow-sm">
+                <span class="badge-neutral">
                     {{ lista.tipo.denominacao if lista.tipo else 'Genérica' }}
                 </span>
             </div>
@@ -33,14 +28,14 @@
 
     <div class="flex gap-2 w-full md:w-auto">
         <button onclick="document.getElementById('modalNovoGrupoItem').classList.remove('hidden')"
-            class="btn-secondary btn-md flex-1 md:flex-none !px-5 !bg-gray-300 !text-black shadow-sm"
+            class="btn-secondary btn-md flex-1 md:flex-none !px-5 shadow-sm"
             data-tooltip="Nova Categoria" data-tooltip-pos="top">
-            <i class="ph-bold ph-folder-plus text-[#ff4700] text-xl"></i>
+            <i class="ph-bold ph-folder-plus text-primary text-xl"></i>
         </button>
         <button onclick="openScrapeModal()"
-            class="btn-secondary btn-md flex-1 md:flex-none !px-5 !bg-gray-300 !text-black shadow-sm"
+            class="btn-secondary btn-md flex-1 md:flex-none !px-5 shadow-sm"
             data-tooltip="Importar via Link" data-tooltip-pos="top">
-            <i class="ph-bold ph-link text-[#ff4700] text-xl"></i>
+            <i class="ph-bold ph-link text-primary text-xl"></i>
         </button>
         <a href="{{ url_for('lists.export_pdf', id=lista.id) }}"
             class="btn-success btn-md flex-1 md:flex-none !px-5"
@@ -51,7 +46,7 @@
 
 </div>
 
-<div class="bg-discord-200 p-6 border border-discord-400 rounded-3xl mb-12 shadow-sm">
+<div class="bg-surface p-6 border border-slate-200 rounded-3xl mb-12 shadow-sm">
     <form action="{{ url_for('lists.add_item', lista_id=lista.id) }}" method="POST"
         class="flex flex-col lg:flex-row gap-5 items-center">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -60,8 +55,8 @@
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
                 <i class="ph-bold ph-plus-circle text-xl"></i>
             </div>
-            <input type="text" name="item" placeholder="O QUE ADICIONAR À LISTA?"
-                class="block w-full h-12 pl-12 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-bold placeholder:text-text-muted/40 rounded-xl transition-all uppercase"
+            <input type="text" name="item" placeholder="O que adicionar à lista?"
+                class="form-input !h-12 !pl-12"
                 required autofocus autocomplete="off">
         </div>
 
@@ -69,20 +64,20 @@
             <!-- Valor -->
             <div class="relative w-full sm:w-32">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
-                    <span class="text-xs font-black leading-none uppercase">R$</span>
+                    <span class="text-xs font-semibold leading-none">R$</span>
                 </div>
                 <input type="number" step="0.01" name="valor" placeholder="0.00"
-                    class="block w-full h-12 pl-10 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-bold placeholder:text-text-muted/40 rounded-xl transition-all">
+                    class="form-input !h-12 !pl-10">
             </div>
 
             <!-- Categoria -->
             <div class="relative w-full sm:w-56 group">
                 <div
-                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted group-focus-within:text-[#ff4700] transition-colors">
+                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted group-focus-within:text-primary transition-colors">
                     <i class="ph-bold ph-tag text-lg"></i>
                 </div>
                 <select name="grupo_id"
-                    class="appearance-none block w-full h-12 pl-11 pr-10 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-bold rounded-xl transition-all cursor-pointer uppercase">
+                    class="form-select !h-12 !pl-11">
                     <option value="" selected>OUTROS (PADRÃO)</option>
                     {% for g in grupos %}
                     {% if g.denominacao.upper() != 'OUTROS' %}
@@ -96,9 +91,8 @@
             </div>
 
             <!-- Botão Adicionar -->
-            <button type="submit"
-                class="btn-primary btn-md w-full lg:w-auto lg:px-10 group !bg-[#ff4700] !text-black !shadow-[#ff4700]/20">
-                <span class="tracking-widest uppercase text-xs">ADICIONAR</span>
+            <button type="submit" class="btn-primary btn-md w-full lg:w-auto lg:px-10 group">
+                <span class="text-sm">Adicionar</span>
                 <i class="ph-bold ph-plus text-lg group-hover:rotate-90 transition-transform duration-300"></i>
             </button>
 
@@ -106,51 +100,86 @@
     </form>
 </div>
 
-<div class="bg-discord-200 border border-discord-400 rounded-[16px] overflow-hidden shadow-sm">
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-discord-400">
-            <thead class="bg-discord-300">
+<div class="bg-surface border border-slate-200 rounded-[16px] overflow-hidden shadow-sm">
+
+    {% if not lista.itens %}
+    <div class="px-6 py-20 text-center">
+        <div class="w-16 h-16 bg-surface-hover rounded-full flex items-center justify-center mx-auto mb-4 text-text-muted">
+            <i class="ph-bold ph-shopping-cart text-3xl"></i>
+        </div>
+        <p class="text-text-muted font-medium">Sua lista está vazia. Comece a adicionar itens!</p>
+    </div>
+    {% else %}
+
+    <!-- Mobile: lista de cards empilhados (padrão, sem prefixo) -->
+    <div class="md:hidden divide-y divide-slate-100">
+        {% for it in lista.itens %}
+        <div class="group flex items-center gap-3 px-4 py-3 {% if it.status %}bg-success/5{% endif %}">
+            <form action="{{ url_for('lists.toggle_item', item_id=it.id) }}" method="POST" class="flex items-center flex-shrink-0">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label class="relative flex items-center cursor-pointer select-none before:absolute before:-inset-3 before:content-['']">
+                    <input type="checkbox" class="peer hidden" {% if it.status %}checked{% endif %} onchange="if(window.saveScrollPosition) window.saveScrollPosition(); this.form.submit()">
+                    <div class="w-5 h-5 rounded border border-slate-200 bg-surface-sunken text-transparent peer-checked:bg-success peer-checked:border-success peer-checked:text-white flex items-center justify-center transition-all duration-200">
+                        <i class="ph-bold ph-check text-xs"></i>
+                    </div>
+                </label>
+            </form>
+
+            <button type="button" onclick="openViewItemModal(this)" data-id="{{ it.id }}"
+                data-nome="{{ it.item }}"
+                data-grupo="{{ it.grupo.denominacao if it.grupo else 'OUTROS' }}"
+                data-grupo-id="{{ it.grupo_id or '' }}" data-valor="{{ it.valor or '' }}"
+                data-link="{{ it.link or '' }}"
+                class="flex-1 min-w-0 flex items-center justify-between gap-2 text-left py-1">
+                <div class="min-w-0 flex-1">
+                    <span class="block text-[15px] leading-tight truncate {{ 'text-text-muted line-through' if it.status else 'text-text-heading' }}">
+                        {{ it.item }}
+                    </span>
+                    {% if it.grupo %}
+                    <span class="badge-neutral mt-1">{{ it.grupo.denominacao }}</span>
+                    {% endif %}
+                </div>
+                <span class="flex-shrink-0 text-sm font-semibold {{ 'text-text-muted' if it.status else 'text-text-heading' }}">
+                    {% if it.valor %}R$ {{ "%.2f"|format(it.valor) }}{% else %}<span class="text-text-muted font-normal">--</span>{% endif %}
+                </span>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Desktop/tablet: tabela (md: e acima) -->
+    <div class="hidden md:block overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-background">
                 <tr>
-                    <th class="px-6 py-4 text-left text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted">
                         Item</th>
-                    <th
-                        class="px-6 py-4 text-left text-[10px] font-black text-text-muted uppercase tracking-[0.2em] hidden sm:table-cell">
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted">
                         Categoria</th>
-                    <th class="px-6 py-4 text-right text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
+                    <th class="px-6 py-4 text-right text-xs font-semibold text-text-muted">
                         Valor Est.</th>
-                    <th
-                        class="px-6 py-4 text-center text-[10px] font-black text-text-muted uppercase tracking-[0.2em] hidden sm:table-cell">
+                    <th class="px-6 py-4 text-center text-xs font-semibold text-text-muted">
                         Ações</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-discord-400">
+            <tbody class="divide-y divide-slate-200">
                 {% for it in lista.itens %}
-                <tr class="group hover:bg-discord-300 transition-standard {% if it.status %}bg-success/5{% endif %}">
-                    <td class="px-3 sm:px-6 py-3 sm:py-4">
-                        <div class="flex items-center gap-3 sm:gap-4">
+                <tr class="group hover:bg-background transition-standard {% if it.status %}bg-success/5{% endif %}">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-4">
                             <form action="{{ url_for('lists.toggle_item', item_id=it.id) }}" method="POST" class="inline flex items-center">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <label class="relative flex items-center cursor-pointer select-none">
+                                <label class="relative flex items-center cursor-pointer select-none before:absolute before:-inset-3 before:content-['']">
                                     <input type="checkbox" class="peer hidden" {% if it.status %}checked{% endif %} onchange="if(window.saveScrollPosition) window.saveScrollPosition(); this.form.submit()">
-                                    <div class="w-5 h-5 rounded border border-discord-400 bg-discord-100 text-transparent peer-checked:bg-success peer-checked:border-success peer-checked:text-white flex items-center justify-center transition-all duration-200 hover:border-text-normal">
+                                    <div class="w-5 h-5 rounded border border-slate-200 bg-surface-sunken text-transparent peer-checked:bg-success peer-checked:border-success peer-checked:text-white flex items-center justify-center transition-all duration-200 hover:border-text-normal">
                                         <i class="ph-bold ph-check text-xs"></i>
                                     </div>
                                 </label>
                             </form>
                             <div class="flex flex-col min-w-0 flex-1">
-                                <!-- Categoria (Visível apenas no Celular) -->
-                                {% if it.grupo %}
-                                {% set c_name = cat_colors[(it.grupo_id % 10)|string] %}
-                                <div class="sm:hidden mb-1">
-                                    <span
-                                        class="text-[9px] font-black tracking-widest uppercase py-0.5 px-2 bg-{{ c_name }}-500/10 text-{{ c_name }}-400 rounded-md">
-                                        {{ it.grupo.denominacao.upper() }}
-                                    </span>
-                                </div>
-                                {% endif %}
                                 <div class="flex items-center justify-between gap-2 group/info">
                                     <span
-                                        class="text-[13px] sm:text-[15px] font-normal sm:font-medium leading-tight line-clamp-2 sm:truncate max-w-[200px] sm:max-w-[250px] md:max-w-md lg:max-w-xl {{ 'text-text-muted line-through' if it.status else 'text-text-heading' }}">
+                                        class="text-[15px] font-medium leading-tight truncate max-w-md lg:max-w-xl {{ 'text-text-muted line-through' if it.status else 'text-text-heading' }}">
                                         {{ it.item }}
                                     </span>
                                     <button type="button" onclick="openViewItemModal(this)" data-id="{{ it.id }}"
@@ -158,38 +187,34 @@
                                         data-grupo="{{ it.grupo.denominacao if it.grupo else 'OUTROS' }}"
                                         data-grupo-id="{{ it.grupo_id or '' }}" data-valor="{{ it.valor or '' }}"
                                         data-link="{{ it.link or '' }}"
-                                        class="btn-icon-sm opacity-100 sm:opacity-0 sm:group-hover:opacity-100 !bg-transparent !border-none !text-blue-400"
+                                        class="btn-icon-sm opacity-0 group-hover:opacity-100 !bg-transparent !border-none !text-primary"
                                         data-tooltip="Ver Detalhes" data-tooltip-pos="top">
                                         <i class="ph-bold ph-info text-lg"></i>
                                     </button>
-
                                 </div>
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+                    <td class="px-6 py-4 whitespace-nowrap">
                         {% if it.grupo %}
-                        {% set c_name = cat_colors[(it.grupo_id % 10)|string] %}
-                        <span
-                            class="text-[10px] font-black tracking-widest uppercase py-1 px-3 bg-{{ c_name }}-500/10 text-{{ c_name }}-400 rounded-md border border-{{ c_name }}-500/20">
-                            {{ it.grupo.denominacao.upper() }}
+                        <span class="badge-neutral">
+                            {{ it.grupo.denominacao }}
                         </span>
                         {% else %}
-                        <span
-                            class="text-[10px] font-black tracking-widest uppercase py-1 px-3 bg-discord-400 text-text-muted rounded-md opacity-50">
-                            OUTROS
+                        <span class="badge-neutral opacity-50">
+                            Outros
                         </span>
                         {% endif %}
                     </td>
                     <td
-                        class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-[13px] sm:text-[15px] font-normal sm:font-bold {% if it.status %}text-text-muted{% else %}text-text-heading{% endif %}">
+                        class="px-6 py-4 whitespace-nowrap text-right text-[15px] font-bold {% if it.status %}text-text-muted{% else %}text-text-heading{% endif %}">
                         {% if it.valor %}
                         R$ {{ "%.2f"|format(it.valor) }}
                         {% else %}
                         <span class="text-text-muted">--</span>
                         {% endif %}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center text-right hidden sm:table-cell">
+                    <td class="px-6 py-4 whitespace-nowrap text-right">
                         <div
                             class="flex justify-end items-center gap-1 opacity-0 group-hover:opacity-100 transition-standard">
                             <button type="button" onclick="openEditItemModal(this)" data-id="{{ it.id }}"
@@ -214,20 +239,11 @@
                         </div>
                     </td>
                 </tr>
-                {% else %}
-                <tr>
-                    <td colspan="4" class="px-6 py-20 text-center">
-                        <div
-                            class="w-16 h-16 bg-discord-400 rounded-full flex items-center justify-center mx-auto mb-4 text-text-muted">
-                            <i class="ph-bold ph-shopping-cart text-3xl"></i>
-                        </div>
-                        <p class="text-text-muted font-medium">Sua lista está vazia. Comece a adicionar itens!</p>
-                    </td>
-                </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    {% endif %}
 
     <!-- Summary Row -->
     {% set total = namespace(valor=0) %}
@@ -242,22 +258,22 @@
     {% endfor %}
 
     {% if total.valor > 0 %}
-    <div class="bg-discord-300 p-8 flex flex-col sm:flex-row justify-between items-center gap-8">
+    <div class="bg-background p-8 flex flex-col sm:flex-row justify-between items-center gap-8">
         <div class="flex items-center gap-10">
             <div class="flex flex-col">
-                <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2">Comprado</span>
+                <span class="text-xs font-semibold text-text-muted mb-2">Comprado</span>
                 <span class="text-xl font-black text-success leading-none">R$ {{ "%.2f"|format(total_comprado.valor)
                     }}</span>
             </div>
-            <div class="w-px h-10 bg-discord-400"></div>
+            <div class="w-px h-10 bg-slate-200"></div>
             <div class="flex flex-col">
-                <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2">Restante</span>
-                <span class="text-xl font-black text-primary-DEFAULT leading-none">R$ {{ "%.2f"|format(total.valor -
+                <span class="text-xs font-semibold text-text-muted mb-2">Restante</span>
+                <span class="text-xl font-black text-primary leading-none">R$ {{ "%.2f"|format(total.valor -
                     total_comprado.valor) }}</span>
             </div>
         </div>
         <div class="text-right flex flex-col sm:items-end">
-            <span class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2">Total Estimado</span>
+            <span class="text-xs font-semibold text-text-muted mb-2">Total Estimado</span>
             <span class="text-4xl font-black text-text-heading leading-none">R$ {{ "%.2f"|format(total.valor) }}</span>
         </div>
     </div>
@@ -266,17 +282,17 @@
 
 <!-- Modal Novo Categoria Item -->
 <div id="modalNovoGrupoItem"
-    class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
-    <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
+    class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-sm">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex flex-col gap-1">
-                    <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                        <i class="ph-bold ph-folder-plus text-primary-DEFAULT"></i> Nova Categoria
+                    <h2 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-folder-plus text-primary"></i> Nova Categoria
                     </h2>
                 </div>
                 <button type="button" onclick="document.getElementById('modalNovoGrupoItem').classList.add('hidden')"
-                    class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
+                    class="p-3 md:p-2 text-text-muted hover:text-text-normal hover:bg-surface-hover rounded-full transition-standard"><i
                         class="ph-bold ph-x"></i></button>
             </div>
             <form action="{{ url_for('lists.add_grupo_item', id=lista.id) }}" method="POST" class="space-y-6">
@@ -284,20 +300,20 @@
 
                 <div>
                     <label
-                        class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Denominação</label>
+                        class="form-label">Denominação</label>
                     <input type="text" name="denominacao" placeholder="Ex: Higiene, Laticínios..."
-                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-semibold rounded-xl transition-all"
+                        class="form-input"
                         required autofocus>
                 </div>
                 <div class="flex flex-col md:flex-row gap-4 pt-6 justify-end">
                     <button type="button"
                         onclick="document.getElementById('modalNovoGrupoItem').classList.add('hidden')"
-                        class="btn-secondary btn-md font-black tracking-widest text-[11px] h-12 px-8 flex items-center justify-center gap-2 opacity-70 hover:opacity-100 transition-all w-full md:w-auto order-2 md:order-1">
-                        <i class="ph-bold ph-x"></i> CANCELAR
+                        class="btn-secondary btn-lg w-full md:w-auto order-2 md:order-1">
+                        <i class="ph-bold ph-x"></i> Cancelar
                     </button>
                     <button type="submit"
-                        class="btn-primary btn-md group !bg-[#ff4700] !text-white !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-12 px-10 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto order-1 md:order-2">
-                        <i class="ph-bold ph-check"></i> SALVAR
+                        class="btn-primary btn-lg w-full md:w-auto order-1 md:order-2">
+                        <i class="ph-bold ph-check"></i> Salvar
                     </button>
                 </div>
 
@@ -308,33 +324,33 @@
 
 <!-- Modal Editar Item -->
 <div id="modalEditarItem"
-    class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[100] p-4 transition-standard">
-    <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
+    class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-sm">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex flex-col gap-1">
-                    <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                        <i class="ph-bold ph-pencil-simple text-[#ff4700]"></i> Editar Item
+                    <h2 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-pencil-simple text-primary"></i> Editar Item
                     </h2>
                 </div>
                 <button type="button" onclick="document.getElementById('modalEditarItem').classList.add('hidden')"
-                    class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
+                    class="p-3 md:p-2 text-text-muted hover:text-text-normal hover:bg-surface-hover rounded-full transition-standard"><i
                         class="ph-bold ph-x"></i></button>
             </div>
             <form id="formEditarItem" action="" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                 <div>
-                    <label class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">Item</label>
+                    <label class="form-label">Item</label>
                     <input type="text" id="edit_item_nome" name="item"
-                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-bold rounded-xl transition-all uppercase"
+                        class="form-input"
                         required>
                 </div>
                 <div>
                     <label
-                        class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">Categoria</label>
+                        class="form-label">Categoria</label>
                     <select id="edit_item_grupo" name="grupo_id"
-                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-bold rounded-xl transition-all uppercase">
+                        class="form-input">
                         <option value="">OUTROS (PADRÃO)</option>
                         {% for g in grupos %}
                         {% if g.denominacao.upper() != 'OUTROS' %}
@@ -344,7 +360,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-2">Valor
+                    <label class="form-label">Valor
                         Estimado</label>
                     <div class="relative">
                         <div
@@ -352,11 +368,11 @@
                             <span class="text-xs font-bold leading-none">R$</span>
                         </div>
                         <input type="number" step="0.01" id="edit_item_valor" name="valor"
-                            class="block w-full h-11 pl-10 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-bold rounded-xl transition-all">
+                            class="form-input !pl-10">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-black text-text-muted uppercase tracking-widest mb-2">URL
+                    <label class="form-label">URL
                         (Referência Externa)</label>
                     <div class="relative">
                         <div
@@ -364,17 +380,17 @@
                             <i class="ph-bold ph-link text-lg"></i>
                         </div>
                         <input type="url" id="edit_item_link" name="link" placeholder="https://exemplo.com"
-                            class="block w-full h-11 pl-10 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-normal focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-semibold rounded-xl transition-all">
+                            class="form-input !pl-10">
                     </div>
                 </div>
                 <div class="flex flex-col md:flex-row gap-4 pt-6 justify-end">
                     <button type="button" onclick="document.getElementById('modalEditarItem').classList.add('hidden')"
-                        class="btn-secondary btn-md font-black tracking-widest text-[11px] h-12 px-8 flex items-center justify-center gap-2 opacity-70 hover:opacity-100 transition-all w-full md:w-auto order-2 md:order-1">
-                        <i class="ph-bold ph-x"></i> CANCELAR
+                        class="btn-secondary btn-lg w-full md:w-auto order-2 md:order-1">
+                        <i class="ph-bold ph-x"></i> Cancelar
                     </button>
                     <button type="submit"
-                        class="btn-primary btn-md group !bg-[#ff4700] !text-white !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-12 px-10 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto order-1 md:order-2">
-                        <i class="ph-bold ph-check"></i> SALVAR
+                        class="btn-primary btn-lg w-full md:w-auto order-1 md:order-2">
+                        <i class="ph-bold ph-check"></i> Salvar
                     </button>
                 </div>
 
@@ -384,28 +400,26 @@
 </div>
 
 <!-- MODAL IMPORTAR VIA URL -->
-<div id="modalImportarURL"
-    class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[120] hidden flex items-center justify-center p-4">
-    <div
-        class="bg-discord-300 w-full max-w-lg rounded-3xl shadow-2xl border border-discord-400 overflow-hidden transform transition-all duration-300 scale-95 opacity-0 modal-content">
-        <div class="p-8">
+<div id="modalImportarURL" class="hidden modal-overlay z-[120]">
+    <div class="modal-sheet md:max-w-lg">
+        <div class="p-6 md:p-8">
             <div class="flex items-center justify-between mb-8">
                 <div class="flex flex-col gap-1">
-                    <h3 class="text-xl font-black text-text-heading tracking-tight flex items-center gap-2">
-                        <i class="ph-bold ph-planet text-[#ff4700]"></i> Importar Link
+                    <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-magic-wand text-primary"></i> Importar Link
                     </h3>
                 </div>
                 <button onclick="closeScrapeModal()"
-                    class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-discord-400 transition-standard text-text-muted">
+                    class="w-11 h-11 md:w-10 md:h-10 flex items-center justify-center rounded-xl hover:bg-surface-hover transition-standard text-text-muted">
                     <i class="ph-bold ph-x text-xl"></i>
                 </button>
             </div>
 
-            <div class="mb-6 bg-discord-400 p-4 rounded-2xl border border-discord-400">
+            <div class="mb-6 bg-surface-hover p-4 rounded-2xl border border-slate-200">
                 <div class="flex items-start gap-3">
-                    <i class="ph-fill ph-info text-[#ff4700] mt-0.5"></i>
+                    <i class="ph-fill ph-info text-primary mt-0.5"></i>
                     <p class="text-[13px] text-text-normal leading-relaxed">
-                        Sites suportados: <span class="text-[#ff4700] font-bold">Amazon, Shopee, Mercado Livre,
+                        Sites suportados: <span class="text-primary font-bold">Amazon, Shopee, Mercado Livre,
                             AliExpress, Shein, Privalia e Zattini.</span>
                     </p>
                 </div>
@@ -417,28 +431,27 @@
                 <div class="space-y-6">
                     <div>
                         <label
-                            class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">URL
-                            DO PRODUTO</label>
+                            class="block text-xs font-semibold text-text-muted mb-3 ml-1">URL do produto</label>
                         <div class="relative">
                             <div
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
                                 <i class="ph-bold ph-link text-xl"></i>
                             </div>
                             <input type="url" name="url" id="urlInputScrape" required placeholder="https://..."
-                                class="block w-full h-12 pl-12 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#ff4700] text-sm font-medium placeholder:text-text-muted/40 rounded-xl transition-all">
+                                class="form-input !h-12 !pl-12">
                         </div>
                     </div>
 
                     <div class="flex flex-col md:flex-row gap-4 pt-6 justify-end">
                         <button type="button" onclick="closeScrapeModal()"
-                            class="btn-secondary btn-md font-black tracking-widest text-[11px] h-12 px-8 flex items-center justify-center gap-2 opacity-70 hover:opacity-100 transition-all w-full md:w-auto order-2 md:order-1">
-                            <i class="ph-bold ph-x"></i> CANCELAR
+                            class="btn-secondary btn-lg w-full md:w-auto order-2 md:order-1">
+                        <i class="ph-bold ph-x"></i> Cancelar
                         </button>
                         <button type="submit" id="btnScrapeSubmit"
-                            class="btn-primary btn-md group !bg-[#ff4700] !text-black !shadow-[#ff4700]/20 font-black tracking-widest text-[11px] h-12 px-10 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto order-1 md:order-2">
-                            <span id="txtScrapeBtn">IMPORTAR</span>
+                            class="btn-primary btn-lg w-full md:w-auto order-1 md:order-2 group">
+                            <span id="txtScrapeBtn">Importar</span>
                             <div id="loaderScrape" class="hidden">
-                                <svg class="animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg"
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                         stroke-width="4"></circle>
@@ -460,44 +473,39 @@
 
 <!-- Modal Ver Item -->
 <div id="modalVerItem"
-    class="hidden fixed inset-0 bg-[#111214]/80 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center z-[110] p-4 transition-standard">
-    <div class="bg-discord-200 rounded-2xl shadow-2xl w-full max-w-sm border border-discord-400 animate-in zoom-in-95">
+    class="hidden modal-overlay z-[110]">
+    <div class="modal-sheet md:max-w-sm">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex flex-col gap-1">
-                    <h2 class="text-xl font-black text-text-heading flex items-center gap-2">
-                        <i class="ph-bold ph-eye text-[#ff4700]"></i> Ver Detalhes
+                    <h2 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                        <i class="ph-bold ph-eye text-primary"></i> Ver Detalhes
                     </h2>
                 </div>
                 <button type="button" onclick="document.getElementById('modalVerItem').classList.add('hidden')"
-                    class="p-2 text-text-muted hover:text-text-normal hover:bg-discord-400 rounded-full transition-standard"><i
+                    class="p-3 md:p-2 text-text-muted hover:text-text-normal hover:bg-surface-hover rounded-full transition-standard"><i
                         class="ph-bold ph-x"></i></button>
             </div>
 
             <div class="space-y-4">
                 <div>
-                    <span
-                        class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Item</span>
-                    <p id="view_item_nome"
-                        class="text-xl font-bold text-text-heading uppercase break-words leading-tight"></p>
+                    <span class="form-label mb-1">Item</span>
+                    <p id="view_item_nome" class="text-lg font-semibold text-text-heading break-words leading-tight"></p>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <span
-                            class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Categoria</span>
-                        <p id="view_item_grupo" class="text-sm font-bold text-text-normal uppercase"></p>
+                        <span class="form-label mb-1">Categoria</span>
+                        <p id="view_item_grupo" class="text-sm font-medium text-text-normal"></p>
                     </div>
                     <div>
-                        <span
-                            class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-1">Valor</span>
-                        <p id="view_item_valor" class="text-sm font-black text-white"></p>
+                        <span class="form-label mb-1">Valor</span>
+                        <p id="view_item_valor" class="text-sm font-semibold text-text-heading"></p>
                     </div>
                 </div>
-                <div id="view_item_link_container" class="hidden pt-2 border-t border-discord-400">
-                    <span class="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-2">Link
-                        Externo</span>
+                <div id="view_item_link_container" class="hidden pt-2 border-t border-slate-200">
+                    <span class="form-label mb-2">Link externo</span>
                     <a id="view_item_link" href="#" target="_blank"
-                        class="flex items-center gap-2 text-[#ff4700] hover:underline font-bold text-[13px] bg-discord-300 p-3 rounded-lg transition-standard">
+                        class="flex items-center gap-2 text-primary hover:underline font-medium text-sm bg-background p-3 rounded-lg transition-standard">
                         <i class="ph-bold ph-arrow-square-out flex-shrink-0"></i>
                         <span id="view_item_link_text" class="truncate"></span>
                     </a>
@@ -507,16 +515,16 @@
             <div class="mt-8 flex gap-3">
                 <button type="button" id="btnEditFromView"
                     onclick="document.getElementById('modalVerItem').classList.add('hidden'); openEditItemModal(this)"
-                    class="btn-secondary btn-md flex-1 uppercase tracking-widest text-[11px] font-black">
-                    <i class="ph-bold ph-pencil-simple text-sm"></i> EDITAR
+                    class="btn-secondary btn-md flex-1">
+                    <i class="ph-bold ph-pencil-simple text-sm"></i> Editar
                 </button>
                 <form id="formDeleteFromView" action="" method="POST" onsubmit="confirmDelete(event, this)"
                     class="flex-1">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="lista_id" value="{{ lista.id }}">
                     <button type="submit"
-                        class="btn-danger btn-md w-full !bg-danger/10 hover:!bg-danger !text-danger hover:!text-white border-none uppercase tracking-widest text-[11px] font-black h-11 flex items-center justify-center gap-2">
-                        <i class="ph-bold ph-trash text-sm"></i> EXCLUIR
+                        class="btn-secondary btn-md w-full !text-danger hover:!bg-danger hover:!text-white hover:!border-danger">
+                        <i class="ph-bold ph-trash text-sm"></i> Excluir
                     </button>
                 </form>
             </div>
@@ -524,7 +532,7 @@
 
             <div class="mt-3">
                 <button type="button" onclick="document.getElementById('modalVerItem').classList.add('hidden')"
-                    class="w-full h-11 text-text-muted font-black rounded-xl transition-standard hover:text-text-normal uppercase tracking-widest text-[11px]">FECHAR</button>
+                    class="btn-ghost btn-md w-full">Fechar</button>
             </div>
         </div>
     </div>

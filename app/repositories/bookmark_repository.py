@@ -8,9 +8,6 @@ class BookmarkRepository(BaseRepository):
     def __init__(self):
         super().__init__(Bookmark)
 
-    def list_ordered_by_creation(self) -> List[Bookmark]:
-        return self.list_all(order_by=self.model.data_criacao.desc())
-
     def list_user_bookmarks(self, user_id: int, is_active: bool = True) -> List[Bookmark]:
         return self.model.query.filter(
             self.model.is_active == is_active,

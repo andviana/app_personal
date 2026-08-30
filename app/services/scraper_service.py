@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import json
 from app.services.log_service import LogService
+from app.services.url_safety import is_safe_external_url
 
 
 class ScraperService:
@@ -51,6 +52,10 @@ class ScraperService:
         Main entry point for scraping.
         Returns a dict: {'item': str, 'valor': float, 'success': bool, 'is_restricted': bool}
         """
+        if not is_safe_external_url(url):
+            LogService.log_action('System', 'SCRAPING_BLOCKED', f"URL recusada (não pública/http-https): {url}")
+            return {'item': None, 'valor': None, 'success': False, 'is_restricted': False}
+
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
             'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -255,7 +260,7 @@ class ScraperService:
                 else:
                     price = ScraperService._find_price_in_json(data)
                     if price: return price
-            except:
+            except (json.JSONDecodeError, TypeError, AttributeError):
                 continue
 
         # Estratégia 2: Meta Tags
@@ -352,5 +357,5 @@ class ScraperService:
             
         try:
             return float(clean)
-        except:
+        except ValueError:
             return None

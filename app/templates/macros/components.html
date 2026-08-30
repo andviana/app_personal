@@ -1,4 +1,12 @@
-{# Primary button #}
+{# ==========================================================================
+   Biblioteca de Componentes — Design System DayLog
+   Fonte única da linguagem visual: botões, formulários, cards e cabeçalhos.
+   Ver /design_system.md para a documentação completa.
+   ========================================================================== #}
+
+{# ---- Botões ------------------------------------------------------------ #}
+
+{# Primário: ação principal da tela (uma por contexto) #}
 {% macro btn_primary(text, type="button", id=none, class="", size="md", href=none) %}
   {% if href %}
     <a href="{{ href }}" {% if id %}id="{{ id }}"{% endif %} class="btn-primary btn-{{ size }} {{ class }}" {{ kwargs|xmlattr }}>
@@ -13,7 +21,7 @@
   {% endif %}
 {% endmacro %}
 
-{# Secondary button #}
+{# Secundário: ações de apoio (ex: Cancelar, Filtrar) #}
 {% macro btn_secondary(text, type="button", id=none, class="", size="md", href=none) %}
   {% if href %}
     <a href="{{ href }}" {% if id %}id="{{ id }}"{% endif %} class="btn-secondary btn-{{ size }} {{ class }}" {{ kwargs|xmlattr }}>
@@ -28,32 +36,49 @@
   {% endif %}
 {% endmacro %}
 
-{# Textual input field #}
+{# Terciário/Ghost: ações discretas dentro de listas e barras de ferramentas #}
+{% macro btn_ghost(text, type="button", id=none, class="", size="md", href=none) %}
+  {% if href %}
+    <a href="{{ href }}" {% if id %}id="{{ id }}"{% endif %} class="btn-ghost btn-{{ size }} {{ class }}" {{ kwargs|xmlattr }}>
+      {{ caller() if caller else '' }}
+      {{ text }}
+    </a>
+  {% else %}
+    <button type="{{ type }}" {% if id %}id="{{ id }}"{% endif %} class="btn-ghost btn-{{ size }} {{ class }}" {{ kwargs|xmlattr }}>
+      {{ caller() if caller else '' }}
+      {{ text }}
+    </button>
+  {% endif %}
+{% endmacro %}
+
+{# ---- Formulários --------------------------------------------------------- #}
+
+{# Campo de texto #}
 {% macro form_input(name, label=none, type="text", value="", placeholder="", id=none, required=false, class="", icon=none) %}
   <div class="flex flex-col w-full">
     {% if label %}
-      <label class="form-label ml-1" {% if id %}for="{{ id }}"{% else %}for="{{ name }}"{% endif %}>{{ label }}</label>
+      <label class="form-label" {% if id %}for="{{ id }}"{% else %}for="{{ name }}"{% endif %}>{{ label }}</label>
     {% endif %}
     {% if icon %}
       <div class="relative">
         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted">
           <i class="ph-bold {{ icon }} text-lg"></i>
         </div>
-        <input type="{{ type }}" 
-               name="{{ name }}" 
+        <input type="{{ type }}"
+               name="{{ name }}"
                {% if id %}id="{{ id }}"{% else %}id="{{ name }}"{% endif %}
-               value="{{ value or '' }}" 
-               placeholder="{{ placeholder }}" 
+               value="{{ value or '' }}"
+               placeholder="{{ placeholder }}"
                {% if required %}required{% endif %}
-               class="form-input !px-12 !h-12 !rounded-xl {{ class }}"
+               class="form-input !pl-11 {{ class }}"
                {{ kwargs|xmlattr }}>
       </div>
     {% else %}
-      <input type="{{ type }}" 
-             name="{{ name }}" 
+      <input type="{{ type }}"
+             name="{{ name }}"
              {% if id %}id="{{ id }}"{% else %}id="{{ name }}"{% endif %}
-             value="{{ value or '' }}" 
-             placeholder="{{ placeholder }}" 
+             value="{{ value or '' }}"
+             placeholder="{{ placeholder }}"
              {% if required %}required{% endif %}
              class="form-input {{ class }}"
              {{ kwargs|xmlattr }}>
@@ -61,29 +86,116 @@
   </div>
 {% endmacro %}
 
-{# Alert box #}
-{% macro alert(message, category="danger", class="") %}
-  {% set bg_color = "bg-danger/10 border-danger/20 text-danger" %}
-  {% set icon = "ph-warning-circle" %}
-  {% if category == "success" %}
-    {% set bg_color = "bg-success/10 border-success/20 text-success" %}
-    {% set icon = "ph-check-circle" %}
-  {% elif category == "warning" %}
-    {% set bg_color = "bg-[#f0b232]/10 border-[#f0b232]/20 text-[#f0b232]" %}
-    {% set icon = "ph-warning" %}
-  {% elif category == "info" %}
-    {% set bg_color = "bg-primary/10 border-primary/20 text-primary" %}
-    {% set icon = "ph-info" %}
-  {% endif %}
-  <div class="flex items-center gap-3 p-4 rounded-xl border {{ bg_color }} {{ class }}" role="alert">
-    <i class="ph-bold {{ icon }} text-lg"></i>
-    <span class="text-xs md:text-sm font-semibold">{{ message }}</span>
+{# Área de texto #}
+{% macro form_textarea(name, label=none, value="", placeholder="", id=none, required=false, class="", rows=4) %}
+  <div class="flex flex-col w-full">
+    {% if label %}
+      <label class="form-label" {% if id %}for="{{ id }}"{% else %}for="{{ name }}"{% endif %}>{{ label }}</label>
+    {% endif %}
+    <textarea name="{{ name }}"
+              {% if id %}id="{{ id }}"{% else %}id="{{ name }}"{% endif %}
+              placeholder="{{ placeholder }}"
+              rows="{{ rows }}"
+              {% if required %}required{% endif %}
+              class="form-textarea {{ class }}"
+              {{ kwargs|xmlattr }}>{{ value or '' }}</textarea>
   </div>
 {% endmacro %}
 
-{# Visual card container #}
+{# Select #}
+{% macro form_select(name, label=none, id=none, required=false, class="") %}
+  <div class="flex flex-col w-full">
+    {% if label %}
+      <label class="form-label" {% if id %}for="{{ id }}"{% else %}for="{{ name }}"{% endif %}>{{ label }}</label>
+    {% endif %}
+    <div class="relative">
+      <select name="{{ name }}"
+              {% if id %}id="{{ id }}"{% else %}id="{{ name }}"{% endif %}
+              {% if required %}required{% endif %}
+              class="form-select {{ class }}"
+              {{ kwargs|xmlattr }}>
+        {{ caller() }}
+      </select>
+      <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-text-muted">
+        <i class="ph-bold ph-caret-down text-sm"></i>
+      </div>
+    </div>
+  </div>
+{% endmacro %}
+
+{# Checkbox com rótulo #}
+{% macro form_checkbox(name, label, value="", id=none, checked=false, class="") %}
+  <label class="flex items-center gap-2.5 cursor-pointer select-none">
+    <input type="checkbox" name="{{ name }}" value="{{ value }}"
+           {% if id %}id="{{ id }}"{% endif %}
+           {% if checked %}checked{% endif %}
+           class="form-checkbox {{ class }}"
+           {{ kwargs|xmlattr }}>
+    <span class="text-sm text-text-normal">{{ label }}</span>
+  </label>
+{% endmacro %}
+
+{# ---- Feedback ------------------------------------------------------------ #}
+
+{# Alerta / mensagem de flash #}
+{% macro alert(message, category="danger", class="") %}
+  {% set bg_color = "bg-danger/5 border-danger/20 text-danger" %}
+  {% set icon = "ph-warning-circle" %}
+  {% if category == "success" %}
+    {% set bg_color = "bg-success/5 border-success/20 text-success" %}
+    {% set icon = "ph-check-circle" %}
+  {% elif category == "warning" %}
+    {% set bg_color = "bg-warning/5 border-warning/20 text-warning" %}
+    {% set icon = "ph-warning" %}
+  {% elif category == "info" %}
+    {% set bg_color = "bg-primary/5 border-primary/20 text-primary" %}
+    {% set icon = "ph-info" %}
+  {% endif %}
+  <div class="flex items-center gap-3 p-4 rounded-lg border {{ bg_color }} {{ class }}" role="alert">
+    <i class="ph-bold {{ icon }} text-lg flex-shrink-0"></i>
+    <span class="text-sm font-medium">{{ message }}</span>
+  </div>
+{% endmacro %}
+
+{# ---- Superfícies ---------------------------------------------------------- #}
+
+{# Card visual padrão #}
 {% macro card(class="", id=none) %}
   <div {% if id %}id="{{ id }}"{% endif %} class="card-container {{ class }}" {{ kwargs|xmlattr }}>
     {{ caller() }}
+  </div>
+{% endmacro %}
+
+{# ---- Layout --------------------------------------------------------------- #}
+
+{# Cabeçalho de página padrão: título + descrição à esquerda,
+   ação principal à direita. Use o bloco `actions` (caller) para
+   botões extras (filtros, ações secundárias) antes do CTA principal. #}
+{% macro page_header(title, icon=none, subtitle=none, badge=none) %}
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div class="flex flex-col gap-1">
+      <h1 class="text-2xl md:text-3xl font-bold text-text-heading tracking-tight flex items-center gap-3">
+        {% if icon %}<i class="ph-bold {{ icon }} text-primary text-2xl md:text-3xl"></i>{% endif %}
+        {{ title }}
+        {% if badge %}<span class="badge-warning">{{ badge }}</span>{% endif %}
+      </h1>
+      {% if subtitle %}<p class="text-sm text-text-muted">{{ subtitle }}</p>{% endif %}
+    </div>
+    {% if caller %}
+    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+      {{ caller() }}
+    </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{# Estado vazio padrão para listas/grids sem itens #}
+{% macro empty_state(title, subtitle=none, icon="ph-tray") %}
+  <div class="col-span-full flex flex-col items-center justify-center py-20 bg-surface rounded-xl border border-dashed border-slate-200 text-center">
+    <div class="w-16 h-16 bg-surface-sunken rounded-full flex items-center justify-center mb-5 text-text-muted">
+      <i class="ph-bold {{ icon }} text-3xl"></i>
+    </div>
+    <h3 class="text-base font-semibold text-text-heading">{{ title }}</h3>
+    {% if subtitle %}<p class="text-sm text-text-muted mt-1.5">{{ subtitle }}</p>{% endif %}
   </div>
 {% endmacro %}

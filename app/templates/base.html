@@ -3,18 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- SEO & Social Media Meta Tags -->
-    <meta name="description" content="DayLog - Organize suas tarefas, listas e snippets com uma interface moderna estilo Discord.">
+    <meta name="description" content="DayLog - Organize suas tarefas, listas e snippets com uma interface simples e limpa.">
     <meta name="keywords" content="tarefas, listas de compras, snippets, organização pessoal, daylog">
     <meta name="author" content="DayLog Team">
 
     <!-- Open Graph / Facebook / Instagram / WhatsApp -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.url }}">
-    <meta property="og:title" content="DayLog - Gestão Pessoal Estilo Discord">
+    <meta property="og:title" content="DayLog - Gestão Pessoal">
     <meta property="og:description" content="Organize sua vida com simplicidade. Tarefas, compras e código em um só lugar.">
     <meta property="og:image" content="{{ url_for('static', filename='img/social-share.png', _external=True) }}">
     <meta property="og:image:width" content="1200">
@@ -25,7 +25,7 @@
     <!-- Twitter / X -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ request.url }}">
-    <meta property="twitter:title" content="DayLog - Gestão Pessoal Estilo Discord">
+    <meta property="twitter:title" content="DayLog - Gestão Pessoal">
     <meta property="twitter:description" content="Organize sua vida com simplicidade. Tarefas, compras e código em um só lugar.">
     <meta property="twitter:image" content="{{ url_for('static', filename='img/social-share.png', _external=True) }}">
 
@@ -46,7 +46,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        /* Tooltip Nativo em CSS (Discord-like) */
+        /* Tooltip Nativo em CSS */
         [data-tooltip] {
             position: relative;
         }
@@ -54,11 +54,11 @@
         [data-tooltip]::before {
             content: attr(data-tooltip);
             position: absolute;
-            background: #111214;
-            color: #dbdee1;
+            background: #0f172a;
+            color: #f8fafc;
             padding: 6px 12px;
             border-radius: 6px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             white-space: nowrap;
             opacity: 0;
@@ -67,7 +67,7 @@
             transform: scale(0.95);
             z-index: 100;
             pointer-events: none;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
         }
 
         /* Posições */
@@ -95,53 +95,65 @@
             transform: translate(-50%, 0) scale(1);
         }
 
-        /* SweetAlert Mixin for Discord */
+        [data-tooltip-pos="left"]::before {
+            top: 50%;
+            right: calc(100% + 12px);
+            transform: translate(0, -50%) scale(0.95);
+        }
+
+        [data-tooltip-pos="left"]:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(0, -50%) scale(1);
+        }
+
+        /* SweetAlert Mixin — tema claro */
         .swal2-popup.discord-theme {
-            background-color: #313338 !important;
-            color: #dbdee1 !important;
-            border-radius: 8px !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+            background-color: #ffffff !important;
+            color: #334155 !important;
+            border-radius: 12px !important;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12) !important;
         }
 
         .discord-theme .swal2-title {
-            color: #f2f3f5 !important;
+            color: #0f172a !important;
             font-weight: 700 !important;
         }
 
         .discord-theme .swal2-html-container {
-            color: #dbdee1 !important;
+            color: #334155 !important;
         }
 
         .discord-theme .swal2-confirm {
-            background-color: #5865F2 !important;
-            border-radius: 4px !important;
+            background-color: #4f46e5 !important;
+            border-radius: 8px !important;
         }
 
         .discord-theme .swal2-confirm:hover {
-            background-color: #4752C4 !important;
+            background-color: #4338ca !important;
         }
 
         .discord-theme .swal2-cancel {
-            background-color: #4e5058 !important;
-            color: white !important;
-            border-radius: 4px !important;
+            background-color: #f1f5f9 !important;
+            color: #334155 !important;
+            border-radius: 8px !important;
         }
 
         .discord-theme .swal2-cancel:hover {
-            background-color: #6d6f78 !important;
+            background-color: #e2e8f0 !important;
         }
 
         .discord-theme .swal2-input,
         .discord-theme .swal2-textarea {
-            background: #1e1f22 !important;
-            color: #dbdee1 !important;
-            border: none !important;
-            border-radius: 4px !important;
+            background: #f1f5f9 !important;
+            color: #0f172a !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
         }
 
         .discord-theme .swal2-input:focus {
             box-shadow: none !important;
-            border: 1px solid #dbdee1 !important;
+            border: 1px solid #4f46e5 !important;
         }
 
         ::-webkit-scrollbar {
@@ -150,30 +162,29 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #2b2d31;
-            border-radius: 4px;
+            background: transparent;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #1a1b1e;
+            background: #cbd5e1;
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #111214;
+            background: #94a3b8;
         }
 
         #loading-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(17, 18, 20, 0.8);
+            background: rgba(248, 250, 252, 0.85);
             backdrop-filter: blur(2px);
             z-index: 9999;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: #dbdee1;
+            color: #334155;
             transition: all 0.2s ease;
         }
 
@@ -199,143 +210,72 @@
     {% block head_extra %}{% endblock %}
 </head>
 
-<body class="bg-discord-300 text-text-normal h-screen flex flex-col md:flex-row overflow-hidden antialiased">
+<body class="bg-background text-text-normal h-screen flex flex-col md:flex-row overflow-hidden antialiased">
 
-    <!-- Desktop Sidebar (Server List Pattern) -->
-    <nav class="hidden md:flex flex-col w-[72px] bg-discord-100 items-center py-3 gap-2 flex-shrink-0 z-50 relative">
+    {# Itens da navegação principal — fonte única para sidebar desktop, drawer mobile e bottom nav. #}
+    {% set nav_items = [
+        {'endpoint': 'main.index', 'match': 'main.index', 'label': 'Dashboard', 'icon': 'ph-squares-four', 'mobile': true},
+        {'endpoint': 'tasks.index', 'match': 'tasks', 'label': 'Tarefas', 'icon': 'ph-list-checks', 'mobile': true},
+        {'endpoint': 'lists.index', 'match': 'lists.', 'exclude': 'simple_lists', 'label': 'Listas Compras', 'icon': 'ph-shopping-bag', 'mobile': true},
+        {'endpoint': 'simple_lists.index', 'match': 'simple_lists', 'label': 'Listas Simples', 'icon': 'ph-list-bullets', 'mobile': false},
+        {'endpoint': 'snippets.index', 'match': 'snippets.', 'label': 'Snippets', 'icon': 'ph-code', 'mobile': true},
+        {'endpoint': 'bookmarks.index', 'match': 'bookmarks.', 'label': 'Favoritos', 'icon': 'ph-bookmarks', 'mobile': false},
+        {'endpoint': 'perfumes.index', 'match': 'perfumes', 'label': 'Perfumes', 'icon': 'ph-drop', 'mobile': true},
+        {'endpoint': 'pessoas.index', 'match': 'pessoas', 'label': 'Pessoas', 'icon': 'ph-users', 'mobile': true},
+    ] %}
+    {% macro nav_is_active(item) %}{% if request.endpoint and item.match in request.endpoint and not (item.exclude and item.exclude in request.endpoint) %}true{% endif %}{% endmacro %}
+
+    <!-- Desktop Sidebar -->
+    <nav class="hidden md:flex flex-col w-[76px] bg-surface border-r border-slate-200 items-center py-4 gap-1.5 flex-shrink-0 z-50 relative">
         <a href="{{ url_for('main.index') }}"
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] bg-discord-300 text-text-normal hover:bg-primary hover:text-white flex items-center justify-center transition-all duration-200 relative mb-2"
+            class="w-11 h-11 rounded-xl bg-primary text-white flex items-center justify-center mb-3 flex-shrink-0"
             data-tooltip="DayLog" data-tooltip-pos="right">
-            <i class="ph-bold ph-check-square-offset text-2xl"></i>
+            <i class="ph-fill ph-check-square-offset text-xl"></i>
         </a>
-
-        <div class="w-8 h-[2px] bg-discord-300 rounded-full mb-2"></div>
 
         {% if current_user.is_authenticated %}
-        <!-- Dashboard -->
-        <a href="{{ url_for('main.index') }}"
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
-                {% if request.endpoint == 'main.index' %}bg-primary text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-primary hover:text-white{% endif %}"
-            data-tooltip="Dashboard" data-tooltip-pos="right">
-            <i class="ph-fill ph-squares-four text-2xl"></i>
-            <div
-                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint == 'main.index' %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
-            </div>
+        {% for item in nav_items %}
+        {% set active = nav_is_active(item) == 'true' %}
+        <a href="{{ url_for(item.endpoint) }}"
+            class="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0 {% if active %}bg-primary-light text-primary{% else %}text-text-muted hover:bg-surface-sunken hover:text-text-heading{% endif %}"
+            data-tooltip="{{ item.label }}" data-tooltip-pos="right">
+            <i class="{{ 'ph-fill' if active else 'ph-bold' }} {{ item.icon }} text-xl"></i>
         </a>
-
-        <!-- Tarefas -->
-        <a href="{{ url_for('tasks.index') }}"
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
-                {% if request.endpoint and 'tasks' in request.endpoint %}bg-success text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-success hover:text-white{% endif %}"
-            data-tooltip="Tarefas" data-tooltip-pos="right">
-            <i class="ph-fill ph-list-checks text-2xl"></i>
-            <div
-                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'tasks' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
-            </div>
-        </a>
-
-        <!-- Listas -->
-        <a href="{{ url_for('lists.index') }}"
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
-                {% if request.endpoint and 'lists.' in request.endpoint and 'simple_lists' not in request.endpoint %}bg-[#ff4700] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#ff4700] hover:text-white{% endif %}"
-            data-tooltip="Listas Compras" data-tooltip-pos="right">
-            <i class="ph-fill ph-shopping-bag text-2xl"></i>
-            <div
-                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'lists.' in request.endpoint and 'simple_lists' not in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
-            </div>
-        </a>
-
-        <!-- Listas Simples -->
-        <a href="{{ url_for('simple_lists.index') }}"
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
-                {% if request.endpoint and 'simple_lists' in request.endpoint %}bg-[#00d1ff] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#00d1ff] hover:text-white{% endif %}"
-            data-tooltip="Listas Simples" data-tooltip-pos="right">
-            <i class="ph-fill ph-list-bullets text-2xl"></i>
-            <div
-                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'simple_lists' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
-            </div>
-        </a>
-
-        <!-- Snippets -->
-        <a href="{{ url_for('snippets.index') }}"
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
-                {% if request.endpoint and 'snippets.' in request.endpoint %}bg-[#9a55f3] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#9a55f3] hover:text-white{% endif %}"
-            data-tooltip="Snippets" data-tooltip-pos="right">
-            <i class="ph-fill ph-code text-2xl"></i>
-            <div
-                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'snippets.' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
-            </div>
-        </a>
-
-        <!-- Favoritos (Bookmarks) -->
-        <a href="{{ url_for('bookmarks.index') }}"
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
-                {% if request.endpoint and 'bookmarks.' in request.endpoint %}bg-[#eb459e] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#eb459e] hover:text-white{% endif %}"
-            data-tooltip="Favoritos" data-tooltip-pos="right">
-            <i class="ph-fill ph-bookmarks text-2xl"></i>
-            <div
-                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'bookmarks.' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
-            </div>
-        </a>
-
-        <!-- Perfumes -->
-        <a href="{{ url_for('perfumes.index') }}"
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
-                {% if request.endpoint and 'perfumes' in request.endpoint %}bg-[#ffb000] text-black rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#ffb000] hover:text-black{% endif %}"
-            data-tooltip="Perfumes" data-tooltip-pos="right">
-            <i class="ph-fill ph-drop text-2xl"></i>
-            <div
-                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'perfumes' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
-            </div>
-        </a>
-
-        <!-- Pessoas -->
-        <a href="{{ url_for('pessoas.index') }}"
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative
-                {% if request.endpoint and 'pessoas' in request.endpoint %}bg-[#8a05be] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#8a05be] hover:text-white{% endif %}"
-            data-tooltip="Pessoas" data-tooltip-pos="right">
-            <i class="ph-fill ph-users text-2xl"></i>
-            <div
-                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'pessoas' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
-            </div>
-        </a>
+        {% endfor %}
 
         <!-- Configurações -->
         <a href="{{ url_for('settings.index') }}"
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative mt-auto
-                {% if request.endpoint and 'settings' in request.endpoint %}bg-[#747f8d] text-white rounded-[16px]{% else %}bg-discord-300 text-text-normal hover:bg-[#747f8d] hover:text-white{% endif %}"
+            class="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 mt-auto flex-shrink-0 {% if request.endpoint and 'settings' in request.endpoint %}bg-primary-light text-primary{% else %}text-text-muted hover:bg-surface-sunken hover:text-text-heading{% endif %}"
             data-tooltip="Configurações" data-tooltip-pos="right">
-            <i class="ph-fill ph-gear-six text-2xl"></i>
-            <div
-                class="absolute left-[-16px] w-[8px] bg-white rounded-r-lg transition-all duration-200 {% if request.endpoint and 'settings' in request.endpoint %}h-10{% else %}h-0 group-hover:h-5{% endif %}">
-            </div>
+            <i class="{{ 'ph-fill' if request.endpoint and 'settings' in request.endpoint else 'ph-bold' }} ph-gear-six text-xl"></i>
         </a>
 
         <!-- Logout -->
         <a href="{{ url_for('auth.logout') }}"
-            class="w-12 h-12 rounded-[24px] hover:rounded-[16px] flex items-center justify-center transition-all duration-200 group relative bg-discord-300 text-danger hover:bg-danger hover:text-white"
-            title="Sair">
-            <i class="ph-bold ph-sign-out text-2xl"></i>
+            class="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 text-text-muted hover:bg-danger/10 hover:text-danger flex-shrink-0"
+            data-tooltip="Sair" data-tooltip-pos="right">
+            <i class="ph-bold ph-sign-out text-xl"></i>
         </a>
         {% endif %}
     </nav>
 
-    <!-- Mobile Header (Visible only on mobile) -->
+    <!-- Mobile Header -->
     <header
-        class="md:hidden bg-discord-200 border-b border-discord-100 flex items-center justify-between px-4 h-[56px] flex-shrink-0 shadow-sm z-40 relative">
-        <div class="flex items-center gap-3">
+        class="md:hidden sticky top-0 bg-surface border-b border-slate-200 flex items-center justify-between pl-2 pr-2 h-[56px] flex-shrink-0 z-40 pt-[env(safe-area-inset-top)]">
+        <div class="flex items-center gap-1">
             {% if current_user.is_authenticated %}
-            <button id="mobile-menu-btn" class="text-text-muted hover:text-text-heading p-1 focus:outline-none" aria-label="Toggle Menu">
+            <button id="mobile-menu-btn" class="w-11 h-11 flex items-center justify-center text-text-muted hover:text-text-heading focus:outline-none flex-shrink-0" aria-label="Abrir menu">
                 <i class="ph-bold ph-list text-2xl"></i>
             </button>
             {% endif %}
-            <a href="{{ url_for('main.index') }}" class="flex items-center gap-2 text-text-heading font-bold text-lg">
+            <a href="{{ url_for('main.index') }}" class="flex items-center gap-2 text-text-heading font-bold text-lg px-1">
                 <i class="ph-fill ph-check-square-offset text-primary"></i> DayLog
             </a>
         </div>
         {% if current_user.is_authenticated %}
-        <div class="flex items-center gap-3">
-            <a href="{{ url_for('auth.logout') }}" class="text-text-muted hover:text-danger" title="Sair"><i
+        <div class="flex items-center">
+            <a href="{{ url_for('auth.logout') }}"
+                class="w-11 h-11 flex items-center justify-center text-text-muted hover:text-danger flex-shrink-0" aria-label="Sair"><i
                     class="ph-bold ph-sign-out text-xl"></i></a>
         </div>
         {% endif %}
@@ -345,90 +285,36 @@
     {% if current_user.is_authenticated %}
     <div id="mobile-drawer" class="fixed inset-0 z-50 flex md:hidden pointer-events-none transition-all duration-300">
         <!-- Overlay backdrop -->
-        <div id="mobile-drawer-overlay" class="absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 ease-in-out pointer-events-none"></div>
-        
+        <div id="mobile-drawer-overlay" class="absolute inset-0 bg-slate-900/50 opacity-0 transition-opacity duration-300 ease-in-out pointer-events-none"></div>
+
         <!-- Drawer content container -->
-        <div id="mobile-drawer-content" class="relative flex flex-col w-72 max-w-xs h-full bg-discord-100 border-r border-discord-200 p-4 transform -translate-x-full transition-transform duration-300 ease-in-out pointer-events-auto">
+        <div id="mobile-drawer-content" class="relative flex flex-col w-72 max-w-[85vw] h-full bg-surface border-r border-slate-200 p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] transform -translate-x-full transition-transform duration-300 ease-in-out pointer-events-auto">
             <div class="flex justify-between items-center mb-6">
-                <span class="flex items-center gap-2 text-text-heading font-black text-lg">
+                <span class="flex items-center gap-2 text-text-heading font-bold text-lg">
                     <i class="ph-fill ph-check-square-offset text-primary"></i> DayLog
                 </span>
-                <button id="mobile-drawer-close" class="text-text-muted hover:text-text-heading p-1 focus:outline-none">
+                <button id="mobile-drawer-close" class="w-11 h-11 flex items-center justify-center -mr-2 text-text-muted hover:text-text-heading focus:outline-none" aria-label="Fechar menu">
                     <i class="ph-bold ph-x text-2xl"></i>
                 </button>
             </div>
-            
-            <div class="flex flex-col gap-2 overflow-y-auto flex-1 pr-1 custom-scrollbar">
-                <!-- Dashboard -->
-                <a href="{{ url_for('main.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                        {% if request.endpoint == 'main.index' %}bg-primary text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
-                    <i class="ph-fill ph-squares-four text-xl"></i>
-                    <span class="text-sm font-semibold">Dashboard</span>
+
+            <div class="flex flex-col gap-1 overflow-y-auto flex-1 pr-1 custom-scrollbar">
+                {% for item in nav_items %}
+                {% set active = nav_is_active(item) == 'true' %}
+                <a href="{{ url_for(item.endpoint) }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200
+                        {% if active %}bg-primary-light text-primary font-semibold{% else %}text-text-muted hover:bg-surface-sunken hover:text-text-heading{% endif %}">
+                    <i class="{{ 'ph-fill' if active else 'ph-bold' }} {{ item.icon }} text-xl"></i>
+                    <span class="text-sm font-medium">{{ item.label }}</span>
                 </a>
-        
-                <!-- Tarefas -->
-                <a href="{{ url_for('tasks.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                        {% if request.endpoint and 'tasks' in request.endpoint %}bg-success text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
-                    <i class="ph-fill ph-list-checks text-xl"></i>
-                    <span class="text-sm font-semibold">Tarefas</span>
-                </a>
-        
-                <!-- Listas -->
-                <a href="{{ url_for('lists.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                        {% if request.endpoint and 'lists.' in request.endpoint and 'simple_lists' not in request.endpoint %}bg-[#ff4700] text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
-                    <i class="ph-fill ph-shopping-bag text-xl"></i>
-                    <span class="text-sm font-semibold">Listas Compras</span>
-                </a>
-        
-                <!-- Listas Simples -->
-                <a href="{{ url_for('simple_lists.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                        {% if request.endpoint and 'simple_lists' in request.endpoint %}bg-[#00d1ff] text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
-                    <i class="ph-fill ph-list-bullets text-xl"></i>
-                    <span class="text-sm font-semibold">Listas Simples</span>
-                </a>
-        
-                <!-- Snippets -->
-                <a href="{{ url_for('snippets.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                        {% if request.endpoint and 'snippets.' in request.endpoint %}bg-[#9a55f3] text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
-                    <i class="ph-fill ph-code text-xl"></i>
-                    <span class="text-sm font-semibold">Snippets</span>
-                </a>
-        
-                <!-- Favoritos (Bookmarks) -->
-                <a href="{{ url_for('bookmarks.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                        {% if request.endpoint and 'bookmarks.' in request.endpoint %}bg-[#eb459e] text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
-                    <i class="ph-fill ph-bookmarks text-xl"></i>
-                    <span class="text-sm font-semibold">Favoritos</span>
-                </a>
-        
-                <!-- Perfumes -->
-                <a href="{{ url_for('perfumes.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                        {% if request.endpoint and 'perfumes' in request.endpoint %}bg-[#ffb000] text-black font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
-                    <i class="ph-fill ph-drop text-xl"></i>
-                    <span class="text-sm font-semibold">Perfumes</span>
-                </a>
-        
-                <!-- Pessoas -->
-                <a href="{{ url_for('pessoas.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                        {% if request.endpoint and 'pessoas' in request.endpoint %}bg-[#8a05be] text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
-                    <i class="ph-fill ph-users text-xl"></i>
-                    <span class="text-sm font-semibold">Pessoas</span>
-                </a>
-        
+                {% endfor %}
+
                 <!-- Configurações -->
                 <a href="{{ url_for('settings.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 mt-auto
-                        {% if request.endpoint and 'settings' in request.endpoint %}bg-[#747f8d] text-white font-bold{% else %}text-text-muted hover:bg-discord-200 hover:text-text-heading{% endif %}">
-                    <i class="ph-fill ph-gear-six text-xl"></i>
-                    <span class="text-sm font-semibold">Configurações</span>
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 mt-auto
+                        {% if request.endpoint and 'settings' in request.endpoint %}bg-primary-light text-primary font-semibold{% else %}text-text-muted hover:bg-surface-sunken hover:text-text-heading{% endif %}">
+                    <i class="{{ 'ph-fill' if request.endpoint and 'settings' in request.endpoint else 'ph-bold' }} ph-gear-six text-xl"></i>
+                    <span class="text-sm font-medium">Configurações</span>
                 </a>
             </div>
         </div>
@@ -437,53 +323,23 @@
 
     <!-- Main Content Area -->
     <main
-        class="flex-1 w-full h-[calc(100vh-56px)] md:h-screen overflow-y-auto bg-discord-300 rounded-tl-lg md:rounded-tl-[8px] shadow-inner relative z-10 pb-20 md:pb-0">
+        class="flex-1 w-full h-[calc(100vh-56px)] md:h-screen overflow-y-auto bg-background relative z-10 pb-[calc(56px+env(safe-area-inset-bottom))] md:pb-0">
         <div class="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8">
             {% block content %}{% endblock %}
         </div>
     </main>
 
-    <!-- Mobile Bottom Navigation (Discord approach) -->
+    <!-- Mobile Bottom Navigation -->
     {% if current_user.is_authenticated %}
     <nav
-        class="md:hidden fixed bottom-0 left-0 right-0 bg-discord-100 border-t border-discord-200 px-4 py-2 flex justify-between items-center z-50 shadow-t-xl h-[64px]">
-        <a href="{{ url_for('main.index') }}"
-            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-primary' if request.endpoint == 'main.index' else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
-            <i
-                class="{{ 'ph-fill' if request.endpoint == 'main.index' else 'ph-bold' }} ph-squares-four text-[22px]"></i>
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-slate-200 flex justify-around items-stretch z-50 pb-[env(safe-area-inset-bottom)]">
+        {% for item in nav_items if item.mobile %}
+        {% set active = nav_is_active(item) == 'true' %}
+        <a href="{{ url_for(item.endpoint) }}"
+            class="flex-1 flex flex-col items-center justify-center gap-0.5 min-h-[56px] transition-standard {{ 'text-primary' if active else 'text-text-muted hover:text-text-normal' }}">
+            <i class="{{ 'ph-fill' if active else 'ph-bold' }} {{ item.icon }} text-[22px]"></i>
         </a>
-        <a href="{{ url_for('tasks.index') }}"
-            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-success' if request.endpoint and 'tasks' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
-            <i
-                class="{{ 'ph-fill' if request.endpoint and 'tasks' in request.endpoint else 'ph-bold' }} ph-list-checks text-[22px]"></i>
-        </a>
-        <a href="{{ url_for('lists.index') }}"
-            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-[#ff4700]' if request.endpoint and 'lists' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
-            <i
-                class="{{ 'ph-fill' if request.endpoint and 'lists' in request.endpoint else 'ph-bold' }} ph-shopping-bag text-[22px]"></i>
-        </a>
-
-        <a href="{{ url_for('snippets.index') }}"
-            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-[#9a55f3]' if request.endpoint and 'snippets' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
-            <i
-                class="{{ 'ph-fill' if request.endpoint and 'snippets' in request.endpoint else 'ph-bold' }} ph-code text-[22px]"></i>
-        </a>
-
-        <a href="{{ url_for('perfumes.index') }}"
-            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-[#ffb000]' if request.endpoint and 'perfumes' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
-            <i
-                class="{{ 'ph-fill' if request.endpoint and 'perfumes' in request.endpoint else 'ph-bold' }} ph-drop text-[22px]"></i>
-        </a>
-        <a href="{{ url_for('pessoas.index') }}"
-            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-[#8a05be]' if request.endpoint and 'pessoas' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
-            <i
-                class="{{ 'ph-fill' if request.endpoint and 'pessoas' in request.endpoint else 'ph-bold' }} ph-users text-[22px]"></i>
-        </a>
-        <a href="{{ url_for('settings.index') }}"
-            class="flex flex-col items-center gap-1 transition-standard {{ 'text-text-heading border-b-2 border-[#747f8d]' if request.endpoint and 'settings' in request.endpoint else 'text-text-muted hover:text-text-normal pb-[2px]' }}">
-            <i
-                class="{{ 'ph-fill' if request.endpoint and 'settings' in request.endpoint else 'ph-bold' }} ph-gear-six text-[22px]"></i>
-        </a>
+        {% endfor %}
     </nav>
 
     {% endif %}
@@ -491,13 +347,13 @@
     <!-- Loading Overlay -->
     <div id="loading-overlay">
         <div
-            class="flex flex-col items-center gap-6 bg-discord-200 border border-discord-100/30 p-8 md:p-10 rounded-2xl shadow-2xl max-w-xs w-full mx-4">
-            <div class="p-4 bg-discord-100 border border-discord-100/10 rounded-2xl shadow-inner flex items-center justify-center">
+            class="flex flex-col items-center gap-6 bg-surface border border-slate-200 p-8 md:p-10 rounded-2xl shadow-xl max-w-xs w-full mx-4">
+            <div class="p-4 bg-primary-light rounded-2xl flex items-center justify-center">
                 <i class="ph-bold ph-circle-notch text-4xl text-primary spinner"></i>
             </div>
             <div class="text-center">
-                <p class="text-lg font-black text-text-heading tracking-tight uppercase">Processando...</p>
-                <p class="text-xs text-text-muted font-bold mt-1.5 uppercase tracking-widest">Aguarde um momento</p>
+                <p class="text-base font-semibold text-text-heading">Processando...</p>
+                <p class="text-xs text-text-muted mt-1.5">Aguarde um momento</p>
             </div>
         </div>
     </div>

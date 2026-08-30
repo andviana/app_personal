@@ -11,55 +11,53 @@
         </a>
 
         <div class="flex flex-col gap-1">
-            <h1 class="text-3xl font-black text-text-heading tracking-tight flex items-center gap-3 uppercase">
-                <i class="ph-bold ph-list-bullets text-[#00d1ff]"></i>
+            <h1 class="text-2xl md:text-3xl font-bold text-text-heading tracking-tight flex items-center gap-3">
+                <i class="ph-bold ph-list-bullets text-primary"></i>
                 {% if lista.owner_id != current_user.id %}
-                <i class="ph-bold ph-users text-[#00d1ff] text-2xl" data-tooltip="Compartilhado por outro usuário"></i>
+                <i class="ph-bold ph-users text-primary text-2xl" data-tooltip="Compartilhado por outro usuário"></i>
                 {% endif %}
                 {{ lista.denominacao }}
             </h1>
-            <p class="text-[11px] font-bold text-text-muted/50 uppercase tracking-[0.2em]">
-                {{ lista.itens|length }} ITENS CADASTRADOS
+            <p class="text-xs text-text-muted">
+                {{ lista.itens|length }} itens cadastrados
             </p>
         </div>
     </div>
 
     <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-        <button onclick="openModal('modalLoteItem')"
-            class="btn-ghost btn-md group border border-discord-400 hover:border-[#00d1ff] !text-text-muted hover:!text-[#00d1ff] font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2 transition-all">
-            ADICIONAR EM LOTE
-            <i class="ph-bold ph-stack text-xl"></i>
+        <button onclick="openModal('modalLoteItem')" class="btn-secondary btn-md group">
+            Adicionar em lote
+            <i class="ph-bold ph-stack text-lg"></i>
         </button>
-        <button onclick="openModal('modalNovoItem')"
-            class="btn-primary btn-md group !bg-[#00d1ff] !text-black !shadow-[#00d1ff]/20 font-black tracking-widest text-[11px] h-11 px-6 flex items-center justify-center gap-2">
-            ADICIONAR
-            <i class="ph-bold ph-plus text-xl transition-transform duration-300 group-hover:rotate-90"></i>
+        <button onclick="openModal('modalNovoItem')" class="btn-primary btn-md group">
+            Adicionar
+            <i class="ph-bold ph-plus text-lg transition-transform duration-300 group-hover:rotate-90"></i>
         </button>
     </div>
 </div>
 
-<div class="bg-discord-200 border border-discord-400 rounded-3xl overflow-hidden shadow-sm">
+<div class="bg-surface border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
     <div class="p-4 sm:p-8 space-y-2">
         {% for item in lista.itens %}
-        <div class="group flex items-center justify-between p-3 rounded-xl hover:bg-discord-300 transition-standard border border-transparent hover:border-discord-400">
+        <div class="group flex items-center justify-between p-3 rounded-xl hover:bg-background transition-standard border border-transparent hover:border-slate-200">
             <div class="flex items-center gap-3 flex-1 min-w-0">
-                <label class="relative flex items-center cursor-pointer select-none">
+                <label class="relative flex items-center cursor-pointer select-none before:absolute before:-inset-3 before:content-['']">
                     <input type="checkbox" class="peer hidden" {% if item.status %}checked{% endif %} 
                            onchange="toggleItem('{{ item.id }}', this.checked)">
-                    <div class="w-5 h-5 rounded border border-discord-400 bg-discord-100 text-transparent peer-checked:bg-[#00d1ff] peer-checked:border-[#00d1ff] peer-checked:text-black flex items-center justify-center transition-all duration-200 hover:border-text-normal">
+                    <div class="w-5 h-5 rounded border border-slate-200 bg-surface-sunken text-transparent peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white flex items-center justify-center transition-all duration-200 hover:border-text-normal">
                         <i class="ph-bold ph-check text-xs"></i>
                     </div>
                 </label>
                 
                 <div class="flex-1 min-w-0">
                     {% if item.link %}
-                    <a href="{{ item.link }}" target="_blank" 
-                       class="item-name text-[13px] font-black tracking-tight truncate uppercase transition-all duration-300 {% if item.status %}text-text-muted line-through decoration-2 opacity-40{% else %}text-text-heading hover:text-[#00d1ff]{% endif %}"
+                    <a href="{{ item.link }}" target="_blank"
+                       class="item-name text-sm font-medium truncate transition-all duration-300 {% if item.status %}text-text-muted line-through decoration-2 opacity-40{% else %}text-text-heading hover:text-primary{% endif %}"
                        id="item-text-{{ item.id }}">
                         {{ item.item }}
                     </a>
                     {% else %}
-                    <span class="item-name text-[13px] font-black tracking-tight truncate uppercase transition-all duration-300 {% if item.status %}text-text-muted line-through decoration-2 opacity-40{% else %}text-text-heading{% endif %}"
+                    <span class="item-name text-sm font-medium truncate transition-all duration-300 {% if item.status %}text-text-muted line-through decoration-2 opacity-40{% else %}text-text-heading{% endif %}"
                           id="item-text-{{ item.id }}">
                         {{ item.item }}
                     </span>
@@ -67,15 +65,15 @@
                 </div>
             </div>
 
-            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onclick="openEditItemModal('{{ item.id }}', '{{ item.item }}', '{{ item.link or '' }}')" 
-                    class="p-1.5 text-text-muted hover:text-[#00d1ff] transition-colors" title="Editar">
+            <div class="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                <button onclick="openEditItemModal('{{ item.id }}', '{{ item.item }}', '{{ item.link or '' }}')"
+                    class="tap-icon text-text-muted hover:text-primary" title="Editar">
                     <i class="ph-bold ph-pencil-simple text-base"></i>
                 </button>
                 <form action="{{ url_for('simple_lists.delete_item', item_id=item.id) }}" method="POST" onsubmit="return confirm('Deseja excluir este item?')">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="lista_id" value="{{ lista.id }}">
-                    <button type="submit" class="p-1.5 text-text-muted hover:text-danger transition-colors" title="Excluir">
+                    <button type="submit" class="tap-icon text-text-muted hover:text-danger" title="Excluir">
                         <i class="ph-bold ph-trash text-base"></i>
                     </button>
                 </form>
@@ -83,41 +81,41 @@
         </div>
         {% else %}
         <div class="py-20 text-center">
-            <div class="w-16 h-16 bg-discord-400 rounded-full flex items-center justify-center mx-auto mb-4 text-text-muted">
+            <div class="w-16 h-16 bg-surface-hover rounded-full flex items-center justify-center mx-auto mb-4 text-text-muted">
                 <i class="ph-bold ph-list-plus text-3xl"></i>
             </div>
-            <p class="text-text-muted font-bold uppercase tracking-widest text-xs">Sua lista está vazia</p>
-            <button onclick="openModal('modalNovoItem')" class="mt-4 text-[#00d1ff] font-black text-[11px] uppercase tracking-widest hover:underline">Adicionar primeiro item</button>
+            <p class="text-text-muted text-sm">Sua lista está vazia</p>
+            <button onclick="openModal('modalNovoItem')" class="mt-4 text-primary text-sm font-semibold hover:underline">Adicionar primeiro item</button>
         </div>
         {% endfor %}
     </div>
 </div>
 
 <!-- Modal Novo Item -->
-<div id="modalNovoItem" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-discord-200 w-full max-w-md rounded-2xl shadow-2xl border border-discord-400 overflow-hidden animate-in zoom-in-95 duration-200">
+<div id="modalNovoItem" class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-md">
         <div class="p-8">
             <div class="flex items-center justify-between mb-8">
-                <h3 class="text-xl font-black text-text-heading flex items-center gap-2 uppercase tracking-tight">
-                    <i class="ph-bold ph-plus text-[#00d1ff]"></i> Novo Item
+                <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                    <i class="ph-bold ph-plus text-primary"></i> Novo Item
                 </h3>
-                <button onclick="closeModal('modalNovoItem')" class="text-text-muted hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeModal('modalNovoItem')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form action="{{ url_for('simple_lists.add_item', lista_id=lista.id) }}" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div>
-                    <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">NOME DO ITEM</label>
-                    <input type="text" name="nome" required placeholder="O QUE ADICIONAR?" autofocus
-                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase rounded-xl transition-all">
+                    <label class="form-label mb-3">Nome do item</label>
+                    <input type="text" name="nome" required placeholder="O que adicionar?" autofocus
+                        class="form-input">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">LINK (OPCIONAL)</label>
-                    <input type="url" name="link" placeholder="HTTPS://EXEMPLO.COM"
-                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#00d1ff] text-sm font-semibold rounded-xl transition-all">
+                    <label class="form-label mb-3">Link (opcional)</label>
+                    <input type="url" name="link" placeholder="https://exemplo.com"
+                        class="form-input">
                 </div>
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeModal('modalNovoItem')" class="flex-1 h-12 bg-discord-400 hover:bg-discord-500 text-text-normal font-black uppercase tracking-widest text-[11px] rounded-xl transition-all">CANCELAR</button>
-                    <button type="submit" class="flex-1 h-12 bg-[#00d1ff] hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-xl shadow-lg shadow-[#00d1ff]/20 transition-all">SALVAR</button>
+                    <button type="button" onclick="closeModal('modalNovoItem')" class="btn-secondary btn-lg flex-1">Cancelar</button>
+                    <button type="submit" class="btn-primary btn-lg flex-1">Salvar</button>
                 </div>
             </form>
         </div>
@@ -125,31 +123,31 @@
 </div>
 
 <!-- Modal Editar Item -->
-<div id="modalEditarItem" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-discord-200 w-full max-w-md rounded-2xl shadow-2xl border border-discord-400 overflow-hidden animate-in zoom-in-95 duration-200">
+<div id="modalEditarItem" class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-md">
         <div class="p-8">
             <div class="flex items-center justify-between mb-8">
-                <h3 class="text-xl font-black text-text-heading flex items-center gap-2 uppercase tracking-tight">
-                    <i class="ph-bold ph-pencil-simple text-[#00d1ff]"></i> Editar Item
+                <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                    <i class="ph-bold ph-pencil-simple text-primary"></i> Editar Item
                 </h3>
-                <button onclick="closeModal('modalEditarItem')" class="text-text-muted hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeModal('modalEditarItem')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form id="formEditarItem" action="" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="lista_id" value="{{ lista.id }}">
                 <div>
-                    <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">NOME DO ITEM</label>
+                    <label class="form-label mb-3">Nome do item</label>
                     <input type="text" id="edit_item_nome" name="nome" required
-                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase rounded-xl transition-all">
+                        class="form-input">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">LINK (OPCIONAL)</label>
+                    <label class="form-label mb-3">Link (opcional)</label>
                     <input type="url" id="edit_item_link" name="link"
-                        class="block w-full h-11 px-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#00d1ff] text-sm font-semibold rounded-xl transition-all">
+                        class="form-input">
                 </div>
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeModal('modalEditarItem')" class="flex-1 h-12 bg-discord-400 hover:bg-discord-500 text-text-normal font-black uppercase tracking-widest text-[11px] rounded-xl transition-all">CANCELAR</button>
-                    <button type="submit" class="flex-1 h-12 bg-[#00d1ff] hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-xl shadow-lg shadow-[#00d1ff]/20 transition-all">SALVAR</button>
+                    <button type="button" onclick="closeModal('modalEditarItem')" class="btn-secondary btn-lg flex-1">Cancelar</button>
+                    <button type="submit" class="btn-primary btn-lg flex-1">Salvar</button>
                 </div>
             </form>
         </div>
@@ -157,25 +155,25 @@
 </div>
 
 <!-- Modal Cadastro em Lote -->
-<div id="modalLoteItem" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-discord-200 w-full max-w-md rounded-2xl shadow-2xl border border-discord-400 overflow-hidden animate-in zoom-in-95 duration-200">
+<div id="modalLoteItem" class="hidden modal-overlay">
+    <div class="modal-sheet md:max-w-md">
         <div class="p-8">
             <div class="flex items-center justify-between mb-8">
-                <h3 class="text-xl font-black text-text-heading flex items-center gap-2 uppercase tracking-tight">
-                    <i class="ph-bold ph-stack text-[#00d1ff]"></i> Cadastro em Lote
+                <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
+                    <i class="ph-bold ph-stack text-primary"></i> Cadastro em Lote
                 </h3>
-                <button onclick="closeModal('modalLoteItem')" class="text-text-muted hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeModal('modalLoteItem')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form action="{{ url_for('simple_lists.add_batch', lista_id=lista.id) }}" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div>
-                    <label class="block text-[10px] font-black uppercase text-text-muted tracking-widest mb-3 ml-1">ITENS (SEPARADOS POR ENTER, VÍRGULA OU ;)</label>
-                    <textarea name="batch_text" rows="8" required placeholder="ITEM 1&#10;ITEM 2, ITEM 3; ITEM 4"
-                        class="block w-full p-4 bg-discord-100 border border-discord-100 hover:bg-discord-100/80 text-text-heading focus:outline-none focus:ring-2 focus:ring-[#00d1ff] text-sm font-bold uppercase rounded-xl transition-all custom-scrollbar"></textarea>
+                    <label class="form-label mb-3">Itens (separados por Enter, vírgula ou ;)</label>
+                    <textarea name="batch_text" rows="8" required placeholder="Item 1&#10;Item 2, Item 3; Item 4"
+                        class="form-textarea custom-scrollbar"></textarea>
                 </div>
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeModal('modalLoteItem')" class="flex-1 h-12 bg-discord-400 hover:bg-discord-500 text-text-normal font-black uppercase tracking-widest text-[11px] rounded-xl transition-all">CANCELAR</button>
-                    <button type="submit" class="flex-1 h-12 bg-[#00d1ff] hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-xl shadow-lg shadow-[#00d1ff]/20 transition-all">IMPORTAR</button>
+                    <button type="button" onclick="closeModal('modalLoteItem')" class="btn-secondary btn-lg flex-1">Cancelar</button>
+                    <button type="submit" class="btn-primary btn-lg flex-1">Importar</button>
                 </div>
             </form>
         </div>
@@ -217,12 +215,12 @@
             if (data.success) {
                 if (data.status) {
                     textElement.classList.add('text-text-muted', 'line-through', 'decoration-2', 'opacity-50');
-                    textElement.classList.remove('text-text-heading', 'hover:text-[#00d1ff]');
+                    textElement.classList.remove('text-text-heading', 'hover:text-primary');
                 } else {
                     textElement.classList.remove('text-text-muted', 'line-through', 'decoration-2', 'opacity-50');
                     textElement.classList.add('text-text-heading');
                     if (textElement.tagName === 'A') {
-                        textElement.classList.add('hover:text-[#00d1ff]');
+                        textElement.classList.add('hover:text-primary');
                     }
                 }
             }

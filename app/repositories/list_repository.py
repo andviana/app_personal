@@ -10,12 +10,9 @@ class ListRepository(BaseRepository):
     def list_ordered_by_denominacao(self) -> List[Lista]:
         return self.list_all(order_by=self.model.denominacao)
 
-    def list_simple_lists(self) -> List[Lista]:
-        return self.model.query.filter(self.model.tipo_id == None).order_by(self.model.denominacao).all()
-
     def list_user_lists(self, user_id: int, is_active: bool = True) -> List[Lista]:
         return self.model.query.filter(
-            self.model.tipo_id != None,
+            self.model.tipo_id.is_not(None),
             self.model.is_active == is_active,
             or_(
                 self.model.owner_id == user_id,
@@ -25,7 +22,7 @@ class ListRepository(BaseRepository):
 
     def list_user_simple_lists(self, user_id: int, is_active: bool = True) -> List[Lista]:
         return self.model.query.filter(
-            self.model.tipo_id == None,
+            self.model.tipo_id.is_(None),
             self.model.is_active == is_active,
             or_(
                 self.model.owner_id == user_id,

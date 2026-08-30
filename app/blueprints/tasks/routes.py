@@ -142,6 +142,51 @@ def add_grupo():
     TaskService.create_group(denominacao, current_user)
     return redirect(request.referrer or url_for('tasks.index'))
 
+@bp.route('/group/archive/<int:id>', methods=['POST'])
+@login_required
+def archive_grupo(id):
+    try:
+        TaskService.archive_group(id, current_user)
+        flash('Grupo de tarefas desativado com sucesso.', 'success')
+    except Exception as e:
+        flash(str(e), 'danger')
+    return redirect(request.referrer or url_for('tasks.index'))
+
+@bp.route('/group/reactivate/<int:id>', methods=['POST'])
+@login_required
+def reactivate_grupo(id):
+    try:
+        TaskService.reactivate_group(id, current_user)
+        flash('Grupo de tarefas reativado com sucesso.', 'success')
+    except Exception as e:
+        flash(str(e), 'danger')
+    return redirect(request.referrer or url_for('tasks.index', archived='true'))
+
+@bp.route('/group/share/<int:id>', methods=['POST'])
+@login_required
+def share_grupo(id):
+    try:
+        user_ids = request.form.getlist('user_ids', type=int)
+        TaskService.share_group(id, user_ids, current_user)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': True, 'message': 'Compartilhamento do grupo atualizado!'})
+        flash('Compartilhamento do grupo atualizado com sucesso!', 'success')
+    except Exception as e:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': False, 'error': str(e)}), 403
+        flash(str(e), 'danger')
+    return redirect(request.referrer or url_for('tasks.index'))
+
+@bp.route('/group/delete/<int:id>', methods=['POST'])
+@login_required
+def delete_grupo(id):
+    try:
+        TaskService.delete_group(id, current_user)
+        flash('Grupo excluído com sucesso.', 'success')
+    except Exception as e:
+        flash(str(e), 'danger')
+    return redirect(url_for('tasks.index'))
+
 @bp.route('/export_pdf')
 @login_required
 def export_pdf():

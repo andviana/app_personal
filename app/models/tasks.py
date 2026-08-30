@@ -8,11 +8,23 @@ shared_tasks = db.Table(
     db.Column('tarefa_id', db.Integer, db.ForeignKey('tarefa.id', ondelete='CASCADE'), primary_key=True)
 )
 
+shared_task_groups = db.Table(
+    'shared_task_groups',
+    db.metadata,
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('grupo_id', db.Integer, db.ForeignKey('grupo_tarefas.id', ondelete='CASCADE'), primary_key=True)
+)
+
 class GrupoTarefas(db.Model):
     """Categorização de tarefas (ex: Trabalho, Pessoal)."""
     id = db.mapped_column(db.Integer, primary_key=True)
     denominacao = db.mapped_column(db.String(100), nullable=False)
+    owner_id = db.mapped_column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    is_active = db.mapped_column(db.Boolean, default=True, nullable=False)
+
     tarefas = db.relationship('Tarefa', backref='grupo', lazy=True)
+    owner = db.relationship('User', foreign_keys=[owner_id], backref='owned_task_groups')
+    shared_users = db.relationship('User', secondary=shared_task_groups, backref='shared_task_groups')
 
     @property
     def tarefas_filtradas(self):

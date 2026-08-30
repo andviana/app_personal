@@ -10,13 +10,38 @@ class TaskService:
     def can_write(tarefa: Tarefa, current_user: Any) -> bool:
         if not current_user or not current_user.is_authenticated:
             return False
-        return tarefa.owner_id == current_user.id or any(u.id == current_user.id for u in tarefa.shared_users)
+        # Direct owner or direct shared user
+        if tarefa.owner_id == current_user.id or any(u.id == current_user.id for u in tarefa.shared_users):
+            return True
+        # Inherited from group owner or group shared user
+        if tarefa.grupo:
+            if tarefa.grupo.owner_id == current_user.id or any(u.id == current_user.id for u in tarefa.grupo.shared_users):
+                return True
+        return False
 
     @staticmethod
     def can_manage(tarefa: Tarefa, current_user: Any) -> bool:
         if not current_user or not current_user.is_authenticated:
             return False
         return tarefa.owner_id == current_user.id
+
+    @staticmethod
+    def can_read_group(grupo: GrupoTarefas, current_user: Any) -> bool:
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return grupo.owner_id == current_user.id or any(u.id == current_user.id for u in grupo.shared_users)
+
+    @staticmethod
+    def can_write_group(grupo: GrupoTarefas, current_user: Any) -> bool:
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return grupo.owner_id == current_user.id or any(u.id == current_user.id for u in grupo.shared_users)
+
+    @staticmethod
+    def can_manage_group(grupo: GrupoTarefas, current_user: Any) -> bool:
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return grupo.owner_id == current_user.id
 
     @staticmethod
     def get_all_tasks(current_user: Any, is_active: bool = True) -> List[Tarefa]:
@@ -30,7 +55,7 @@ class TaskService:
         repo_grupos = GrupoTarefasRepository()
         repo_tasks = TaskRepository()
         
-        grupos = repo_grupos.list_all(order_by=GrupoTarefas.denominacao)
+        grupos = repo_grupos.list_user_groups(current_user.id, is_active=is_active)
         user_tasks = repo_tasks.list_user_tasks(current_user.id, is_active=is_active)
 
         status_priority = {'INICIADO': 0, 'PENDENTE': 1, 'FINALIZADO': 2}
@@ -46,7 +71,7 @@ class TaskService:
         repo_grupos = GrupoTarefasRepository()
         repo_tasks = TaskRepository()
         
-        grupos = repo_grupos.list_all(order_by=GrupoTarefas.denominacao)
+        grupos = repo_grupos.list_user_groups(current_user.id, is_active=is_active)
         user_tasks = repo_tasks.list_user_tasks(current_user.id, is_active=is_active)
 
         for g in grupos:
@@ -60,7 +85,13 @@ class TaskService:
         repo_tasks = TaskRepository()
         
         grupo = repo_grupos.get_or_404(grupo_id)
-        user_tasks = repo_tasks.list_user_tasks(current_user.id, is_active=is_active, grupo_id=grupo_id)
+        if not TaskService.can_read_group(grupo, current_user):
+            # Check if user has task access inside group
+            user_tasks = repo_tasks.list_user_tasks(current_user.id, is_active=is_active, grupo_id=grupo_id)
+            if not user_tasks:
+                raise PermissionError("Sem permissão para visualizar este grupo.")
+        else:
+            user_tasks = repo_tasks.list_user_tasks(current_user.id, is_active=is_active, grupo_id=grupo_id)
 
         status_priority = {'INICIADO': 0, 'PENDENTE': 1, 'FINALIZADO': 2}
         user_tasks.sort(key=lambda t: status_priority.get(t.status.denominacao.upper() if t.status else 'PENDENTE', 9))
@@ -180,7 +211,6 @@ class TaskService:
             raise PermissionError("Apenas o proprietário pode compartilhar esta tarefa.")
         
         users = User.query.filter(User.id.in_(user_ids)).all() if user_ids else []
-        # Do not include the owner in shared_users list
         tarefa.shared_users = [u for u in users if u.id != tarefa.owner_id]
         repo.commit()
         LogService.log_action(current_user.username, 'TASK_SHARED', f'ID: {id} | SHARED_WITH: {[u.username for u in tarefa.shared_users]}')
@@ -190,10 +220,61 @@ class TaskService:
     def create_group(denominacao: str, current_user: Any) -> Optional[GrupoTarefas]:
         if denominacao:
             repo = GrupoTarefasRepository()
-            novo_grupo = GrupoTarefas(denominacao=denominacao.upper())
+            novo_grupo = GrupoTarefas(
+                denominacao=denominacao.upper(),
+                owner_id=current_user.id,
+                is_active=True
+            )
             repo.add(novo_grupo)
             repo.commit()
             LogService.log_action(current_user.username, 'TASK_GROUP_CREATED', f'NAME: {denominacao.upper()}')
             return novo_grupo
         return None
+
+    @staticmethod
+    def delete_group(id: int, current_user: Any) -> str:
+        repo = GrupoTarefasRepository()
+        grupo = repo.get_or_404(id)
+        if not TaskService.can_manage_group(grupo, current_user):
+            raise PermissionError("Apenas o proprietário pode excluir este grupo.")
+        nome = grupo.denominacao
+        repo.delete(grupo)
+        repo.commit()
+        LogService.log_action(current_user.username, 'TASK_GROUP_DELETED', f'ID: {id} | NAME: {nome}')
+        return nome
+
+    @staticmethod
+    def archive_group(id: int, current_user: Any) -> GrupoTarefas:
+        repo = GrupoTarefasRepository()
+        grupo = repo.get_or_404(id)
+        if not TaskService.can_manage_group(grupo, current_user):
+            raise PermissionError("Apenas o proprietário pode arquivar este grupo.")
+        grupo.is_active = False
+        repo.commit()
+        LogService.log_action(current_user.username, 'TASK_GROUP_ARCHIVED', f'ID: {id}')
+        return grupo
+
+    @staticmethod
+    def reactivate_group(id: int, current_user: Any) -> GrupoTarefas:
+        repo = GrupoTarefasRepository()
+        grupo = repo.get_or_404(id)
+        if not TaskService.can_manage_group(grupo, current_user):
+            raise PermissionError("Apenas o proprietário pode reativar este grupo.")
+        grupo.is_active = True
+        repo.commit()
+        LogService.log_action(current_user.username, 'TASK_GROUP_REACTIVATED', f'ID: {id}')
+        return grupo
+
+    @staticmethod
+    def share_group(id: int, user_ids: List[int], current_user: Any) -> GrupoTarefas:
+        repo = GrupoTarefasRepository()
+        grupo = repo.get_or_404(id)
+        if not TaskService.can_manage_group(grupo, current_user):
+            raise PermissionError("Apenas o proprietário pode compartilhar este grupo.")
+        
+        users = User.query.filter(User.id.in_(user_ids)).all() if user_ids else []
+        grupo.shared_users = [u for u in users if u.id != grupo.owner_id]
+        repo.commit()
+        LogService.log_action(current_user.username, 'TASK_GROUP_SHARED', f'ID: {id} | SHARED_WITH: {[u.username for u in grupo.shared_users]}')
+        return grupo
 

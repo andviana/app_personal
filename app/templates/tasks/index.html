@@ -58,9 +58,10 @@
     </div>
 </div>
 
-{% if view == 'groups' and not is_archived_view %}
+{% if view == 'groups' %}
     <!-- GROUPS VIEW (Hierarchical) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+        {% if not is_archived_view %}
         <!-- "Todos" Card -->
         <div class="group card-container !border-discord-100/10 hover:!border-success flex items-center gap-4 relative overflow-hidden cursor-pointer"
             onclick="window.location.href='{{ url_for('tasks.index', view='all') }}';">
@@ -73,23 +74,66 @@
                 <p class="text-[11px] font-bold text-text-muted mt-1 uppercase tracking-widest">Visualização Global</p>
             </div>
         </div>
+        {% endif %}
 
         {% for g in grupos %}
         {% set c_name = cat_colors[(g.id % 10)|string] %}
-        <div class="group card-container !border-discord-100/10 hover:!border-{{ c_name }}-500 flex items-center gap-4 relative overflow-hidden cursor-pointer"
+        <div class="group card-container !border-discord-100/10 hover:!border-{{ c_name }}-500 flex items-center gap-4 relative overflow-hidden cursor-pointer {% if is_archived_view %}opacity-60 grayscale bg-discord-200{% endif %}"
             onclick="window.location.href='{{ url_for('tasks.index', grupo_id=g.id) }}';">
             <div class="absolute top-0 left-0 w-1 h-full bg-{{ c_name }}-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div class="bg-discord-400 text-{{ c_name }}-500 p-3 rounded-xl group-hover:bg-{{ c_name }}-500 group-hover:text-white transition-all duration-200">
                 <i class="ph-fill ph-folder text-2xl"></i>
             </div>
             <div class="flex-1 min-w-0">
-                <h3 class="text-base font-black text-text-heading truncate uppercase tracking-tight">{{ g.denominacao }}</h3>
-                <p class="text-[11px] font-bold text-text-muted mt-1 uppercase tracking-widest">{{ g.tarefas|length }} tarefas</p>
+                <div class="flex items-center gap-2">
+                    {% if not is_archived_view and g.owner_id and g.owner_id != current_user.id %}
+                    <i class="ph-bold ph-users text-primary text-base" data-tooltip="Categoria compartilhada com você"></i>
+                    {% endif %}
+                    <h3 class="text-base font-black text-text-heading truncate uppercase tracking-tight">{{ g.denominacao }}</h3>
+                </div>
+                <div class="flex items-center gap-2 mt-1">
+                    {% if is_archived_view %}
+                    <span class="bg-gray-600/60 text-gray-200 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded">Desativada</span>
+                    {% endif %}
+                    <p class="text-[11px] font-bold text-text-muted uppercase tracking-widest">{{ g.tarefas_filtradas|length }} tarefas</p>
+                </div>
             </div>
-            <div class="flex items-center gap-2" onclick="event.stopPropagation()">
-                <a href="{{ url_for('tasks.index', grupo_id=g.id) }}" class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-{{ c_name }}-500 transition-all duration-200">
-                    <i class="ph-bold ph-arrow-square-out text-lg"></i>
-                </a>
+            <div class="flex items-center gap-1" onclick="event.stopPropagation()">
+                {% if is_archived_view %}
+                    {% if g.owner_id == current_user.id %}
+                    <form action="{{ url_for('tasks.reactivate_grupo', id=g.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="w-8 h-8 flex items-center justify-center text-success hover:text-white transition-all" data-tooltip="Reativar Categoria">
+                            <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                {% else %}
+                    {% if g.owner_id == current_user.id %}
+                    <!-- Compartilhar Grupo -->
+                    <button type="button" onclick="openShareModalGroup({{ g.id }}, {{ g.shared_users|map(attribute='id')|list|tojson }})"
+                        class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-primary transition-all" data-tooltip="Compartilhar Categoria">
+                        <i class="ph-bold ph-share-network text-lg"></i>
+                    </button>
+                    <!-- Arquivar Grupo -->
+                    <form action="{{ url_for('tasks.archive_grupo', id=g.id) }}" method="POST" class="inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-warning transition-all" data-tooltip="Desativar Categoria">
+                            <i class="ph-bold ph-archive text-lg"></i>
+                        </button>
+                    </form>
+                    <!-- Excluir Grupo -->
+                    <form action="{{ url_for('tasks.delete_grupo', id=g.id) }}" method="POST" onsubmit="return confirm('Deseja realmente excluir este grupo e todas as suas tarefas?')" class="inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-danger transition-all" data-tooltip="Excluir Categoria">
+                            <i class="ph-bold ph-trash text-lg"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                    <a href="{{ url_for('tasks.index', grupo_id=g.id) }}" class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-{{ c_name }}-500 transition-all duration-200">
+                        <i class="ph-bold ph-arrow-square-out text-lg"></i>
+                    </a>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -199,17 +243,40 @@
         data-grupo="{{ g.denominacao }}">
         <div class="flex items-center justify-between mb-4 px-3 pt-3">
             <div class="flex items-center gap-3">
+                {% if not is_archived_view and g.owner_id and g.owner_id != current_user.id %}
+                <i class="ph-bold ph-users text-primary text-sm" data-tooltip="Categoria compartilhada com você"></i>
+                {% endif %}
                 <h2 class="text-[11px] font-black text-{{ c_name }}-400 tracking-[0.2em] uppercase">{{ g.denominacao }}</h2>
                 <span class="bg-{{ c_name }}-500/10 text-{{ c_name }}-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-{{ c_name }}-500/10">{{ g.tarefas_filtradas|length }}</span>
             </div>
-            {% if not is_archived_view %}
-            <button type="button" onclick="openAddTaskModal({{ g.id }}, '{{ g.denominacao }}')"
-                class="btn-ghost btn-sm !text-{{ c_name }}-400 hover:!text-white hover:!bg-{{ c_name }}-500/20"
-                data-tooltip="Nova Tarefa" data-tooltip-pos="left">
-                <i class="ph-bold ph-plus text-sm"></i>
-                <span class="hidden sm:inline">Nova Tarefa</span>
-            </button>
-            {% endif %}
+            
+            <div class="flex items-center gap-1">
+                {% if not is_archived_view and g.owner_id == current_user.id %}
+                <!-- Compartilhar Grupo no Cabeçalho -->
+                <button type="button" onclick="openShareModalGroup({{ g.id }}, {{ g.shared_users|map(attribute='id')|list|tojson }})"
+                    class="btn-ghost btn-sm !text-{{ c_name }}-400 hover:!text-white hover:!bg-{{ c_name }}-500/20"
+                    data-tooltip="Compartilhar Categoria" data-tooltip-pos="left">
+                    <i class="ph-bold ph-share-network text-sm"></i>
+                </button>
+                <!-- Desativar Grupo no Cabeçalho -->
+                <form action="{{ url_for('tasks.archive_grupo', id=g.id) }}" method="POST" class="inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-ghost btn-sm !text-{{ c_name }}-400 hover:!text-warning hover:!bg-{{ c_name }}-500/20"
+                        data-tooltip="Desativar Categoria" data-tooltip-pos="left">
+                        <i class="ph-bold ph-archive text-sm"></i>
+                    </button>
+                </form>
+                {% endif %}
+
+                {% if not is_archived_view %}
+                <button type="button" onclick="openAddTaskModal({{ g.id }}, '{{ g.denominacao }}')"
+                    class="btn-ghost btn-sm !text-{{ c_name }}-400 hover:!text-white hover:!bg-{{ c_name }}-500/20"
+                    data-tooltip="Nova Tarefa" data-tooltip-pos="left">
+                    <i class="ph-bold ph-plus text-sm"></i>
+                    <span class="hidden sm:inline">Nova Tarefa</span>
+                </button>
+                {% endif %}
+            </div>
         </div>
 
         <div class="grid grid-cols-1 gap-1.5 p-2">
@@ -232,7 +299,7 @@
                     
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-2">
-                            {% if not is_archived_view and t.owner_id != current_user.id %}
+                            {% if not is_archived_view and t.owner_id and t.owner_id != current_user.id %}
                             <i class="ph-bold ph-users text-primary text-base" data-tooltip="Compartilhado com você"></i>
                             {% endif %}
                             <span class="block text-[13px] sm:text-[15px] font-medium truncate {{ 'text-text-muted line-through' if status_name == 'FINALIZADO' else 'text-text-heading' }}">
@@ -275,19 +342,19 @@
                         </button>
 
                         {% if t.owner_id == current_user.id %}
-                        <!-- Botão Compartilhar -->
+                        <!-- Botão Compartilhar Tarefa -->
                         <button onclick="openShareModalTask({{ t.id }}, {{ t.shared_users|map(attribute='id')|list|tojson }})"
                             class="btn-ghost btn-base p-2 hover:text-primary" data-tooltip="Compartilhar" data-tooltip-pos="top">
                             <i class="ph-bold ph-share-network text-base"></i>
                         </button>
-                        <!-- Botão Arquivar -->
+                        <!-- Botão Arquivar Tarefa -->
                         <form action="{{ url_for('tasks.archive', id=t.id) }}" method="POST" class="inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn-ghost btn-base p-2 hover:text-warning" data-tooltip="Arquivar" data-tooltip-pos="top">
                                 <i class="ph-bold ph-archive text-base"></i>
                             </button>
                         </form>
-                        <!-- Botão Excluir -->
+                        <!-- Botão Excluir Tarefa -->
                         <button data-id="{{ t.id }}" data-desc="{{ t.descricao }}" onclick="confirmDeleteTask(this.dataset.id, this.dataset.desc)"
                             class="btn-ghost btn-base p-2 hover:!text-danger" data-tooltip="Excluir" data-tooltip-pos="top">
                             <i class="ph-bold ph-trash text-base"></i>
@@ -474,6 +541,41 @@
     </div>
 </div>
 
+<!-- Modal Compartilhar Grupo de Tarefas -->
+<div id="modalCompartilharGrupo"
+    class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div class="bg-discord-200 w-full max-w-md rounded-2xl shadow-2xl border border-discord-400 overflow-hidden animate-in zoom-in-95 duration-200">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-black text-text-heading flex items-center gap-2 uppercase tracking-tight">
+                    <i class="ph-bold ph-share-network text-primary"></i> Compartilhar Categoria
+                </h3>
+                <button onclick="document.getElementById('modalCompartilharGrupo').classList.add('hidden')" class="text-text-muted hover:text-white"><i class="ph-bold ph-x text-xl"></i></button>
+            </div>
+            <form id="formCompartilharGrupo" action="" method="POST" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div>
+                    <label class="block text-xs font-bold text-text-muted uppercase tracking-widest mb-3">Selecione os usuários com acesso a este grupo:</label>
+                    <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-discord-100 rounded-xl border border-discord-400">
+                        {% for u in users %}
+                        {% if u.id != current_user.id %}
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-discord-300 cursor-pointer">
+                            <input type="checkbox" name="user_ids" value="{{ u.id }}" class="group-user-checkbox w-4 h-4 rounded text-primary focus:ring-primary bg-discord-400 border-discord-400">
+                            <span class="text-sm font-semibold text-text-heading">{{ u.username }}</span>
+                        </label>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="document.getElementById('modalCompartilharGrupo').classList.add('hidden')" class="btn-secondary btn-md flex-1 uppercase tracking-widest text-[11px] font-black">CANCELAR</button>
+                    <button type="submit" class="btn-primary btn-md flex-1 uppercase tracking-widest text-[11px] font-black !bg-primary">SALVAR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <form id="delete-task-form" method="POST" style="display: none;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 </form>
@@ -492,6 +594,18 @@
         });
         
         document.getElementById('modalCompartilharTarefa').classList.remove('hidden');
+    }
+
+    function openShareModalGroup(groupId, sharedUserIds) {
+        const form = document.getElementById('formCompartilharGrupo');
+        form.action = "{{ url_for('tasks.share_grupo', id=0) }}".replace('0', groupId);
+        
+        const checkboxes = document.querySelectorAll('.group-user-checkbox');
+        checkboxes.forEach(cb => {
+            cb.checked = sharedUserIds.includes(parseInt(cb.value));
+        });
+        
+        document.getElementById('modalCompartilharGrupo').classList.remove('hidden');
     }
 
     document.addEventListener('DOMContentLoaded', function () {

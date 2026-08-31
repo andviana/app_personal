@@ -3,9 +3,12 @@
 {% block title %}Acesso não autorizado - DayLog{% endblock %}
 
 {% block content %}
-<div class="relative isolate overflow-hidden -mx-4 md:-mx-8 -my-6 md:-my-8 min-h-[calc(100vh-56px)] md:min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950">
-
+<!-- Fundo cobre 100% da viewport (fixed = independe do layout/sidebar do app) -->
+<div class="fixed inset-0 z-0 overflow-hidden bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950">
     {% include "auth/_futuristic_bg.html" %}
+</div>
+
+<div class="relative z-10 min-h-[calc(100vh-56px)] md:min-h-screen flex items-center justify-center px-4 py-12">
 
     <div class="relative z-10 max-w-md w-full space-y-6 text-center">
         <div class="bg-white/95 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 md:p-10 shadow-2xl shadow-black/40">

@@ -225,7 +225,8 @@
     ] %}
     {% macro nav_is_active(item) %}{% if request.endpoint and item.match in request.endpoint and not (item.exclude and item.exclude in request.endpoint) %}true{% endif %}{% endmacro %}
 
-    <!-- Desktop Sidebar -->
+    <!-- Desktop Sidebar (apenas para usuários autenticados) -->
+    {% if current_user.is_authenticated %}
     <nav class="hidden md:flex flex-col w-[76px] bg-surface border-r border-slate-200 items-center py-4 gap-1.5 flex-shrink-0 z-50 relative">
         <a href="{{ url_for('main.index') }}"
             class="w-11 h-11 rounded-xl bg-primary text-white flex items-center justify-center mb-3 flex-shrink-0"
@@ -233,7 +234,6 @@
             <i class="ph-fill ph-check-square-offset text-xl"></i>
         </a>
 
-        {% if current_user.is_authenticated %}
         {% for item in nav_items %}
         {% set active = nav_is_active(item) == 'true' %}
         <a href="{{ url_for(item.endpoint) }}"
@@ -256,8 +256,8 @@
             data-tooltip="Sair" data-tooltip-pos="right">
             <i class="ph-bold ph-sign-out text-xl"></i>
         </a>
-        {% endif %}
     </nav>
+    {% endif %}
 
     <!-- Mobile Header -->
     <header

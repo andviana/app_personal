@@ -8,6 +8,9 @@ class UserRepository(BaseRepository):
     def find_by_username(self, username: str) -> User:
         return self.find_one_by(username=username)
 
+    def find_by_email(self, email: str) -> User:
+        return self.find_one_by(email=email)
+
     def list_all_users(self):
         return self.model.query.order_by(self.model.username).all()
 

@@ -28,6 +28,22 @@ class SettingsService:
         return True, 'Senha alterada com sucesso!'
 
     @staticmethod
+    def update_email(current_user, email):
+        email = (email or '').strip().lower()
+
+        if email:
+            existing = BaseRepository(User).find_one_by(email=email)
+            if existing and existing.id != current_user.id:
+                return False, 'Este e-mail já está em uso por outro usuário.'
+
+        repo = BaseRepository(User)
+        user = repo.get_by_id(current_user.id)
+        user.email = email or None
+        repo.commit()
+        LogService.log_action(current_user.username, 'EMAIL_UPDATED', f'EMAIL: {user.email}')
+        return True, 'E-mail atualizado com sucesso!'
+
+    @staticmethod
     def get_index_data():
         return {
             'grupos_tarefas': BaseRepository(GrupoTarefas).list_all(order_by=GrupoTarefas.denominacao),

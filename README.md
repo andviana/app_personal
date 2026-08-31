@@ -10,7 +10,7 @@ Sistema de gerenciamento pessoal para tarefas, listas, pessoas, perfumes e snipp
 - **Snippets**: Armazenamento de trechos de código ou texto.
 - **Perfumes**: Catálogo pessoal de fragrâncias.
 - **Pessoas**: Cadastro de contatos, documentos e arquivos.
-- **Segurança**: Autenticação com Flask-Login e proteção CSRF com Flask-WTF.
+- **Segurança**: Autenticação com Flask-Login e proteção CSRF com Flask-WTF. Login opcional com Google (OAuth 2.0).
 
 ---
 
@@ -140,12 +140,73 @@ A aplicação suporta 3 cenários configuráveis via variável `ENVIRONMENT` em 
 
 ---
 
+## 🔐 Login com Google (OAuth)
+
+A tela de login tem um botão opcional "Continuar com Google". Ele só aparece
+quando `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` estão configurados — sem
+isso, o app funciona normalmente só com usuário/senha.
+
+**Como funciona:** o Google apenas confirma a identidade (e-mail) de quem
+está logando — ele **não cria contas**. No callback, o DayLog procura um
+usuário já cadastrado cujo campo `email` (em *Configurações > Perfil*) bata
+com o e-mail confirmado pelo Google. Se encontrar, libera o acesso; se não
+encontrar, mostra uma tela de "Acesso não autorizado" e não cria nada.
+
+### 1. Criar as credenciais no Google Cloud Console
+
+1. Acesse o [Google Cloud Console](https://console.cloud.google.com/) e crie um projeto (ou reutilize um existente).
+2. Em **APIs e Serviços > Tela de consentimento OAuth**, configure como "Externo", preencha nome do app/e-mail de suporte e publique (ou mantenha em "Testing" e adicione os e-mails autorizados como *test users* — suficiente para uso pessoal/familiar).
+3. Em **APIs e Serviços > Credenciais > Criar Credenciais > ID do cliente OAuth**, escolha **Aplicativo da Web**.
+4. Em **URIs de redirecionamento autorizados**, cadastre uma URI para cada ambiente que for usar:
+   - Local: `http://localhost:5000/auth/google/callback`
+   - Produção (Hostinger): `https://daylog.institutoviva.digital/auth/google/callback`
+5. Salve e copie o **Client ID** e o **Client Secret** gerados.
+
+### 2. Configurar as variáveis de ambiente
+
+Adicione ao `.env` (local) ou ao `.env` do servidor (produção — é o mesmo
+arquivo que o `docker-compose.yml` já carrega via `env_file`):
+
+```bash
+GOOGLE_CLIENT_ID=xxxxxxxxxxxx.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+Depois de editar o `.env` no VPS, suba o container novamente para aplicar:
+
+```bash
+docker compose up -d --build web
+```
+
+### 3. Rodar a migração e cadastrar o e-mail dos usuários
+
+O login com Google casa pelo e-mail, então cada usuário precisa ter um
+e-mail salvo (*Configurações > Perfil*). Depois de atualizar o código no
+servidor, rode a migração que adiciona a coluna `email`:
+
+```bash
+docker compose exec web flask db upgrade
+```
+
+### 4. Especificidades do seu ambiente (Hostinger VPS + Docker + Traefik)
+
+O `docker-compose.yml` já expõe o serviço `web` para a internet via
+**Traefik**, que termina o HTTPS com Let's Encrypt no domínio
+`daylog.institutoviva.digital` — é exatamente esse domínio HTTPS que deve
+ir na URI de redirecionamento do passo 1 (o Google **recusa** redirect URIs
+HTTP em produção; só aceita HTTP para `localhost`). Como o Traefik já
+resolve o certificado automaticamente, não é necessário nenhum ajuste
+adicional de TLS para o OAuth funcionar — só as credenciais no `.env` e o
+redirect URI correto.
+
+---
+
 ## 🛠️ Tecnologias Utilizadas
 
 - **Backend**: Python, Flask, SQLAlchemy, Flask-Migrate (Alembic).
 - **Frontend**: Jinja2, Tailwind CSS, Phosphor Icons, SweetAlert2.
 - **Database**: SQLite (local) / PostgreSQL (homologação/produção via `psycopg2`).
 - **Scraper**: BeautifulSoup4, Requests.
-- **Segurança**: Flask-Login, Flask-WTF (CSRF), sanitização de HTML com Bleach, proteção contra SSRF no scraper.
+- **Segurança**: Flask-Login, Flask-WTF (CSRF), Authlib (login OAuth com Google), sanitização de HTML com Bleach, proteção contra SSRF no scraper.
 - **Outros**: Markdown + Pygments (highlight de snippets), ReportLab (exportação de PDF), Flask-Compress (compressão de respostas).
 

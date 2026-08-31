@@ -7,6 +7,7 @@ class User(UserMixin, db.Model):
     id = db.mapped_column(db.Integer, primary_key=True)
     username = db.mapped_column(db.String(64), index=True, unique=True, nullable=False)
     password_hash = db.mapped_column(db.String(256), nullable=False)
+    email = db.mapped_column(db.String(255), index=True, unique=True, nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

@@ -324,3 +324,30 @@
 .modal-overlay {
     animation: overlay-in 0.15s ease-out;
 }
+
+/* ============================================================
+   TELA DE LOGIN — fundo animado com elementos flutuantes
+   ============================================================ */
+@keyframes float-slow {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(24px, -32px) scale(1.06); }
+}
+
+@keyframes float-slower {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-28px, 26px) scale(1.08); }
+}
+
+@keyframes float-chip {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-14px) rotate(3deg); }
+}
+
+.animate-float-slow { animation: float-slow 9s ease-in-out infinite; }
+.animate-float-slower { animation: float-slower 13s ease-in-out infinite; }
+.animate-float-chip { animation: float-chip 6s ease-in-out infinite; }
+
+.bg-grid-pattern {
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 28px 28px;
+}

@@ -29,6 +29,12 @@ class Config:
         cast=lambda v: [s.strip() for s in v.split(',') if s.strip()]
     )
 
+    # 3.1 Login com Google (OAuth 2.0 / OpenID Connect)
+    # Client ID e Secret vêm do Google Cloud Console (ver README para o passo a passo).
+    # Deixe em branco para manter o botão "Continuar com Google" desativado.
+    GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID', default='')
+    GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET', default='')
+
     # 4. Seleção de Banco de Dados conforme o cenário/ambiente
     if ENVIRONMENT == 'homologation':
         # Homologação: Supabase PostgreSQL (Deploy no Render)

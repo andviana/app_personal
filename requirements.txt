@@ -26,3 +26,4 @@ Flask-WTF==1.2.1
 bleach==6.1.0
 Flask-Compress==1.15
 brotli==1.2.0
+Authlib==1.8.0

@@ -25,6 +25,14 @@ def backup_import():
     success, message = SettingsService.import_backup_action(file, current_user)
     return jsonify({'success': success, 'message': message})
 
+@bp.route('/update_email', methods=['POST'])
+@login_required
+def update_email():
+    email = request.form.get('email')
+    success, message = SettingsService.update_email(current_user, email)
+    flash(message, 'success' if success else 'danger')
+    return redirect(url_for('settings.index'))
+
 @bp.route('/alterar_senha', methods=['GET', 'POST'])
 @login_required
 def alterar_senha():

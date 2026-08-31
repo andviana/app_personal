@@ -1,0 +1,25 @@
+{# Fundo decorativo animado, compartilhado pelas telas de autenticação
+   (login e "não autorizado"). Puramente visual — sem interação. #}
+<div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+    <!-- Grade de pontos sutil -->
+    <div class="absolute inset-0 bg-grid-pattern opacity-40"></div>
+
+    <!-- Orbs de brilho flutuantes -->
+    <div class="absolute -top-24 -left-24 w-72 h-72 md:w-96 md:h-96 rounded-full bg-primary/30 blur-3xl animate-float-slow"></div>
+    <div class="absolute top-1/3 -right-20 w-64 h-64 md:w-80 md:h-80 rounded-full bg-violet-500/20 blur-3xl animate-float-slower" style="animation-delay: 1.5s;"></div>
+    <div class="absolute -bottom-28 left-1/4 w-72 h-72 md:w-96 md:h-96 rounded-full bg-cyan-400/15 blur-3xl animate-float-slow" style="animation-delay: 3s;"></div>
+
+    <!-- Chips flutuantes representando os módulos do app -->
+    <div class="hidden md:flex absolute top-[14%] left-[12%] w-14 h-14 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm items-center justify-center text-primary-light animate-float-chip">
+        <i class="ph-fill ph-list-checks text-2xl"></i>
+    </div>
+    <div class="hidden md:flex absolute top-[20%] right-[14%] w-12 h-12 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm items-center justify-center text-violet-300 animate-float-chip" style="animation-delay: 1.2s;">
+        <i class="ph-fill ph-shopping-bag text-xl"></i>
+    </div>
+    <div class="hidden md:flex absolute bottom-[18%] left-[16%] w-12 h-12 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm items-center justify-center text-cyan-300 animate-float-chip" style="animation-delay: 2.4s;">
+        <i class="ph-fill ph-code text-xl"></i>
+    </div>
+    <div class="hidden md:flex absolute bottom-[24%] right-[10%] w-14 h-14 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm items-center justify-center text-primary-light animate-float-chip" style="animation-delay: 3.6s;">
+        <i class="ph-fill ph-bookmark-simple text-2xl"></i>
+    </div>
+</div>

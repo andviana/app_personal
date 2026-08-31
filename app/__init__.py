@@ -6,11 +6,14 @@ from flask_login import LoginManager
 from config import Config
 from flask_wtf.csrf import CSRFProtect
 from flask_compress import Compress
+from authlib.integrations.flask_client import OAuth
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
 csrf = CSRFProtect()
+oauth = OAuth()
 login.login_view = 'auth.login'
 login.login_message = 'Por favor, faça login para acessar esta página.'
 login.login_message_category = 'info'
@@ -22,6 +25,13 @@ def create_app(config_class=Config):
         static_url_path='/static'
     )
     app.config.from_object(config_class)
+
+    # Confia em 1 hop de proxy reverso (Traefik, em produção) para o esquema
+    # (http/https), host e IP originais da requisição — sem isso, URLs geradas
+    # com _external=True (ex: redirect_uri do login com Google) saem como
+    # http:// mesmo atrás de um proxy HTTPS, e os logs registram o IP interno
+    # do proxy em vez do IP real do cliente.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
     # Garantir que o diretório de mídia (caminho absoluto) exista
     if 'MEDIA_FOLDER' in app.config:
@@ -43,6 +53,16 @@ def create_app(config_class=Config):
 
     login.init_app(app)
     csrf.init_app(app)
+
+    # Login com Google (OAuth 2.0 / OpenID Connect) — só registra o provedor
+    # se as credenciais estiverem configuradas (ver README, seção Google Login).
+    oauth.init_app(app)
+    if app.config.get('GOOGLE_CLIENT_ID') and app.config.get('GOOGLE_CLIENT_SECRET'):
+        oauth.register(
+            name='google',
+            server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+            client_kwargs={'scope': 'openid email profile'},
+        )
 
     @app.route('/media/<path:filename>')
     def serve_media(filename):
@@ -161,6 +181,7 @@ def create_app(config_class=Config):
                 return int(os.path.getmtime(path))
             except OSError:
                 return 1
-        return dict(get_file_version=get_file_version)
+        google_login_enabled = bool(app.config.get('GOOGLE_CLIENT_ID') and app.config.get('GOOGLE_CLIENT_SECRET'))
+        return dict(get_file_version=get_file_version, google_login_enabled=google_login_enabled)
 
     return app

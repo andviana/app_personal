@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Acesso não autorizado - DayLog{% endblock %}
+
+{% block content %}
+<div class="relative isolate overflow-hidden -mx-4 md:-mx-8 -my-6 md:-my-8 min-h-[calc(100vh-56px)] md:min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950">
+
+    {% include "auth/_futuristic_bg.html" %}
+
+    <div class="relative z-10 max-w-md w-full space-y-6 text-center">
+        <div class="bg-white/95 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 md:p-10 shadow-2xl shadow-black/40">
+            <div class="mx-auto h-16 w-16 bg-danger/10 rounded-3xl flex items-center justify-center mb-5">
+                <i class="ph-bold ph-shield-warning text-danger text-3xl"></i>
+            </div>
+
+            <h1 class="text-2xl font-bold text-text-heading tracking-tight mb-2">Acesso não autorizado</h1>
+            <p class="text-sm text-text-muted leading-relaxed">
+                {% if email %}
+                    O e-mail <strong class="text-text-heading">{{ email }}</strong> não está cadastrado no DayLog.
+                {% else %}
+                    Não foi possível confirmar seu e-mail com o Google.
+                {% endif %}
+                Peça ao administrador para cadastrar seu e-mail em <em>Configurações &gt; Perfil</em>, ou entre com usuário e senha.
+            </p>
+
+            <div class="mt-8">
+                {% import "macros/components.html" as c %}
+                {{ c.btn_primary("Voltar ao login", href=url_for('auth.login'), size="lg", class="w-full") }}
+            </div>
+        </div>
+
+        <p class="text-center text-xs text-white/40">© DayLog — gestão pessoal simples e segura.</p>
+    </div>
+</div>
+{% endblock %}

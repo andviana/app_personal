@@ -36,8 +36,11 @@ COPY . .
 # Copia o CSS compilado e minificado gerado no estágio 1
 COPY --from=css-builder /app/app/static/css/output.css ./app/static/css/output.css
 
+# Torna o ponto de entrada executável (aplica migrações e sobe o Gunicorn)
+RUN chmod +x entrypoint.sh
+
 # Exposição da porta da aplicação
 EXPOSE 5000
 
-# Servidor de Produção WSGI (Gunicorn)
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--threads", "2", "run:app"]
+# Ponto de Entrada: aplica migrações pendentes e inicia o servidor WSGI (Gunicorn)
+CMD ["./entrypoint.sh"]

@@ -138,6 +138,16 @@ A aplicação suporta 3 cenários configuráveis via variável `ENVIRONMENT` em 
 - O Render detecta automaticamente o arquivo `package.json` e configura o ambiente Node.js necessário.
 - Se preferir usar SQLite (não recomendado para o plano gratuito do Render), você precisará configurar um **Persistent Disk**.
 
+### 4. Deploy em Produção (Hostinger VPS + Docker)
+
+Produção **não** usa `render-build.sh` — ela roda em containers Docker atrás do Traefik (ver `docker-compose.yml`). O deploy é feito pelo script `build.sh`, executado no VPS a partir do diretório do projeto:
+
+```bash
+./build.sh
+```
+
+Ele atualiza o código (`git pull`), reconstrói e sobe o container `web`, confirma que ele ficou de pé e que a aplicação está respondendo, e limpa imagens antigas. As migrações do banco (`flask db upgrade`) rodam automaticamente dentro do container a cada deploy — não é necessário rodá-las manualmente (ver `entrypoint.sh`).
+
 ---
 
 ## 🔐 Login com Google (OAuth)

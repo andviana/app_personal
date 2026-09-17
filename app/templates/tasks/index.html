@@ -48,44 +48,56 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
         {% if not is_archived_view %}
         <!-- "Todos" Card -->
-        <div class="group card-container hover:!border-primary/40 flex items-center gap-4 cursor-pointer"
+        <div class="group card-container hover:!border-primary/40 flex flex-col justify-between cursor-pointer"
             onclick="window.location.href='{{ url_for('tasks.index', view='all') }}';">
-            <div class="bg-surface-sunken text-text-muted p-3 rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-200">
-                <i class="ph-fill ph-squares-four text-2xl"></i>
+            <div class="flex items-center gap-3.5 w-full">
+                <div class="bg-surface-sunken text-text-muted p-3 rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-200 flex-shrink-0">
+                    <i class="ph-fill ph-squares-four text-2xl"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-base font-semibold text-text-heading truncate">Todas as tarefas</h3>
+                    <p class="text-xs text-text-muted mt-0.5">Visualização global</p>
+                </div>
             </div>
-            <div class="flex-1">
-                <h3 class="text-base font-semibold text-text-heading">Todas as tarefas</h3>
-                <p class="text-xs text-text-muted mt-0.5">Visualização global</p>
+            <div class="flex items-center justify-end gap-1 mt-3 pt-2 border-t border-transparent w-full">
+                <span class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center rounded-lg text-text-muted group-hover:text-primary transition-all">
+                    <i class="ph-bold ph-arrow-square-out text-lg"></i>
+                </span>
             </div>
         </div>
         {% endif %}
 
         {% for g in grupos %}
-        <div class="group card-container hover:!border-primary/40 flex items-center gap-4 cursor-pointer {% if is_archived_view %}opacity-60 grayscale{% endif %}"
+        <div class="group card-container hover:!border-primary/40 flex flex-col justify-between cursor-pointer {% if is_archived_view %}opacity-60 grayscale{% endif %}"
             onclick="window.location.href='{{ url_for('tasks.index', grupo_id=g.id) }}';">
-            <div class="bg-surface-sunken text-text-muted p-3 rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-200">
-                <i class="ph-fill ph-folder text-2xl"></i>
-            </div>
-            <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2">
-                    {% if not is_archived_view and g.owner_id and g.owner_id != current_user.id %}
-                    <i class="ph-bold ph-users text-primary text-base" data-tooltip="Categoria compartilhada com você"></i>
-                    {% endif %}
-                    <h3 class="text-base font-semibold text-text-heading truncate">{{ g.denominacao }}</h3>
+            <!-- Linha superior: Ícone, Título e Contagem -->
+            <div class="flex items-center gap-3.5 w-full">
+                <div class="bg-surface-sunken text-text-muted p-3 rounded-xl group-hover:bg-primary group-hover:text-white transition-all duration-200 flex-shrink-0">
+                    <i class="ph-fill ph-folder text-2xl"></i>
                 </div>
-                <div class="flex items-center gap-2 mt-1">
-                    {% if is_archived_view %}
-                    <span class="badge-neutral">Desativada</span>
-                    {% endif %}
-                    <p class="text-xs text-text-muted">{{ g.tarefas_filtradas|length }} tarefas</p>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        {% if not is_archived_view and g.owner_id and g.owner_id != current_user.id %}
+                        <i class="ph-bold ph-users text-primary text-base flex-shrink-0" data-tooltip="Categoria compartilhada com você"></i>
+                        {% endif %}
+                        <h3 class="text-base font-semibold text-text-heading truncate" title="{{ g.denominacao }}">{{ g.denominacao }}</h3>
+                    </div>
+                    <div class="flex items-center gap-2 mt-0.5">
+                        {% if is_archived_view %}
+                        <span class="badge-neutral">Desativada</span>
+                        {% endif %}
+                        <p class="text-xs text-text-muted">{{ g.tarefas_filtradas|length }} tarefas</p>
+                    </div>
                 </div>
             </div>
-            <div class="flex items-center gap-1" onclick="event.stopPropagation()">
+
+            <!-- Linha inferior: Controles -->
+            <div class="flex items-center justify-end gap-1 mt-3 pt-2 border-t border-slate-100/80 w-full" onclick="event.stopPropagation()">
                 {% if is_archived_view %}
                     {% if g.owner_id == current_user.id %}
                     <form action="{{ url_for('tasks.reactivate_grupo', id=g.id) }}" method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center rounded-lg text-success hover:bg-success hover:text-white transition-all" data-tooltip="Reativar Categoria">
+                        <button type="submit" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center rounded-lg text-success hover:bg-surface-sunken hover:text-success transition-all" data-tooltip="Reativar Categoria">
                             <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i>
                         </button>
                     </form>
@@ -112,7 +124,7 @@
                         </button>
                     </form>
                     {% endif %}
-                    <a href="{{ url_for('tasks.index', grupo_id=g.id) }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center rounded-lg text-text-muted hover:bg-surface-sunken hover:text-primary transition-all duration-200">
+                    <a href="{{ url_for('tasks.index', grupo_id=g.id) }}" class="w-11 h-11 md:w-8 md:h-8 flex items-center justify-center rounded-lg text-text-muted hover:bg-surface-sunken hover:text-primary transition-all duration-200" data-tooltip="Abrir Categoria">
                         <i class="ph-bold ph-arrow-square-out text-lg"></i>
                     </a>
                 {% endif %}

@@ -217,10 +217,10 @@
         {'endpoint': 'main.index', 'match': 'main.index', 'label': 'Dashboard', 'icon': 'ph-squares-four', 'mobile': true},
         {'endpoint': 'tasks.index', 'match': 'tasks', 'label': 'Tarefas', 'icon': 'ph-list-checks', 'mobile': true},
         {'endpoint': 'lists.index', 'match': 'lists.', 'exclude': 'simple_lists', 'label': 'Listas Compras', 'icon': 'ph-shopping-bag', 'mobile': true},
-        {'endpoint': 'simple_lists.index', 'match': 'simple_lists', 'label': 'Listas Simples', 'icon': 'ph-list-bullets', 'mobile': false},
+        {'endpoint': 'simple_lists.index', 'match': 'simple_lists', 'label': 'Listas Simples', 'icon': 'ph-list-bullets', 'mobile': true},
         {'endpoint': 'snippets.index', 'match': 'snippets.', 'label': 'Snippets', 'icon': 'ph-code', 'mobile': true},
         {'endpoint': 'bookmarks.index', 'match': 'bookmarks.', 'label': 'Favoritos', 'icon': 'ph-bookmarks', 'mobile': false},
-        {'endpoint': 'perfumes.index', 'match': 'perfumes', 'label': 'Perfumes', 'icon': 'ph-drop', 'mobile': true},
+        {'endpoint': 'perfumes.index', 'match': 'perfumes', 'label': 'Perfumes', 'icon': 'ph-drop', 'mobile': false},
         {'endpoint': 'pessoas.index', 'match': 'pessoas', 'label': 'Pessoas', 'icon': 'ph-users', 'mobile': true},
     ] %}
     {% macro nav_is_active(item) %}{% if request.endpoint and item.match in request.endpoint and not (item.exclude and item.exclude in request.endpoint) %}true{% endif %}{% endmacro %}

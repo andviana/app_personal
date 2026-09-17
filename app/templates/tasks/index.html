@@ -274,86 +274,158 @@
 
         <div class="grid grid-cols-1 divide-y divide-slate-100">
             {% for t in g.tarefas_filtradas %}
-            <div class="task-row group px-4 py-3 flex items-center justify-between hover:bg-background transition-all duration-200 {% if is_archived_view %}opacity-60 grayscale{% endif %}"
+            <div class="task-row group px-4 py-3 flex flex-col hover:bg-background transition-all duration-200 {% if is_archived_view %}opacity-60 grayscale{% endif %}"
                 data-desc="{{ t.descricao|lower }}" data-status="{{ t.status.denominacao if t.status else '' }}">
-                <div class="flex items-center gap-4 flex-grow min-w-0">
-                    {% set status_name = t.status.denominacao if t.status else 'PENDENTE' %}
-                    {% if not is_archived_view %}
-                    <form action="{{ url_for('tasks.concluir' if status_name != 'FINALIZADO' else 'tasks.iniciar', id=t.id) }}" method="POST" data-ajax="true">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="relative flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 after:absolute after:-inset-2.5 after:content-['']
-                            {% if status_name == 'FINALIZADO' %}bg-success border-success text-white
-                            {% elif status_name == 'INICIADO' %}bg-success border-success text-white animate-pulse
-                            {% else %}border-text-muted hover:border-text-normal text-transparent hover:text-text-normal{% endif %}">
-                            <i class="ph-bold ph-{{ 'check' if status_name == 'FINALIZADO' else 'play' if status_name == 'INICIADO' else 'check' }}"></i>
-                        </button>
-                    </form>
-                    {% endif %}
-                    
-                    <div class="min-w-0 flex-1">
-                        <div class="flex items-center gap-2">
-                            {% if not is_archived_view and t.owner_id and t.owner_id != current_user.id %}
-                            <i class="ph-bold ph-users text-primary text-base" data-tooltip="Compartilhado com você"></i>
-                            {% endif %}
-                            <span class="block text-[13px] sm:text-[15px] font-medium truncate {{ 'text-text-muted line-through' if status_name == 'FINALIZADO' else 'text-text-heading' }}">
-                                {{ t.descricao }}
-                            </span>
-                        </div>
-                        <div class="flex items-center gap-2 mt-1">
-                            {% if is_archived_view %}
-                            <span class="badge-neutral">Desativada</span>
-                            {% else %}
-                            <span class="{% if status_name == 'PENDENTE' %}badge-warning{% elif status_name == 'INICIADO' %}badge-success{% else %}badge-neutral opacity-60{% endif %}">
-                                {{ status_name }}
-                            </span>
-                            {% endif %}
+                
+                <!-- Linha superior: Checkbox, Título completo e Botão Accordion -->
+                <div class="flex items-center justify-between gap-3 w-full min-w-0">
+                    <div class="flex items-center gap-3.5 flex-grow min-w-0">
+                        {% set status_name = t.status.denominacao if t.status else 'PENDENTE' %}
+                        {% if not is_archived_view %}
+                        <form action="{{ url_for('tasks.concluir' if status_name != 'FINALIZADO' else 'tasks.iniciar', id=t.id) }}" method="POST" data-ajax="true">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="relative flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center transition-all duration-200 after:absolute after:-inset-2.5 after:content-['']
+                                {% if status_name == 'FINALIZADO' %}bg-success border-success text-white
+                                {% elif status_name == 'INICIADO' %}bg-success border-success text-white animate-pulse
+                                {% else %}border-text-muted hover:border-text-normal text-transparent hover:text-text-normal{% endif %}">
+                                <i class="ph-bold ph-{{ 'check' if status_name == 'FINALIZADO' else 'play' if status_name == 'INICIADO' else 'check' }}"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-2">
+                                {% if not is_archived_view and t.owner_id and t.owner_id != current_user.id %}
+                                <i class="ph-bold ph-users text-primary text-base flex-shrink-0" data-tooltip="Compartilhado com você"></i>
+                                {% endif %}
+                                <span class="block text-[14px] sm:text-[15px] font-medium break-words leading-snug {{ 'text-text-muted line-through' if status_name == 'FINALIZADO' else 'text-text-heading' }}">
+                                    {{ t.descricao }}
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2 mt-1">
+                                {% if is_archived_view %}
+                                <span class="badge-neutral">Desativada</span>
+                                {% else %}
+                                <span class="{% if status_name == 'PENDENTE' %}badge-warning{% elif status_name == 'INICIADO' %}badge-success{% else %}badge-neutral opacity-60{% endif %}">
+                                    {{ status_name }}
+                                </span>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Controles Desktop (visíveis no hover em telas sm+) -->
+                    <div class="hidden sm:flex items-center gap-0.5 sm:gap-1 opacity-0 group-hover:opacity-100 transition-standard flex-shrink-0">
+                        {% if is_archived_view %}
+                            {% if t.owner_id == current_user.id %}
+                            <form action="{{ url_for('tasks.reactivate', id=t.id) }}" method="POST">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn-ghost btn-base p-2 text-success hover:bg-surface-hover rounded-md" data-tooltip="Reativar Tarefa">
+                                    <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        {% else %}
+                            <form action="{{ url_for('tasks.iniciar', id=t.id) }}" method="POST" class="play-btn-form {% if status_name != 'PENDENTE' %}hidden{% endif %}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="p-2 text-success hover:bg-surface-hover rounded-md transition-standard" data-tooltip="Iniciar" data-tooltip-pos="top">
+                                    <i class="ph-bold ph-play text-base"></i>
+                                </button>
+                            </form>
+                            <button data-id="{{ t.id }}" data-desc="{{ t.descricao }}" data-grupo="{{ t.grupo_id }}" data-status="{{ status_name }}"
+                                onclick="openEditModal(this.dataset.id, this.dataset.desc, this.dataset.grupo, this.dataset.status)"
+                                class="btn-ghost btn-base p-2 hover:text-primary" data-tooltip="Editar" data-tooltip-pos="top">
+                                <i class="ph-bold ph-pencil-simple text-base"></i>
+                            </button>
+
+                            {% if t.owner_id == current_user.id %}
+                            <!-- Botão Compartilhar Tarefa -->
+                            <button onclick="openShareModalTask({{ t.id }}, {{ t.shared_users|map(attribute='id')|list|tojson }})"
+                                class="btn-ghost btn-base p-2 hover:text-primary" data-tooltip="Compartilhar" data-tooltip-pos="top">
+                                <i class="ph-bold ph-share-network text-base"></i>
+                            </button>
+                            <!-- Botão Arquivar Tarefa -->
+                            <form action="{{ url_for('tasks.archive', id=t.id) }}" method="POST" class="inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn-ghost btn-base p-2 hover:text-warning" data-tooltip="Arquivar" data-tooltip-pos="top">
+                                    <i class="ph-bold ph-archive text-base"></i>
+                                </button>
+                            </form>
+                            <!-- Botão Excluir Tarefa -->
+                            <button data-id="{{ t.id }}" data-desc="{{ t.descricao }}" onclick="confirmDeleteTask(this.dataset.id, this.dataset.desc)"
+                                class="btn-ghost btn-base p-2 hover:!text-danger" data-tooltip="Excluir" data-tooltip-pos="top">
+                                <i class="ph-bold ph-trash text-base"></i>
+                            </button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Botão Toggle do Accordion (Mobile) -->
+                    <button type="button" onclick="toggleTaskAccordion(this)"
+                        class="sm:hidden p-2 text-text-muted hover:text-primary hover:bg-surface-sunken rounded-lg transition-all flex-shrink-0"
+                        aria-label="Ações da tarefa" data-tooltip="Ações">
+                        <i class="ph-bold ph-caret-down text-lg transition-transform duration-200 accordion-arrow"></i>
+                    </button>
                 </div>
 
-                <div class="flex items-center gap-0.5 sm:gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-standard flex-shrink-0">
-                    {% if is_archived_view %}
-                        {% if t.owner_id == current_user.id %}
-                        <form action="{{ url_for('tasks.reactivate', id=t.id) }}" method="POST">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn-ghost btn-base p-2 text-success hover:bg-surface-hover rounded-md" data-tooltip="Reativar Tarefa">
-                                <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i>
+                <!-- Conteúdo do Accordion Mobile (Controles: Editar, Compartilhar, Arquivar, Excluir) -->
+                <div class="task-accordion-content hidden sm:hidden pt-3 mt-2 border-t border-slate-100/80 w-full animate-in fade-in slide-in-from-top-1">
+                    <div class="grid grid-cols-2 gap-2 bg-surface-sunken/60 p-2 rounded-xl border border-slate-200/60">
+                        {% if is_archived_view %}
+                            {% if t.owner_id == current_user.id %}
+                            <form action="{{ url_for('tasks.reactivate', id=t.id) }}" method="POST" class="col-span-2">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="w-full flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold text-success hover:bg-surface rounded-lg transition-all border border-slate-200/40 shadow-xs">
+                                    <i class="ph-bold ph-arrow-counter-clockwise text-base"></i>
+                                    Reativar
+                                </button>
+                            </form>
+                            {% endif %}
+                        {% else %}
+                            {% if status_name == 'PENDENTE' %}
+                            <form action="{{ url_for('tasks.iniciar', id=t.id) }}" method="POST" class="play-btn-form col-span-2">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="w-full flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold text-success hover:bg-surface rounded-lg transition-all border border-slate-200/40 shadow-xs">
+                                    <i class="ph-bold ph-play text-base"></i>
+                                    Iniciar Tarefa
+                                </button>
+                            </form>
+                            {% endif %}
+                            
+                            <!-- 1. Editar -->
+                            <button data-id="{{ t.id }}" data-desc="{{ t.descricao }}" data-grupo="{{ t.grupo_id }}" data-status="{{ status_name }}"
+                                onclick="openEditModal(this.dataset.id, this.dataset.desc, this.dataset.grupo, this.dataset.status)"
+                                class="flex items-center justify-center gap-1.5 py-2 px-2 text-xs font-semibold text-text-normal hover:text-primary hover:bg-surface rounded-lg transition-all border border-slate-200/40 shadow-xs">
+                                <i class="ph-bold ph-pencil-simple text-base text-primary"></i>
+                                <span>Editar</span>
                             </button>
-                        </form>
-                        {% endif %}
-                    {% else %}
-                        <form action="{{ url_for('tasks.iniciar', id=t.id) }}" method="POST" class="play-btn-form {% if status_name != 'PENDENTE' %}hidden{% endif %}">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="p-2 text-success hover:bg-surface-hover rounded-md transition-standard" data-tooltip="Iniciar" data-tooltip-pos="top">
-                                <i class="ph-bold ph-play text-base"></i>
-                            </button>
-                        </form>
-                        <button data-id="{{ t.id }}" data-desc="{{ t.descricao }}" data-grupo="{{ t.grupo_id }}" data-status="{{ status_name }}"
-                            onclick="openEditModal(this.dataset.id, this.dataset.desc, this.dataset.grupo, this.dataset.status)"
-                            class="btn-ghost btn-base p-2 hover:text-primary" data-tooltip="Editar" data-tooltip-pos="top">
-                            <i class="ph-bold ph-pencil-simple text-base"></i>
-                        </button>
 
-                        {% if t.owner_id == current_user.id %}
-                        <!-- Botão Compartilhar Tarefa -->
-                        <button onclick="openShareModalTask({{ t.id }}, {{ t.shared_users|map(attribute='id')|list|tojson }})"
-                            class="btn-ghost btn-base p-2 hover:text-primary" data-tooltip="Compartilhar" data-tooltip-pos="top">
-                            <i class="ph-bold ph-share-network text-base"></i>
-                        </button>
-                        <!-- Botão Arquivar Tarefa -->
-                        <form action="{{ url_for('tasks.archive', id=t.id) }}" method="POST" class="inline">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn-ghost btn-base p-2 hover:text-warning" data-tooltip="Arquivar" data-tooltip-pos="top">
-                                <i class="ph-bold ph-archive text-base"></i>
+                            {% if t.owner_id == current_user.id %}
+                            <!-- 2. Compartilhar -->
+                            <button onclick="openShareModalTask({{ t.id }}, {{ t.shared_users|map(attribute='id')|list|tojson }})"
+                                class="flex items-center justify-center gap-1.5 py-2 px-2 text-xs font-semibold text-text-normal hover:text-primary hover:bg-surface rounded-lg transition-all border border-slate-200/40 shadow-xs">
+                                <i class="ph-bold ph-share-network text-base text-primary"></i>
+                                <span>Compartilhar</span>
                             </button>
-                        </form>
-                        <!-- Botão Excluir Tarefa -->
-                        <button data-id="{{ t.id }}" data-desc="{{ t.descricao }}" onclick="confirmDeleteTask(this.dataset.id, this.dataset.desc)"
-                            class="btn-ghost btn-base p-2 hover:!text-danger" data-tooltip="Excluir" data-tooltip-pos="top">
-                            <i class="ph-bold ph-trash text-base"></i>
-                        </button>
+
+                            <!-- 3. Arquivar -->
+                            <form action="{{ url_for('tasks.archive', id=t.id) }}" method="POST" class="w-full">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="w-full flex items-center justify-center gap-1.5 py-2 px-2 text-xs font-semibold text-text-normal hover:text-warning hover:bg-surface rounded-lg transition-all border border-slate-200/40 shadow-xs">
+                                    <i class="ph-bold ph-archive text-base text-warning"></i>
+                                    <span>Arquivar</span>
+                                </button>
+                            </form>
+
+                            <!-- 4. Excluir -->
+                            <button data-id="{{ t.id }}" data-desc="{{ t.descricao }}" onclick="confirmDeleteTask(this.dataset.id, this.dataset.desc)"
+                                class="flex items-center justify-center gap-1.5 py-2 px-2 text-xs font-semibold text-text-normal hover:text-danger hover:bg-surface rounded-lg transition-all border border-slate-200/40 shadow-xs">
+                                <i class="ph-bold ph-trash text-base text-danger"></i>
+                                <span>Excluir</span>
+                            </button>
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
+                    </div>
                 </div>
             </div>
             {% endfor %}

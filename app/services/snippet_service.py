@@ -1,12 +1,34 @@
 from app.repositories.snippet_repository import SnippetRepository, TagRepository, SnippetTagRepository
 from app.models import Snippet, Tag
 from app.services.log_service import LogService
+from flask import abort
 
 class SnippetService:
     @staticmethod
-    def get_snippet_by_id(id):
+    def can_read(snippet: Snippet, current_user) -> bool:
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return snippet.owner_id == current_user.id or any(u.id == current_user.id for u in snippet.shared_users) or snippet.owner_id is None
+
+    @staticmethod
+    def can_write(snippet: Snippet, current_user) -> bool:
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return snippet.owner_id == current_user.id or any(u.id == current_user.id for u in snippet.shared_users) or snippet.owner_id is None
+
+    @staticmethod
+    def can_manage(snippet: Snippet, current_user) -> bool:
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return snippet.owner_id == current_user.id or snippet.owner_id is None
+
+    @staticmethod
+    def get_snippet_by_id(id, current_user=None):
         repo = SnippetRepository()
-        return repo.get_or_404(id)
+        snippet = repo.get_or_404(id)
+        if current_user and not SnippetService.can_read(snippet, current_user):
+            abort(403)
+        return snippet
 
     @staticmethod
     def get_snippet_by_uuid(uuid_str):
@@ -14,9 +36,9 @@ class SnippetService:
         return repo.find_one_or_404(uuid=uuid_str)
 
     @staticmethod
-    def get_all_snippets(search=None):
+    def get_all_snippets(current_user, search=None, defer_content=True):
         repo = SnippetRepository()
-        return repo.search_snippets(search)
+        return repo.search_snippets(current_user, search=search, defer_content=defer_content)
 
     @staticmethod
     def create_snippet(form_data, current_user):
@@ -25,7 +47,12 @@ class SnippetService:
         conteudo = form_data.get('conteudo')
         descricao = form_data.get('descricao')
         if titulo and conteudo:
-            snippet = Snippet(titulo=titulo, conteudo=conteudo, descricao=descricao)
+            snippet = Snippet(
+                titulo=titulo,
+                conteudo=conteudo,
+                descricao=descricao,
+                owner_id=current_user.id if current_user and current_user.is_authenticated else None
+            )
             repo.add(snippet)
             repo.commit()
             LogService.log_action(current_user.username, 'SNIPPET_CREATED', f'ID: {snippet.id} | TITLE: {titulo}')
@@ -36,6 +63,8 @@ class SnippetService:
     def update_snippet(id, form_data, current_user):
         repo = SnippetRepository()
         snippet = repo.get_or_404(id)
+        if not SnippetService.can_write(snippet, current_user):
+            abort(403)
         titulo = form_data.get('titulo')
         conteudo = form_data.get('conteudo')
         descricao = form_data.get('descricao')
@@ -52,6 +81,8 @@ class SnippetService:
     def delete_snippet(id, current_user):
         repo = SnippetRepository()
         snippet = repo.get_or_404(id)
+        if not SnippetService.can_manage(snippet, current_user):
+            abort(403)
         titulo = snippet.titulo
         repo.delete(snippet)
         repo.commit()

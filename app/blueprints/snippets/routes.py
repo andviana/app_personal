@@ -8,12 +8,7 @@ from flask_login import current_user, login_required
 @login_required
 def index():
     search = request.args.get('search', '')
-    snippets = SnippetService.get_all_snippets(search)
-
-    # Pre-render Markdown content for mobile accordion
-    for s in snippets:
-        s.html = render_markdown(s.conteudo)
-
+    snippets = SnippetService.get_all_snippets(current_user, search=search, defer_content=True)
     return render_template('snippets/index.html', snippets=snippets, search=search)
 
 @bp.route('/novo')
@@ -24,7 +19,7 @@ def novo():
 @bp.route('/<int:id>')
 @login_required
 def view(id):
-    snippet = SnippetService.get_snippet_by_id(id)
+    snippet = SnippetService.get_snippet_by_id(id, current_user)
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
             'id': snippet.id,
@@ -84,7 +79,7 @@ def shared(uuid):
 @bp.route('/editar/<int:id>')
 @login_required
 def editar(id):
-    snippet = SnippetService.get_snippet_by_id(id)
+    snippet = SnippetService.get_snippet_by_id(id, current_user)
     return render_template('snippets/edit.html', snippet=snippet)
 
 @bp.route('/add', methods=['POST'])

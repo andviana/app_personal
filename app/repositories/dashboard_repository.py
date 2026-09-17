@@ -75,16 +75,21 @@ class DashboardRepository:
 
     @staticmethod
     def get_bookmarks_count(user_id: int) -> int:
-        """Total de favoritos ativos visíveis ao usuário (próprios + compartilhados)."""
-        return len(BookmarkRepository().list_user_bookmarks(user_id, is_active=True))
+        """Total de favoritos visíveis ao usuário (próprios + compartilhados)."""
+        return len(BookmarkRepository().list_user_bookmarks(user_id))
 
     @staticmethod
-    def get_catalog_counts() -> Dict[str, int]:
-        """Totais das coleções compartilhadas entre todos os usuários."""
+    def get_catalog_counts(user_id: int = None) -> Dict[str, int]:
+        """Totais das coleções catalogadas e acessíveis ao usuário."""
+        snippets_q = db.session.query(func.count(Snippet.id))
+        if user_id:
+            snippets_q = snippets_q.filter(
+                or_(Snippet.owner_id == user_id, Snippet.shared_users.any(id=user_id))
+            )
         return {
             "perfumes_count": db.session.query(func.count(Perfume.id)).scalar() or 0,
             "pessoas_count": db.session.query(func.count(Pessoa.id)).scalar() or 0,
-            "snippets_count": db.session.query(func.count(Snippet.id)).scalar() or 0,
+            "snippets_count": snippets_q.scalar() or 0,
         }
 
     @staticmethod
@@ -141,6 +146,5 @@ class DashboardRepository:
     @staticmethod
     def get_shared_bookmarks(user_id: int) -> List[Bookmark]:
         return Bookmark.query.filter(
-            Bookmark.is_active.is_(True),
             Bookmark.shared_users.any(id=user_id)
         ).all()

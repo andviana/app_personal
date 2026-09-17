@@ -5,59 +5,74 @@
 
 {% block content %}
 <div class="flex flex-col gap-8">
-    {% call page_header('Meus Favoritos', icon='ph-bookmarks', badge=('Arquivados' if is_archived_view else none)) %}
-        {% if is_archived_view %}
-        <a href="{{ url_for('bookmarks.index') }}" class="btn-secondary btn-md" data-tooltip="Ver Favoritos Ativos">
-            <i class="ph-bold ph-arrow-left text-lg"></i>
-            <span class="text-xs">Ver Ativos</span>
-        </a>
-        {% else %}
-        <a href="{{ url_for('bookmarks.index', archived='true') }}" class="btn-ghost btn-md" data-tooltip="Ver Favoritos Desativados">
-            <i class="ph-bold ph-archive text-lg"></i>
-            <span class="text-xs">Desativados</span>
-        </a>
-        <button onclick="openModal('modalNovaCategoria')" class="btn-ghost btn-md" data-tooltip="Nova Categoria">
-            <i class="ph-bold ph-folder-plus text-lg"></i>
-            <span class="text-xs">Categoria</span>
-        </button>
-        <button onclick="openModal('modalLoteBookmark')" class="btn-secondary btn-md" data-tooltip="Adicionar em Lote">
-            <i class="ph-bold ph-stack text-lg"></i>
-            <span class="text-xs">Lote</span>
-        </button>
-        <button onclick="openModal('modalNovoBookmark')" class="btn-primary btn-md group">
-            Adicionar
-            <i class="ph-bold ph-plus text-lg transition-transform duration-300 group-hover:rotate-90"></i>
-        </button>
-        {% endif %}
+    {% call page_header('Meus Favoritos', icon='ph-bookmarks') %}
+    <button onclick="openModal('modalNovaCategoria')" class="btn-ghost btn-md" data-tooltip="Nova Categoria">
+        <i class="ph-bold ph-folder-plus text-lg"></i>
+        <span class="text-xs">Categoria</span>
+    </button>
+    <button onclick="openModal('modalLoteBookmark')" class="btn-secondary btn-md" data-tooltip="Adicionar em Lote">
+        <i class="ph-bold ph-stack text-lg"></i>
+        <span class="text-xs">Lote</span>
+    </button>
+    <button onclick="openModal('modalNovoBookmark')" class="btn-primary btn-md group">
+        Adicionar
+        <i class="ph-bold ph-plus text-lg transition-transform duration-300 group-hover:rotate-90"></i>
+    </button>
     {% endcall %}
 
     <!-- Search & Filters -->
     <div class="flex flex-col gap-4">
         <!-- Global Search Bar (Full Width) -->
         <div class="relative w-full group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted group-focus-within:text-primary transition-colors">
+            <div
+                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted group-focus-within:text-primary transition-colors">
                 <i class="ph-bold ph-magnifying-glass text-lg"></i>
             </div>
             <input type="text" id="globalSearch" placeholder="Buscar por título ou descrição..."
                 class="form-input !h-12 !pl-11">
         </div>
 
-        <!-- Category Filter (Wrapping Multi-line) -->
-        <div class="flex items-start gap-2">
-            <button onclick="openModal('modalGerenciarCategorias')"
-                class="btn-icon-md flex-shrink-0"
-                title="Gerenciar Categorias">
-                <i class="ph-bold ph-gear-six text-lg"></i>
-            </button>
-            <div class="w-px h-6 bg-slate-200 mx-1 flex-shrink-0 mt-2.5"></div>
+        <!-- Category Filter Area (Mobile Accordion / Desktop Flex) -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-start gap-2">
+            <!-- Mobile Accordion Trigger Bar -->
+            <div class="flex sm:hidden items-center gap-2 w-full">
+                <button type="button" onclick="toggleMobileCategoryAccordion()"
+                    class="h-11 flex items-center justify-between flex-1 px-4 bg-surface border border-slate-200 rounded-xl text-xs font-semibold text-text-heading hover:bg-surface-hover transition-all">
+                    <span class="flex items-center gap-2">
+                        <i class="ph-bold ph-funnel text-primary text-sm"></i>
+                        <span id="mobileSelectedCatLabel">Filtrar por Categoria</span>
+                    </span>
+                    <i id="mobileCatAccordionArrow"
+                        class="ph-bold ph-caret-down text-sm text-text-muted transition-transform duration-200"></i>
+                </button>
+                <button type="button" onclick="openModal('modalGerenciarCategorias')" class="btn-icon-md flex-shrink-0"
+                    title="Gerenciar Categorias">
+                    <i class="ph-bold ph-gear-six text-lg"></i>
+                </button>
+            </div>
 
-            <div class="flex flex-wrap items-center gap-2 w-full">
-                <button onclick="filterByCategory('all')" class="category-btn active px-3.5 py-1.5 rounded-full text-xs font-medium bg-primary text-white transition-all" data-category="all">Todos</button>
-                {% for cat in categories %}
-                <button onclick="filterByCategory('{{ cat.id }}')"
-                    class="category-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-surface border border-slate-200 text-text-muted hover:bg-surface-hover hover:text-text-normal transition-all"
-                    data-category="{{ cat.id }}">{{ cat.nome }}</button>
-                {% endfor %}
+            <!-- Desktop Category Bar & Mobile Accordion Body -->
+            <div class="flex items-start gap-2 w-full">
+                <button type="button" onclick="openModal('modalGerenciarCategorias')"
+                    class="hidden sm:flex btn-icon-md flex-shrink-0" title="Gerenciar Categorias">
+                    <i class="ph-bold ph-gear-six text-lg"></i>
+                </button>
+                <div class="hidden sm:block w-px h-6 bg-slate-200 mx-1 flex-shrink-0 mt-2.5"></div>
+
+                <div id="categoryContainer"
+                    class="hidden sm:flex flex-wrap items-center gap-2 w-full pt-2 sm:pt-0 border-t border-slate-100 sm:border-0">
+                    <button type="button" onclick="filterByCategory('all')"
+                        class="category-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-surface border border-slate-200 text-text-muted hover:bg-surface-hover hover:text-text-normal transition-all"
+                        data-category="all" data-label="Todos">Todos</button>
+                    <button type="button" onclick="filterByCategory('uncategorized')"
+                        class="category-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-surface border border-slate-200 text-text-muted hover:bg-surface-hover hover:text-text-normal transition-all"
+                        data-category="uncategorized" data-label="Sem Categoria">Sem Categoria</button>
+                    {% for cat in categories %}
+                    <button type="button" onclick="filterByCategory('{{ cat.id }}')"
+                        class="category-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-surface border border-slate-200 text-text-muted hover:bg-surface-hover hover:text-text-normal transition-all"
+                        data-category="{{ cat.id }}" data-label="{{ cat.nome }}">{{ cat.nome }}</button>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
@@ -65,26 +80,36 @@
     <!-- Grid of Cards -->
     <div id="bookmarkGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {% for b in bookmarks %}
-        <div class="bookmark-card group bg-surface border border-slate-200 rounded-2xl overflow-hidden hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 flex flex-col shadow-sm {% if is_archived_view %}opacity-60 grayscale bg-surface{% endif %}"
-             data-title="{{ b.titulo|upper }}" data-desc="{{ b.descricao|upper }}" data-categories="{{ b.categories|map(attribute='id')|join(',') }}">
-            
+        <div class="bookmark-card group bg-surface border border-slate-200 rounded-2xl overflow-hidden hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 flex flex-col shadow-sm"
+            style="display: none;" data-title="{{ b.titulo|upper }}" data-desc="{{ b.descricao|upper }}"
+            data-categories="{{ b.categories|map(attribute='id')|join(',') }}">
+
             <!-- Top Preview Cover Area -->
-            <a href="{{ b.url }}" target="_blank" class="bookmark-card-cover block relative bg-surface-hover overflow-hidden border-b border-slate-200">
+            <a href="{{ b.url }}" target="_blank"
+                class="bookmark-card-cover block relative bg-surface-hover overflow-hidden border-b border-slate-200">
                 {% if b.image_url %}
-                <img src="{{ b.image_url }}" alt="preview" class="group-hover:scale-105 transition-transform duration-500" loading="lazy" onerror="handleImageError(this)">
+                <img src="{{ b.image_url }}" alt="preview"
+                    class="group-hover:scale-105 transition-transform duration-500" loading="lazy"
+                    onerror="handleImageError(this)">
                 {% else %}
-                <div class="w-full h-full bg-gradient-to-br from-surface-sunken to-background flex items-center justify-center relative">
-                    <div class="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:10px_16px]"></div>
+                <div
+                    class="w-full h-full bg-gradient-to-br from-surface-sunken to-background flex items-center justify-center relative">
+                    <div
+                        class="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:10px_16px]">
+                    </div>
                     <i class="ph-bold ph-link text-2xl text-primary/30"></i>
                 </div>
                 <!-- Floating Favicon Badge -->
-                <div class="absolute bottom-2 left-2 bg-surface-sunken/90 backdrop-blur-sm p-1.5 rounded-lg flex items-center justify-center border border-white/5 shadow-md">
-                    <img src="https://www.google.com/s2/favicons?domain={{ b.url }}&sz=32" alt="favicon" class="w-6 h-6 object-contain" onerror="this.src='/static/images/fallback_favicon.png';">
+                <div
+                    class="absolute bottom-2 left-2 bg-surface-sunken/90 backdrop-blur-sm p-1.5 rounded-lg flex items-center justify-center border border-white/5 shadow-md">
+                    <img src="https://www.google.com/s2/favicons?domain={{ b.url }}&sz=32" alt="favicon"
+                        class="w-6 h-6 object-contain" onerror="this.src='/static/images/fallback_favicon.png';">
                 </div>
                 {% endif %}
 
-                {% if not is_archived_view and b.owner_id and b.owner_id != current_user.id %}
-                <div class="absolute top-2 right-2 bg-surface-sunken/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 border border-primary/20 shadow-md">
+                {% if b.owner_id and b.owner_id != current_user.id %}
+                <div
+                    class="absolute top-2 right-2 bg-surface-sunken/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 border border-primary/20 shadow-md">
                     <i class="ph-bold ph-users text-primary text-xs" title="Compartilhado com você"></i>
                 </div>
                 {% endif %}
@@ -94,11 +119,13 @@
             <div class="bookmark-card-body gap-2">
                 <a href="{{ b.url }}" target="_blank" class="flex flex-col gap-1">
                     <div class="flex items-center justify-between gap-1">
-                        <h3 class="text-sm font-semibold text-text-heading line-clamp-2 leading-tight group-hover:text-primary transition-colors" title="{{ b.titulo }}">
+                        <h3 class="text-sm font-semibold text-text-heading line-clamp-2 leading-tight group-hover:text-primary transition-colors"
+                            title="{{ b.titulo }}">
                             {{ b.titulo }}
                         </h3>
                     </div>
-                    <p class="text-text-muted text-[10px] leading-snug line-clamp-2 font-medium" title="{{ b.descricao or '' }}">
+                    <p class="text-text-muted text-[10px] leading-snug line-clamp-2 font-medium"
+                        title="{{ b.descricao or '' }}">
                         {{ b.descricao or 'Sem descrição disponível.' }}
                     </p>
                 </a>
@@ -107,9 +134,6 @@
                 <div class="flex flex-col gap-2">
                     <!-- Categories -->
                     <div class="flex flex-wrap gap-1 max-h-[36px] overflow-y-auto custom-scrollbar pr-1">
-                        {% if is_archived_view %}
-                        <span class="badge-neutral">Desativado</span>
-                        {% endif %}
                         {% for cat in b.categories %}
                         <span class="badge-primary">
                             {{ cat.nome }}
@@ -123,75 +147,57 @@
                     <!-- Actions -->
                     <div class="flex justify-end items-center" onclick="event.stopPropagation()">
                         <div class="flex items-center gap-1.5">
-                            {% if is_archived_view %}
-                                {% if b.owner_id == current_user.id %}
-                                <form action="{{ url_for('bookmarks.reactivate', id=b.id) }}" method="POST">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="w-11 h-11 md:w-6 md:h-6 flex items-center justify-center bg-background hover:bg-success text-success hover:bg-success hover:text-white rounded-md transition-all" title="Reativar Favorito">
-                                        <i class="ph-bold ph-arrow-counter-clockwise text-xs"></i>
-                                    </button>
-                                </form>
-                                {% endif %}
-                            {% else %}
-                                <button 
-                                    data-id="{{ b.id }}"
-                                    data-titulo="{{ b.titulo }}"
-                                    data-url="{{ b.url }}"
-                                    data-image="{{ b.image_url or '' }}"
-                                    data-descricao="{{ b.descricao or '' }}"
-                                    data-cats="{{ b.categories|map(attribute='id')|join(',') }}"
-                                    onclick="prepareEditModal(this)"
-                                    class="w-11 h-11 md:w-6 md:h-6 flex items-center justify-center bg-background hover:bg-surface-hover text-text-muted hover:text-primary rounded-md transition-all"
-                                    title="Editar Favorito">
-                                    <i class="ph-bold ph-pencil-simple text-xs"></i>
-                                </button>
+                            <button data-id="{{ b.id }}" data-titulo="{{ b.titulo }}" data-url="{{ b.url }}"
+                                data-image="{{ b.image_url or '' }}" data-descricao="{{ b.descricao or '' }}"
+                                data-cats="{{ b.categories|map(attribute='id')|join(',') }}"
+                                onclick="prepareEditModal(this)"
+                                class="w-11 h-11 md:w-6 md:h-6 flex items-center justify-center bg-background hover:bg-surface-hover text-text-muted hover:text-primary rounded-md transition-all"
+                                title="Editar Favorito">
+                                <i class="ph-bold ph-pencil-simple text-xs"></i>
+                            </button>
 
-                                {% if b.owner_id == current_user.id %}
-                                <!-- Compartilhar Bookmark -->
-                                <button onclick="openShareModalBookmark({{ b.id }}, {{ b.shared_users|map(attribute='id')|list|tojson }})"
-                                    class="w-11 h-11 md:w-6 md:h-6 flex items-center justify-center bg-background hover:bg-primary text-text-muted hover:text-text-heading rounded-md transition-all"
-                                    title="Compartilhar">
-                                    <i class="ph-bold ph-share-network text-xs"></i>
+                            {% if b.owner_id == current_user.id %}
+                            <!-- Compartilhar Bookmark -->
+                            <button
+                                onclick="openShareModalBookmark({{ b.id }}, {{ b.shared_users|map(attribute='id')|list|tojson }})"
+                                class="w-11 h-11 md:w-6 md:h-6 flex items-center justify-center bg-background hover:bg-primary text-text-muted hover:text-text-heading rounded-md transition-all"
+                                title="Compartilhar">
+                                <i class="ph-bold ph-share-network text-xs"></i>
+                            </button>
+                            <!-- Excluir Bookmark -->
+                            <form id="delete_form_{{ b.id }}" action="{{ url_for('bookmarks.delete', id=b.id) }}"
+                                method="POST" class="inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="button" onclick="AppUI.confirmAction({
+                                        title: 'EXCLUIR FAVORITO', 
+                                        text: 'Deseja excluir \'{{ b.titulo }}\'?',
+                                        confirmText: 'SIM, EXCLUIR',
+                                        onConfirm: () => document.getElementById('delete_form_{{ b.id }}').submit()
+                                    })"
+                                    class="w-11 h-11 md:w-6 md:h-6 flex items-center justify-center bg-background hover:bg-danger text-text-muted hover:text-text-heading rounded-md transition-all"
+                                    title="Excluir">
+                                    <i class="ph-bold ph-trash text-xs"></i>
                                 </button>
-                                <!-- Arquivar Bookmark -->
-                                <form action="{{ url_for('bookmarks.archive', id=b.id) }}" method="POST" class="inline">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="w-11 h-11 md:w-6 md:h-6 flex items-center justify-center bg-background hover:bg-warning text-text-muted hover:text-text-heading rounded-md transition-all" title="Desativar">
-                                        <i class="ph-bold ph-archive text-xs"></i>
-                                    </button>
-                                </form>
-                                <!-- Excluir Bookmark -->
-                                <form id="delete_form_{{ b.id }}" action="{{ url_for('bookmarks.delete', id=b.id) }}" method="POST" class="inline">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="button" 
-                                        onclick="AppUI.confirmAction({
-                                            title: 'EXCLUIR FAVORITO', 
-                                            text: 'Deseja excluir \'{{ b.titulo }}\'?',
-                                            confirmText: 'SIM, EXCLUIR',
-                                            onConfirm: () => document.getElementById('delete_form_{{ b.id }}').submit()
-                                        })"
-                                        class="w-11 h-11 md:w-6 md:h-6 flex items-center justify-center bg-background hover:bg-danger text-text-muted hover:text-text-heading rounded-md transition-all"
-                                        title="Excluir">
-                                        <i class="ph-bold ph-trash text-xs"></i>
-                                    </button>
-                                </form>
-                                {% endif %}
+                            </form>
                             {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {% else %}
-        <div class="col-span-full py-24 text-center bg-surface rounded-[40px] border-2 border-dashed border-slate-200">
-            <div class="w-20 h-20 bg-surface-hover rounded-full flex items-center justify-center mx-auto mb-6 text-text-muted">
-                <i class="ph-bold ph-bookmarks text-4xl"></i>
-            </div>
-            <h3 class="text-lg font-semibold text-text-heading">Sua biblioteca está vazia</h3>
-            <p class="text-text-muted mt-2 font-medium">Comece adicionando seus links favoritos com Smart Scraping.</p>
-            <button onclick="openModal('modalNovoBookmark')" class="mt-6 text-primary text-sm font-medium hover:underline">Adicionar primeiro link</button>
-        </div>
         {% endfor %}
+
+        <!-- Bookmark Empty State Placeholder -->
+        <div id="bookmarkEmptyState"
+            class="col-span-full py-20 text-center bg-surface rounded-[32px] border border-slate-200">
+            <div
+                class="w-16 h-16 bg-surface-hover rounded-full flex items-center justify-center mx-auto mb-4 text-text-muted">
+                <i class="ph-bold ph-hand-pointing text-3xl text-primary"></i>
+            </div>
+            <h3 id="emptyStateTitle" class="text-base font-semibold text-text-heading">Selecione uma categoria</h3>
+            <p id="emptyStateDesc" class="text-text-muted mt-1 text-xs font-medium max-w-sm mx-auto">Clique em uma das
+                opções acima ("Todos", "Sem Categoria" ou uma categoria específica) para visualizar os favoritos.</p>
+        </div>
     </div>
 </div>
 
@@ -205,23 +211,26 @@
                         <i class="ph-bold ph-plus text-primary"></i> Novo Favorito
                     </h3>
                 </div>
-                <button onclick="closeModal('modalNovoBookmark')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeModal('modalNovoBookmark')"
+                    class="p-3 -m-3 text-text-muted hover:text-text-heading"><i
+                        class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form action="{{ url_for('bookmarks.add') }}" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="image_url" id="bookmarkImage">
-                
+
                 <div class="space-y-1">
                     <label class="form-label">URL do site</label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted" id="urlIcon">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text-muted"
+                            id="urlIcon">
                             <i class="ph-bold ph-link text-xl"></i>
                         </div>
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center hidden" id="urlLoader">
                             <i class="ph-bold ph-circle-notch text-xl text-primary animate-spin"></i>
                         </div>
-                        <input type="url" name="url" id="bookmarkUrl" required placeholder="https://..." onchange="handleUrlChange(this.value)"
-                            class="form-input !h-14 !pl-12 !rounded-2xl">
+                        <input type="url" name="url" id="bookmarkUrl" required placeholder="https://..."
+                            onchange="handleUrlChange(this.value)" class="form-input !h-14 !pl-12 !rounded-2xl">
                     </div>
                 </div>
 
@@ -233,8 +242,8 @@
                     </div>
                     <div>
                         <label class="form-label">Descrição</label>
-                        <textarea name="descricao" id="bookmarkDesc" rows="3" placeholder="Breve descrição do conteúdo..."
-                            class="form-textarea"></textarea>
+                        <textarea name="descricao" id="bookmarkDesc" rows="3"
+                            placeholder="Breve descrição do conteúdo..." class="form-textarea"></textarea>
                     </div>
                 </div>
 
@@ -245,7 +254,8 @@
                             {% for cat in categories %}
                             <label class="cursor-pointer group/cat">
                                 <input type="checkbox" name="category_ids" value="{{ cat.id }}" class="hidden peer">
-                                <span class="px-3.5 py-1.5 rounded-full bg-surface-hover text-text-muted text-xs font-medium border border-transparent peer-checked:bg-primary peer-checked:text-white transition-all duration-200">
+                                <span
+                                    class="px-3.5 py-1.5 rounded-full bg-surface-hover text-text-muted text-xs font-medium border border-transparent peer-checked:bg-primary peer-checked:text-white transition-all duration-200">
                                     {{ cat.nome }}
                                 </span>
                             </label>
@@ -255,7 +265,8 @@
                 </div>
 
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeModal('modalNovoBookmark')" class="btn-secondary btn-lg flex-1">Cancelar</button>
+                    <button type="button" onclick="closeModal('modalNovoBookmark')"
+                        class="btn-secondary btn-lg flex-1">Cancelar</button>
                     <button type="submit" class="btn-primary btn-lg flex-1">Salvar</button>
                 </div>
             </form>
@@ -273,11 +284,13 @@
                         <i class="ph-bold ph-stack text-primary"></i> Cadastro em Lote
                     </h3>
                 </div>
-                <button onclick="closeModal('modalLoteBookmark')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeModal('modalLoteBookmark')"
+                    class="p-3 -m-3 text-text-muted hover:text-text-heading"><i
+                        class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form action="{{ url_for('bookmarks.batch_add') }}" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                
+
                 <div>
                     <label class="form-label">Cole as URLs abaixo (uma por linha)</label>
                     <textarea name="batch_text" rows="8" required placeholder="https://site1.com&#10;https://site2.com"
@@ -291,7 +304,8 @@
                             {% for cat in categories %}
                             <label class="cursor-pointer group/cat">
                                 <input type="checkbox" name="category_ids" value="{{ cat.id }}" class="hidden peer">
-                                <span class="px-3.5 py-1.5 rounded-full bg-surface-hover text-text-muted text-xs font-medium border border-transparent peer-checked:bg-primary peer-checked:text-white transition-all duration-200">
+                                <span
+                                    class="px-3.5 py-1.5 rounded-full bg-surface-hover text-text-muted text-xs font-medium border border-transparent peer-checked:bg-primary peer-checked:text-white transition-all duration-200">
                                     {{ cat.nome }}
                                 </span>
                             </label>
@@ -301,7 +315,8 @@
                 </div>
 
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeModal('modalLoteBookmark')" class="btn-secondary btn-lg flex-1">Cancelar</button>
+                    <button type="button" onclick="closeModal('modalLoteBookmark')"
+                        class="btn-secondary btn-lg flex-1">Cancelar</button>
                     <button type="submit" class="btn-primary btn-lg flex-1">Importar</button>
                 </div>
             </form>
@@ -315,12 +330,14 @@
                 <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
                     <i class="ph-bold ph-pencil-simple text-primary"></i> Editar Favorito
                 </h3>
-                <button onclick="closeModal('modalEditarBookmark')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeModal('modalEditarBookmark')"
+                    class="p-3 -m-3 text-text-muted hover:text-text-heading"><i
+                        class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form id="formEditarBookmark" action="" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="image_url" id="edit_image_url">
-                
+
                 <div>
                     <label class="form-label">URL</label>
                     <input type="url" name="url" id="edit_url" required class="form-input !h-12">
@@ -342,8 +359,10 @@
                         <div class="flex flex-wrap gap-2">
                             {% for cat in categories %}
                             <label class="cursor-pointer group/cat">
-                                <input type="checkbox" name="category_ids" value="{{ cat.id }}" class="hidden peer edit-cat-checkbox" id="edit_cat_{{ cat.id }}">
-                                <span class="px-3.5 py-1.5 rounded-full bg-surface-hover text-text-muted text-xs font-medium border border-transparent peer-checked:bg-primary peer-checked:text-white transition-all duration-200">
+                                <input type="checkbox" name="category_ids" value="{{ cat.id }}"
+                                    class="hidden peer edit-cat-checkbox" id="edit_cat_{{ cat.id }}">
+                                <span
+                                    class="px-3.5 py-1.5 rounded-full bg-surface-hover text-text-muted text-xs font-medium border border-transparent peer-checked:bg-primary peer-checked:text-white transition-all duration-200">
                                     {{ cat.nome }}
                                 </span>
                             </label>
@@ -353,7 +372,8 @@
                 </div>
 
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeModal('modalEditarBookmark')" class="btn-secondary btn-lg flex-1">Cancelar</button>
+                    <button type="button" onclick="closeModal('modalEditarBookmark')"
+                        class="btn-secondary btn-lg flex-1">Cancelar</button>
                     <button type="submit" class="btn-primary btn-lg flex-1">Salvar</button>
                 </div>
             </form>
@@ -369,29 +389,32 @@
                 <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
                     <i class="ph-bold ph-gear-six text-primary"></i> Gerenciar Categorias
                 </h3>
-                <button onclick="closeModal('modalGerenciarCategorias')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeModal('modalGerenciarCategorias')"
+                    class="p-3 -m-3 text-text-muted hover:text-text-heading"><i
+                        class="ph-bold ph-x text-xl"></i></button>
             </div>
-            
+
             <div class="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                 <div class="space-y-4"> <!-- Aumentada a margem entre itens -->
                     {% for cat in categories %}
-                    <div class="p-4 bg-surface-hover rounded-2xl group hover:bg-surface-hover transition-all border border-transparent hover:border-white/5">
+                    <div
+                        class="p-4 bg-surface-hover rounded-2xl group hover:bg-surface-hover transition-all border border-transparent hover:border-white/5">
                         <div class="flex items-center justify-between" id="cat_view_{{ cat.id }}">
                             <span class="text-sm font-semibold text-text-heading">{{ cat.nome }}</span>
                             <div class="flex items-center gap-1">
-                                <button onclick="toggleEditCategory('{{ cat.id }}', true)" class="p-3 md:p-2 text-text-muted hover:text-primary transition-colors">
+                                <button onclick="toggleEditCategory('{{ cat.id }}', true)"
+                                    class="p-3 md:p-2 text-text-muted hover:text-primary transition-colors">
                                     <i class="ph-bold ph-pencil-simple text-lg"></i>
                                 </button>
-                                <form id="delete_cat_form_{{ cat.id }}" action="{{ url_for('bookmarks.category_delete', id=cat.id) }}" method="POST">
+                                <form id="delete_cat_form_{{ cat.id }}"
+                                    action="{{ url_for('bookmarks.category_delete', id=cat.id) }}" method="POST">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="button" 
-                                        onclick="AppUI.confirmAction({
+                                    <button type="button" onclick="AppUI.confirmAction({
                                             title: 'EXCLUIR CATEGORIA', 
                                             text: 'Deseja excluir a categoria \'{{ cat.nome }}\'? Isso removerá a tag de todos os links associados.',
                                             confirmText: 'SIM, EXCLUIR',
                                             onConfirm: () => document.getElementById('delete_cat_form_{{ cat.id }}').submit()
-                                        })"
-                                        class="p-3 md:p-2 text-text-muted hover:text-danger transition-colors">
+                                        })" class="p-3 md:p-2 text-text-muted hover:text-danger transition-colors">
                                         <i class="ph-bold ph-trash text-lg"></i>
                                     </button>
                                 </form>
@@ -399,12 +422,17 @@
                         </div>
                         <!-- Form de Edição Oculto -->
                         <div class="hidden" id="cat_edit_{{ cat.id }}">
-                            <form action="{{ url_for('bookmarks.category_edit', id=cat.id) }}" method="POST" class="flex items-center gap-2">
+                            <form action="{{ url_for('bookmarks.category_edit', id=cat.id) }}" method="POST"
+                                class="flex items-center gap-2">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="text" name="nome" value="{{ cat.nome }}" required
                                     class="form-input !h-10 flex-1">
-                                <button type="submit" class="p-3 -m-3 md:p-2 md:m-0 text-success hover:scale-110 transition-transform"><i class="ph-bold ph-check text-lg"></i></button>
-                                <button type="button" onclick="toggleEditCategory('{{ cat.id }}', false)" class="p-3 md:p-2 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-lg"></i></button>
+                                <button type="submit"
+                                    class="p-3 -m-3 md:p-2 md:m-0 text-success hover:scale-110 transition-transform"><i
+                                        class="ph-bold ph-check text-lg"></i></button>
+                                <button type="button" onclick="toggleEditCategory('{{ cat.id }}', false)"
+                                    class="p-3 md:p-2 text-text-muted hover:text-text-heading"><i
+                                        class="ph-bold ph-x text-lg"></i></button>
                             </form>
                         </div>
                     </div>
@@ -432,7 +460,9 @@
                 <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
                     <i class="ph-bold ph-folder-plus text-primary"></i> Nova Categoria
                 </h3>
-                <button onclick="closeModal('modalNovaCategoria')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeModal('modalNovaCategoria')"
+                    class="p-3 -m-3 text-text-muted hover:text-text-heading"><i
+                        class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form action="{{ url_for('bookmarks.category_add') }}" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -442,7 +472,8 @@
                         class="form-input !h-12">
                 </div>
                 <div class="flex gap-4 pt-4">
-                    <button type="button" onclick="closeModal('modalNovaCategoria')" class="btn-secondary btn-lg flex-1">Cancelar</button>
+                    <button type="button" onclick="closeModal('modalNovaCategoria')"
+                        class="btn-secondary btn-lg flex-1">Cancelar</button>
                     <button type="submit" class="btn-primary btn-lg flex-1">Salvar</button>
                 </div>
             </form>
@@ -452,10 +483,10 @@
 
 <script>
     // Search Filtering
-    document.getElementById('globalSearch').addEventListener('input', function(e) {
+    document.getElementById('globalSearch').addEventListener('input', function (e) {
         const term = e.target.value.toUpperCase();
         const cards = document.querySelectorAll('.bookmark-card');
-        
+
         cards.forEach(card => {
             const title = card.getAttribute('data-title');
             const desc = card.getAttribute('data-desc');
@@ -467,34 +498,103 @@
         });
     });
 
+    function toggleMobileCategoryAccordion() {
+        const container = document.getElementById('categoryContainer');
+        const arrow = document.getElementById('mobileCatAccordionArrow');
+        if (container) {
+            const isHidden = container.classList.contains('hidden');
+            if (isHidden) {
+                container.classList.remove('hidden');
+                if (arrow) arrow.classList.add('rotate-180');
+            } else {
+                container.classList.add('hidden');
+                if (arrow) arrow.classList.remove('rotate-180');
+            }
+        }
+    }
+
     // Category Filtering
     function filterByCategory(catId) {
         const cards = document.querySelectorAll('.bookmark-card');
         const buttons = document.querySelectorAll('.category-btn');
-        
+        const emptyState = document.getElementById('bookmarkEmptyState');
+        const emptyTitle = document.getElementById('emptyStateTitle');
+        const emptyDesc = document.getElementById('emptyStateDesc');
+        const mobileLabel = document.getElementById('mobileSelectedCatLabel');
+
+        let visibleCount = 0;
+
         buttons.forEach(btn => {
-            if (btn.getAttribute('data-category') === String(catId)) {
+            if (catId && btn.getAttribute('data-category') === String(catId)) {
                 btn.classList.add('active', 'bg-primary', 'text-white', 'shadow-lg', 'shadow-primary/20');
                 btn.classList.remove('bg-surface', 'text-text-muted');
+                if (mobileLabel) {
+                    mobileLabel.textContent = "Categoria: " + (btn.getAttribute('data-label') || btn.textContent.trim());
+                }
             } else {
                 btn.classList.remove('active', 'bg-primary', 'text-white', 'shadow-lg', 'shadow-primary/20');
                 btn.classList.add('bg-surface', 'text-text-muted');
             }
         });
 
+        if (!catId) {
+            // No category selected (initial route state)
+            cards.forEach(card => card.style.display = 'none');
+            if (mobileLabel) mobileLabel.textContent = "Filtrar por Categoria";
+            if (emptyState) {
+                emptyState.style.display = 'block';
+                if (emptyTitle) emptyTitle.textContent = "Selecione uma categoria";
+                if (emptyDesc) emptyDesc.textContent = "Clique em uma das opções acima (\"Todos\", \"Sem Categoria\" ou uma categoria específica) para visualizar os favoritos.";
+            }
+            return;
+        }
+
         cards.forEach(card => {
+            const catsAttr = card.getAttribute('data-categories') || '';
+            const catList = catsAttr.split(',').filter(x => x.trim().length > 0);
+
+            let show = false;
             if (catId === 'all') {
-                card.style.display = 'flex';
+                show = true;
+            } else if (catId === 'uncategorized') {
+                show = (catList.length === 0);
             } else {
-                const cats = card.getAttribute('data-categories').split(',');
-                if (cats.includes(String(catId))) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
+                show = catList.includes(String(catId));
+            }
+
+            if (show) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
             }
         });
+
+        if (emptyState) {
+            if (visibleCount === 0) {
+                emptyState.style.display = 'block';
+                if (emptyTitle) emptyTitle.textContent = "Nenhum favorito encontrado";
+                if (emptyDesc) emptyDesc.textContent = "Não há favoritos nesta categoria.";
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+
+        // Auto collapse mobile accordion on selection if window is small
+        if (window.innerWidth < 640 && catId) {
+            const container = document.getElementById('categoryContainer');
+            const arrow = document.getElementById('mobileCatAccordionArrow');
+            if (container && !container.classList.contains('hidden')) {
+                container.classList.add('hidden');
+                if (arrow) arrow.classList.remove('rotate-180');
+            }
+        }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const selectedCat = "{{ selected_category or '' }}";
+        filterByCategory(selectedCat || null);
+    });
 
     // Smart Scraping
     async function handleUrlChange(url) {
@@ -523,7 +623,7 @@
                 if (data.title) titleInput.value = data.title;
                 if (data.description) descInput.value = data.description;
                 if (data.image_url) document.getElementById('bookmarkImage').value = data.image_url;
-                
+
                 // Animate fill
                 titleInput.classList.add('ring-2', 'ring-success');
                 setTimeout(() => titleInput.classList.remove('ring-2', 'ring-success'), 2000);
@@ -540,7 +640,7 @@
         const modal = document.getElementById(id);
         modal.classList.remove('hidden');
         modal.classList.add('flex');
-        
+
         // Auto focus the first input inside the modal
         const firstInput = modal.querySelector('input:not([type="hidden"]), select, textarea');
         if (firstInput) {
@@ -566,15 +666,15 @@
 
         const form = document.getElementById('formEditarBookmark');
         form.action = "{{ url_for('bookmarks.edit', id=0) }}".replace('0', id);
-        
+
         document.getElementById('edit_titulo').value = titulo;
         document.getElementById('edit_url').value = url;
         document.getElementById('edit_descricao').value = descricao;
         document.getElementById('edit_image_url').value = image_url;
-        
+
         // Reset checkboxes
         document.querySelectorAll('.edit-cat-checkbox').forEach(cb => cb.checked = false);
-        
+
         // Set categories
         if (categoryIds) {
             categoryIds.split(',').forEach(catId => {
@@ -582,7 +682,7 @@
                 if (cb) cb.checked = true;
             });
         }
-        
+
         openModal('modalEditarBookmark');
     }
     function toggleEditCategory(id, editing) {
@@ -599,36 +699,39 @@
     function openShareModalBookmark(bookmarkId, sharedUserIds) {
         const form = document.getElementById('formCompartilharBookmark');
         form.action = "{{ url_for('bookmarks.share', id=0) }}".replace('0', bookmarkId);
-        
+
         const checkboxes = document.querySelectorAll('.bookmark-user-checkbox');
         checkboxes.forEach(cb => {
             cb.checked = sharedUserIds.includes(parseInt(cb.value));
         });
-        
+
         openModal('modalCompartilharBookmark');
     }
 </script>
 
 <!-- Modal Compartilhar Bookmark -->
-<div id="modalCompartilharBookmark"
-    class="hidden modal-overlay">
+<div id="modalCompartilharBookmark" class="hidden modal-overlay">
     <div class="modal-sheet md:max-w-md">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-semibold text-text-heading flex items-center gap-2">
                     <i class="ph-bold ph-share-network text-primary"></i> Compartilhar Favorito
                 </h3>
-                <button onclick="closeModal('modalCompartilharBookmark')" class="p-3 -m-3 text-text-muted hover:text-text-heading"><i class="ph-bold ph-x text-xl"></i></button>
+                <button onclick="closeModal('modalCompartilharBookmark')"
+                    class="p-3 -m-3 text-text-muted hover:text-text-heading"><i
+                        class="ph-bold ph-x text-xl"></i></button>
             </div>
             <form id="formCompartilharBookmark" action="" method="POST" class="space-y-6">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div>
                     <label class="form-label mb-3">Selecione os usuários com acesso:</label>
-                    <div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-surface-sunken rounded-xl border border-slate-200">
+                    <div
+                        class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-surface-sunken rounded-xl border border-slate-200">
                         {% for u in users %}
                         {% if u.id != current_user.id %}
                         <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-background cursor-pointer">
-                            <input type="checkbox" name="user_ids" value="{{ u.id }}" class="bookmark-user-checkbox w-4 h-4 rounded text-primary focus:ring-primary bg-surface-hover border-slate-200">
+                            <input type="checkbox" name="user_ids" value="{{ u.id }}"
+                                class="bookmark-user-checkbox w-4 h-4 rounded text-primary focus:ring-primary bg-surface-hover border-slate-200">
                             <span class="text-sm font-semibold text-text-heading">{{ u.username }}</span>
                         </label>
                         {% endif %}
@@ -636,7 +739,8 @@
                     </div>
                 </div>
                 <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="closeModal('modalCompartilharBookmark')" class="btn-secondary btn-md flex-1">Cancelar</button>
+                    <button type="button" onclick="closeModal('modalCompartilharBookmark')"
+                        class="btn-secondary btn-md flex-1">Cancelar</button>
                     <button type="submit" class="btn-primary btn-md flex-1">Salvar</button>
                 </div>
             </form>
@@ -649,6 +753,7 @@
         height: 310px;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     .bookmark-card-cover {
         height: 180px;
         position: relative;
@@ -659,11 +764,13 @@
         justify-content: center;
         background-color: rgba(43, 45, 49, 0.3);
     }
+
     .bookmark-card-cover img {
         width: 100%;
         height: auto;
         display: block;
     }
+
     .bookmark-card-body {
         padding: 14px;
         display: flex;
@@ -672,31 +779,36 @@
         flex: 1;
         min-height: 0;
     }
+
     .line-clamp-2 {
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
+
     .line-clamp-3 {
         display: -webkit-box;
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
+
     .custom-scrollbar::-webkit-scrollbar {
         width: 4px;
     }
+
     .custom-scrollbar::-webkit-scrollbar-track {
         background: transparent;
     }
+
     .custom-scrollbar::-webkit-scrollbar-thumb {
         background: #cbd5e1;
         border-radius: 10px;
     }
 
     /* Fix para seleção de categorias nos modais */
-    input[type="checkbox"].peer:checked + span {
+    input[type="checkbox"].peer:checked+span {
         background-color: #4f46e5 !important;
         color: white !important;
         border-color: rgba(255, 255, 255, 0.3) !important;

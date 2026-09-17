@@ -1,5 +1,6 @@
 from typing import List, Optional
 from sqlalchemy import or_
+from sqlalchemy.orm import joinedload, selectinload
 from app.repositories.base_repository import BaseRepository
 from app.models import Lista, ItemLista, GrupoItem, TipoLista
 
@@ -11,7 +12,11 @@ class ListRepository(BaseRepository):
         return self.list_all(order_by=self.model.denominacao)
 
     def list_user_lists(self, user_id: int, is_active: bool = True) -> List[Lista]:
-        return self.model.query.filter(
+        return self.model.query.options(
+            joinedload(self.model.tipo),
+            selectinload(self.model.itens),
+            selectinload(self.model.shared_users)
+        ).filter(
             self.model.tipo_id.is_not(None),
             self.model.is_active == is_active,
             or_(
@@ -21,7 +26,10 @@ class ListRepository(BaseRepository):
         ).order_by(self.model.denominacao).all()
 
     def list_user_simple_lists(self, user_id: int, is_active: bool = True) -> List[Lista]:
-        return self.model.query.filter(
+        return self.model.query.options(
+            selectinload(self.model.itens),
+            selectinload(self.model.shared_simple_users)
+        ).filter(
             self.model.tipo_id.is_(None),
             self.model.is_active == is_active,
             or_(

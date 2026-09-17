@@ -3,18 +3,18 @@
 {% block title %}{{ lista.denominacao }} - DayLog{% endblock %}
 
 {% block content %}
-<div class="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-    <div class="flex flex-col gap-4">
+<div class="mb-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div class="flex flex-col gap-2">
         <a href="{{ url_for('simple_lists.index') }}" class="btn-back group">
             <i class="ph-bold ph-arrow-left btn-back-icon"></i>
             Voltar
         </a>
 
-        <div class="flex flex-col gap-1">
-            <h1 class="text-2xl md:text-3xl font-bold text-text-heading tracking-tight flex items-center gap-3">
+        <div class="flex flex-col gap-0.5">
+            <h1 class="text-xl md:text-2xl font-bold text-text-heading tracking-tight flex items-center gap-2.5">
                 <i class="ph-bold ph-list-bullets text-primary"></i>
                 {% if lista.owner_id != current_user.id %}
-                <i class="ph-bold ph-users text-primary text-2xl" data-tooltip="Compartilhado por outro usuário"></i>
+                <i class="ph-bold ph-users text-primary text-xl" data-tooltip="Compartilhado por outro usuário"></i>
                 {% endif %}
                 {{ lista.denominacao }}
             </h1>
@@ -24,40 +24,40 @@
         </div>
     </div>
 
-    <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-        <button onclick="openModal('modalLoteItem')" class="btn-secondary btn-md group">
+    <div class="flex flex-row gap-2 w-full md:w-auto">
+        <button onclick="openModal('modalLoteItem')" class="btn-secondary btn-sm group flex-1 md:flex-initial">
             Adicionar em lote
-            <i class="ph-bold ph-stack text-lg"></i>
+            <i class="ph-bold ph-stack text-base"></i>
         </button>
-        <button onclick="openModal('modalNovoItem')" class="btn-primary btn-md group">
+        <button onclick="openModal('modalNovoItem')" class="btn-primary btn-sm group flex-1 md:flex-initial">
             Adicionar
-            <i class="ph-bold ph-plus text-lg transition-transform duration-300 group-hover:rotate-90"></i>
+            <i class="ph-bold ph-plus text-base transition-transform duration-300 group-hover:rotate-90"></i>
         </button>
     </div>
 </div>
 
-<div class="bg-surface border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
-    <div class="p-4 sm:p-8 space-y-2">
+<div class="bg-surface border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+    <div class="p-2 sm:p-3 divide-y divide-slate-100">
         {% for item in lista.itens %}
-        <div class="group flex items-center justify-between p-3 rounded-xl hover:bg-background transition-standard border border-transparent hover:border-slate-200">
-            <div class="flex items-center gap-3 flex-1 min-w-0">
-                <label class="relative flex items-center cursor-pointer select-none before:absolute before:-inset-3 before:content-['']">
+        <div class="group flex items-center justify-between py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-lg hover:bg-background transition-standard">
+            <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                <label class="relative flex items-center cursor-pointer select-none before:absolute before:-inset-2 before:content-['']">
                     <input type="checkbox" class="peer hidden" {% if item.status %}checked{% endif %} 
                            onchange="toggleItem('{{ item.id }}', this.checked)">
-                    <div class="w-5 h-5 rounded border border-slate-200 bg-surface-sunken text-transparent peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white flex items-center justify-center transition-all duration-200 hover:border-text-normal">
-                        <i class="ph-bold ph-check text-xs"></i>
+                    <div class="w-4 h-4 sm:w-5 sm:h-5 rounded border border-slate-300 bg-surface-sunken text-transparent peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white flex items-center justify-center transition-all duration-200 hover:border-text-normal flex-shrink-0">
+                        <i class="ph-bold ph-check text-[10px] sm:text-xs"></i>
                     </div>
                 </label>
                 
                 <div class="flex-1 min-w-0">
                     {% if item.link %}
                     <a href="{{ item.link }}" target="_blank"
-                       class="item-name text-sm font-medium truncate transition-all duration-300 {% if item.status %}text-text-muted line-through decoration-2 opacity-40{% else %}text-text-heading hover:text-primary{% endif %}"
+                       class="item-name text-xs sm:text-sm font-medium truncate transition-all duration-300 block leading-tight {% if item.status %}text-text-muted line-through decoration-2 opacity-40{% else %}text-text-heading hover:text-primary{% endif %}"
                        id="item-text-{{ item.id }}">
                         {{ item.item }}
                     </a>
                     {% else %}
-                    <span class="item-name text-sm font-medium truncate transition-all duration-300 {% if item.status %}text-text-muted line-through decoration-2 opacity-40{% else %}text-text-heading{% endif %}"
+                    <span class="item-name text-xs sm:text-sm font-medium truncate transition-all duration-300 block leading-tight {% if item.status %}text-text-muted line-through decoration-2 opacity-40{% else %}text-text-heading{% endif %}"
                           id="item-text-{{ item.id }}">
                         {{ item.item }}
                     </span>
@@ -65,27 +65,27 @@
                 </div>
             </div>
 
-            <div class="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+            <div class="flex gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0">
                 <button onclick="openEditItemModal('{{ item.id }}', '{{ item.item }}', '{{ item.link or '' }}')"
-                    class="tap-icon text-text-muted hover:text-primary" title="Editar">
-                    <i class="ph-bold ph-pencil-simple text-base"></i>
+                    class="p-1 text-text-muted hover:text-primary rounded" title="Editar">
+                    <i class="ph-bold ph-pencil-simple text-sm sm:text-base"></i>
                 </button>
                 <form action="{{ url_for('simple_lists.delete_item', item_id=item.id) }}" method="POST" onsubmit="return confirm('Deseja excluir este item?')">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="lista_id" value="{{ lista.id }}">
-                    <button type="submit" class="tap-icon text-text-muted hover:text-danger" title="Excluir">
-                        <i class="ph-bold ph-trash text-base"></i>
+                    <button type="submit" class="p-1 text-text-muted hover:text-danger rounded" title="Excluir">
+                        <i class="ph-bold ph-trash text-sm sm:text-base"></i>
                     </button>
                 </form>
             </div>
         </div>
         {% else %}
-        <div class="py-20 text-center">
-            <div class="w-16 h-16 bg-surface-hover rounded-full flex items-center justify-center mx-auto mb-4 text-text-muted">
-                <i class="ph-bold ph-list-plus text-3xl"></i>
+        <div class="py-12 text-center">
+            <div class="w-12 h-12 bg-surface-hover rounded-full flex items-center justify-center mx-auto mb-3 text-text-muted">
+                <i class="ph-bold ph-list-plus text-2xl"></i>
             </div>
-            <p class="text-text-muted text-sm">Sua lista está vazia</p>
-            <button onclick="openModal('modalNovoItem')" class="mt-4 text-primary text-sm font-semibold hover:underline">Adicionar primeiro item</button>
+            <p class="text-text-muted text-xs">Sua lista está vazia</p>
+            <button onclick="openModal('modalNovoItem')" class="mt-3 text-primary text-xs font-semibold hover:underline">Adicionar primeiro item</button>
         </div>
         {% endfor %}
     </div>

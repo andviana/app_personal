@@ -2,6 +2,19 @@
  * Tasks Module
  * Handles task filtering, group toggling and CRUD modals.
  */
+function toggleTaskAccordion(btn) {
+    const row = btn.closest('.task-row');
+    if (!row) return;
+    const accordion = row.querySelector('.task-accordion-content');
+    const arrow = btn.querySelector('.accordion-arrow');
+    if (accordion) {
+        accordion.classList.toggle('hidden');
+        if (arrow) {
+            arrow.classList.toggle('rotate-180');
+        }
+    }
+}
+
 function togglePanel() {
     const filterBar = document.getElementById('filterBar');
     const taskForm = document.getElementById('taskFormArea');
@@ -206,14 +219,14 @@ function updateTaskRowStatus(row, status) {
     }
 
     // Update separate play button form visibility
-    const playForm = row.querySelector('.play-btn-form');
-    if (playForm) {
+    const playForms = row.querySelectorAll('.play-btn-form');
+    playForms.forEach(playForm => {
         if (status === 'PENDENTE') {
             playForm.classList.remove('hidden');
         } else {
             playForm.classList.add('hidden');
         }
-    }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {

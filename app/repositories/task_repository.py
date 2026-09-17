@@ -1,5 +1,6 @@
 from typing import Optional, List
 from sqlalchemy import or_
+from sqlalchemy.orm import joinedload, selectinload
 from app.repositories.base_repository import BaseRepository
 from app.models import Tarefa, GrupoTarefas, StatusTarefas
 
@@ -8,7 +9,11 @@ class TaskRepository(BaseRepository):
         super().__init__(Tarefa)
 
     def list_user_tasks(self, user_id: int, is_active: bool = True, grupo_id: Optional[int] = None) -> List[Tarefa]:
-        query = self.model.query.join(Tarefa.grupo).filter(
+        query = self.model.query.options(
+            joinedload(self.model.status),
+            joinedload(self.model.grupo),
+            selectinload(self.model.shared_users)
+        ).join(Tarefa.grupo).filter(
             Tarefa.is_active == is_active,
             GrupoTarefas.is_active == is_active,
             or_(
@@ -31,7 +36,10 @@ class GrupoTarefasRepository(BaseRepository):
         return self.find_one_by(denominacao=denominacao)
 
     def list_user_groups(self, user_id: int, is_active: bool = True) -> List[GrupoTarefas]:
-        return self.model.query.filter(
+        return self.model.query.options(
+            selectinload(self.model.tarefas),
+            selectinload(self.model.shared_users)
+        ).filter(
             GrupoTarefas.is_active == is_active,
             or_(
                 GrupoTarefas.owner_id == user_id,

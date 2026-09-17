@@ -39,7 +39,7 @@ function copySnippetLink(url) {
     });
 }
 
-function toggleAccordion(id) {
+function toggleAccordion(id, snippetId) {
     const content = document.getElementById('content-' + id);
     const icon = document.getElementById('icon-' + id);
     if (!content || !icon) return;
@@ -50,6 +50,26 @@ function toggleAccordion(id) {
         content.classList.remove('hidden');
         icon.classList.add('rotate-180');
         parent.classList.add('ring-2', 'ring-primary', 'border-transparent');
+
+        // Carregamento sob demanda do conteúdo markdown no mobile
+        if (snippetId && content.getAttribute('data-loaded') === 'false') {
+            fetch(`/snippets/${snippetId}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const bodyElem = document.getElementById('body-' + id);
+                if (bodyElem) bodyElem.innerHTML = data.html;
+                
+                const copyBtn = document.getElementById('copy-btn-' + id);
+                if (copyBtn) copyBtn.setAttribute('data-raw', data.conteudo || '');
+                
+                content.setAttribute('data-loaded', 'true');
+            })
+            .catch(err => {
+                console.error('Erro ao carregar snippet:', err);
+            });
+        }
     } else {
         content.classList.add('hidden');
         icon.classList.remove('rotate-180');

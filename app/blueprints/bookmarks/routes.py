@@ -7,8 +7,8 @@ from flask_login import current_user, login_required
 @bp.route('/')
 @login_required
 def index():
-    show_archived = request.args.get('archived') == 'true'
-    bookmarks = BookmarkService.get_all_bookmarks(current_user, is_active=not show_archived)
+    selected_category = request.args.get('category', default=None)
+    bookmarks = BookmarkService.get_all_bookmarks(current_user)
     categories = BookmarkService.get_all_categories()
     users = UserRepository().list_all_users()
     return render_template(
@@ -16,7 +16,7 @@ def index():
         bookmarks=bookmarks,
         categories=categories,
         users=users,
-        is_archived_view=show_archived
+        selected_category=selected_category
     )
 
 @bp.route('/scrape', methods=['POST'])
@@ -54,20 +54,6 @@ def edit(id):
     success, message = BookmarkService.update_bookmark(id, titulo, url, descricao, category_ids, image_url, current_user)
     flash(message, 'success' if success else 'danger')
     return redirect(url_for('bookmarks.index'))
-
-@bp.route('/archive/<int:id>', methods=['POST'])
-@login_required
-def archive(id):
-    success, message = BookmarkService.archive_bookmark(id, current_user)
-    flash(message, 'success' if success else 'danger')
-    return redirect(request.referrer or url_for('bookmarks.index'))
-
-@bp.route('/reactivate/<int:id>', methods=['POST'])
-@login_required
-def reactivate(id):
-    success, message = BookmarkService.reactivate_bookmark(id, current_user)
-    flash(message, 'success' if success else 'danger')
-    return redirect(request.referrer or url_for('bookmarks.index', archived='true'))
 
 @bp.route('/share/<int:id>', methods=['POST'])
 @login_required

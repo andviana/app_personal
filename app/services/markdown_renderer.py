@@ -13,6 +13,7 @@ def render_markdown(text):
     
     # Extensões para Markdown
     extensions = [
+        'tables',
         FencedCodeExtension(),
         CodeHiliteExtension(css_class='codehilite', guess_lang=False)
     ]
@@ -20,7 +21,7 @@ def render_markdown(text):
     html = markdown.markdown(text, extensions=extensions)
     
     # Sanitização para segurança (XSS)
-    # Permite tags comuns de formatação e estrutura geradas pelo Markdown + CodeHilite
+    # Permite tags comuns de formatação e estrutura geradas pelo Markdown + CodeHilite + Tables
     allowed_tags = [
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'hr', 'pre', 'code', 
         'span', 'div', 'ul', 'ol', 'li', 'strong', 'em', 'a', 'img', 
@@ -32,7 +33,10 @@ def render_markdown(text):
         'span': ['class'],
         'div': ['class'],
         'code': ['class'],
-        'pre': ['class']
+        'pre': ['class'],
+        'th': ['align', 'style', 'class'],
+        'td': ['align', 'style', 'class'],
+        'table': ['class']
     }
     
     return bleach.clean(html, tags=allowed_tags, attributes=allowed_attrs)

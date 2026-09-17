@@ -2,6 +2,13 @@ import uuid
 from app import db
 from datetime import datetime, timezone
 
+shared_snippets = db.Table(
+    'shared_snippets',
+    db.metadata,
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('snippet_id', db.Integer, db.ForeignKey('snippet.id', ondelete='CASCADE'), primary_key=True)
+)
+
 # Tabela de associação Muitos-para-Muitos (Como Modelo para facilitar Backup)
 class SnippetTag(db.Model):
     __tablename__ = 'snippet_tags'
@@ -16,9 +23,12 @@ class Snippet(db.Model):
     descricao = db.mapped_column(db.String(200), nullable=True)
     conteudo = db.mapped_column(db.Text, nullable=False)
     data_criacao = db.mapped_column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    owner_id = db.mapped_column(db.Integer, db.ForeignKey('user.id'), nullable=True)
 
-    # Relacionamento com Tags
+    # Relacionamentos
     tags = db.relationship('Tag', secondary='snippet_tags', back_populates='snippets', lazy='joined')
+    owner = db.relationship('User', foreign_keys=[owner_id], backref='owned_snippets')
+    shared_users = db.relationship('User', secondary=shared_snippets, backref='shared_snippets')
 
     def __repr__(self):
         return f'<Snippet {self.titulo}>'

@@ -65,7 +65,7 @@ class DashboardService:
         shopping = DashboardRepository.get_shopping_summary(current_user.id)
         listas_simples_count = DashboardRepository.get_simple_lists_count(current_user.id)
         bookmarks_count = DashboardRepository.get_bookmarks_count(current_user.id)
-        catalog = DashboardRepository.get_catalog_counts()
+        catalog = DashboardRepository.get_catalog_counts(current_user.id)
         contributions = DashboardService.get_contribution_stats(current_user)
         shared_with_me = DashboardService.get_shared_with_me(current_user)
 

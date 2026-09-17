@@ -30,7 +30,7 @@
 
 <div class="grid grid-cols-1 gap-4 mt-8">
     {% for l in listas %}
-    <div class="group bg-surface border border-slate-200 rounded-[16px] p-4 hover:border-text-muted transition-all duration-300 flex items-center gap-4 relative overflow-hidden shadow-sm cursor-pointer {% if is_archived_view %}opacity-60 grayscale bg-surface{% endif %}"
+    <div class="group bg-surface border border-slate-200 rounded-[16px] p-4 hover:border-text-muted transition-all duration-300 flex items-start gap-4 relative overflow-hidden shadow-sm cursor-pointer {% if is_archived_view %}opacity-60 grayscale bg-surface{% endif %}"
         onclick="window.location.href='{{ url_for('lists.detail', id=l.id) }}';">
         <!-- Visual Accent -->
         <div class="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity">
@@ -38,16 +38,22 @@
 
         <!-- Icon -->
         <div
-            class="flex-shrink-0 p-3 bg-surface-hover text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-standard">
+            class="flex-shrink-0 p-3 bg-surface-hover text-primary rounded-xl group-hover:bg-primary group-hover:text-white transition-standard mt-0.5">
             <i class="ph-fill ph-shopping-bag text-2xl"></i>
         </div>
 
-        <!-- Info -->
-        <div class="flex-1 min-w-0">
-            <div class="flex flex-col gap-0.5">
-                <div class="flex items-center gap-2">
-                    <span
-                        class="badge-neutral">
+        <!-- Info & Actions Container -->
+        <div class="flex-1 min-w-0 flex flex-col justify-between gap-3">
+            <!-- Top Line: Title & Badges -->
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    {% if not is_archived_view and l.owner_id != current_user.id %}
+                    <i class="ph-bold ph-users text-primary text-lg flex-shrink-0" data-tooltip="Compartilhado com você"></i>
+                    {% endif %}
+                    <h3 class="text-base font-semibold text-text-heading truncate">{{ l.denominacao }}</h3>
+                </div>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                    <span class="badge-neutral">
                         {{ l.tipo.denominacao if l.tipo else 'Genérica' }}
                     </span>
                     {% if is_archived_view %}
@@ -56,67 +62,65 @@
                     </span>
                     {% endif %}
                 </div>
-                
-                <div class="flex items-center gap-2 mt-1">
-                    {% if not is_archived_view and l.owner_id != current_user.id %}
-                    <i class="ph-bold ph-users text-primary text-lg" data-tooltip="Compartilhado com você"></i>
+            </div>
+
+            <!-- Bottom Line: Item Count (Left) & Action Controls (Right) -->
+            <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100/80">
+                <div class="flex items-center gap-4 text-text-muted">
+                    <span class="text-[11px] font-bold flex items-center gap-1.5">
+                        <i class="ph-bold ph-stack"></i> {{ l.itens|length }} itens
+                    </span>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-1" onclick="event.stopPropagation()">
+                    <a href="{{ url_for('lists.detail', id=l.id) }}"
+                        class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-primary transition-standard"
+                        data-tooltip="Abrir Lista" data-tooltip-pos="top">
+                        <i class="ph-bold ph-arrow-square-out text-lg"></i>
+                    </a>
+
+                    {% if is_archived_view %}
+                        {% if l.owner_id == current_user.id %}
+                        <form action="{{ url_for('lists.reactivate', id=l.id) }}" method="POST" class="flex-shrink-0">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="w-8 h-8 flex items-center justify-center text-success hover:bg-success hover:text-white rounded-lg transition-standard"
+                                data-tooltip="Reativar Lista" data-tooltip-pos="top">
+                                <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    {% else %}
+                        {% if l.owner_id == current_user.id %}
+                        <!-- Compartilhar -->
+                        <button onclick="openShareModalList({{ l.id }}, {{ l.shared_users|map(attribute='id')|list|tojson }})"
+                            class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-primary transition-standard"
+                            data-tooltip="Compartilhar" data-tooltip-pos="top">
+                            <i class="ph-bold ph-share-network text-lg"></i>
+                        </button>
+
+                        <!-- Arquivar -->
+                        <form action="{{ url_for('lists.archive', id=l.id) }}" method="POST" class="flex-shrink-0">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-warning transition-standard"
+                                data-tooltip="Arquivar" data-tooltip-pos="top">
+                                <i class="ph-bold ph-archive text-lg"></i>
+                            </button>
+                        </form>
+
+                        <!-- Excluir -->
+                        <form action="{{ url_for('lists.delete', id=l.id) }}" method="POST"
+                            onsubmit="confirmListDelete(event, this)" class="flex-shrink-0">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="w-8 h-8 flex items-center justify-center text-text-muted hover:text-danger transition-standard"
+                                data-tooltip="Excluir" data-tooltip-pos="top">
+                                <i class="ph-bold ph-trash text-lg"></i>
+                            </button>
+                        </form>
+                        {% endif %}
                     {% endif %}
-                    <h3 class="text-base font-semibold text-text-heading truncate">{{ l.denominacao }}</h3>
                 </div>
             </div>
-            <div class="flex items-center gap-4 text-text-muted mt-1">
-                <span class="text-[11px] font-bold flex items-center gap-1.5"><i class="ph-bold ph-stack"></i> {{
-                    l.itens|length }} itens</span>
-            </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="flex items-center gap-2" onclick="event.stopPropagation()">
-            <a href="{{ url_for('lists.detail', id=l.id) }}"
-                class="w-11 h-11 md:w-10 md:h-10 flex items-center justify-center text-text-muted hover:text-primary transition-standard"
-                data-tooltip="Abrir Lista" data-tooltip-pos="top">
-                <i class="ph-bold ph-arrow-square-out text-xl"></i>
-            </a>
-
-            {% if is_archived_view %}
-                {% if l.owner_id == current_user.id %}
-                <form action="{{ url_for('lists.reactivate', id=l.id) }}" method="POST">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="w-11 h-11 md:w-10 md:h-10 flex items-center justify-center text-success hover:bg-success hover:text-white transition-standard"
-                        data-tooltip="Reativar Lista" data-tooltip-pos="top">
-                        <i class="ph-bold ph-arrow-counter-clockwise text-xl"></i>
-                    </button>
-                </form>
-                {% endif %}
-            {% else %}
-                {% if l.owner_id == current_user.id %}
-                <!-- Compartilhar -->
-                <button onclick="openShareModalList({{ l.id }}, {{ l.shared_users|map(attribute='id')|list|tojson }})"
-                    class="w-11 h-11 md:w-10 md:h-10 flex items-center justify-center text-text-muted hover:text-primary transition-standard"
-                    data-tooltip="Compartilhar" data-tooltip-pos="top">
-                    <i class="ph-bold ph-share-network text-xl"></i>
-                </button>
-
-                <!-- Arquivar -->
-                <form action="{{ url_for('lists.archive', id=l.id) }}" method="POST" class="flex-shrink-0">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="w-11 h-11 md:w-10 md:h-10 flex items-center justify-center text-text-muted hover:text-warning transition-standard"
-                        data-tooltip="Arquivar" data-tooltip-pos="top">
-                        <i class="ph-bold ph-archive text-xl"></i>
-                    </button>
-                </form>
-
-                <!-- Excluir -->
-                <form action="{{ url_for('lists.delete', id=l.id) }}" method="POST"
-                    onsubmit="confirmListDelete(event, this)" class="flex-shrink-0">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="btn-icon-sm !bg-transparent !border-none hover:!text-danger"
-                        data-tooltip="Excluir" data-tooltip-pos="top">
-                        <i class="ph-bold ph-trash text-lg"></i>
-                    </button>
-                </form>
-                {% endif %}
-            {% endif %}
         </div>
     </div>
     {% else %}

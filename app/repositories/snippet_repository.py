@@ -1,24 +1,36 @@
 from typing import List, Optional
+from sqlalchemy import or_
+from sqlalchemy.orm import defer, selectinload
 from app.repositories.base_repository import BaseRepository
-from app.models import Snippet, Tag, SnippetTag
+from app.models import Snippet, Tag, SnippetTag, User
 
 class SnippetRepository(BaseRepository):
     def __init__(self):
         super().__init__(Snippet)
 
-    def search_snippets(self, search: Optional[str] = None) -> List[Snippet]:
+    def search_snippets(self, user, search: Optional[str] = None, defer_content: bool = True) -> List[Snippet]:
+        query = self.model.query.options(selectinload(self.model.tags)).filter(
+            or_(
+                self.model.owner_id == user.id,
+                self.model.shared_users.any(User.id == user.id)
+            )
+        )
+
+        if defer_content:
+            query = query.options(defer(self.model.conteudo))
+
         if search:
             if search.startswith('#'):
                 tag_name = search[1:].upper()
-                return self.model.query.join(self.model.tags).filter(Tag.denominacao == tag_name).all()
-            
-            return self.model.query.filter(
-                (self.model.titulo.ilike(f'%{search}%')) | 
-                (self.model.conteudo.ilike(f'%{search}%')) |
-                (self.model.descricao.ilike(f'%{search}%'))
-            ).all()
+                query = query.join(self.model.tags).filter(Tag.denominacao == tag_name)
+            else:
+                query = query.filter(
+                    (self.model.titulo.ilike(f'%{search}%')) | 
+                    (self.model.conteudo.ilike(f'%{search}%')) |
+                    (self.model.descricao.ilike(f'%{search}%'))
+                )
         
-        return self.list_all(order_by=self.model.data_criacao.desc())
+        return query.order_by(self.model.data_criacao.desc()).all()
 
 class TagRepository(BaseRepository):
     def __init__(self):

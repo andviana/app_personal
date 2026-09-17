@@ -265,6 +265,11 @@
 .markdown-body ul, .markdown-body ol { padding-left: 2em; margin-top: 0; margin-bottom: 16px; }
 .markdown-body li { margin-top: .25em; }
 .markdown-body code:not(.codehilite code) { padding: .2em .4em; margin: 0; font-size: 85%; background-color: rgba(27,31,35,.05); border-radius: 3px; font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace; }
+.markdown-body table { width: 100%; border-collapse: collapse; margin-top: 16px; margin-bottom: 20px; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; font-size: 0.875rem; }
+.markdown-body th { padding: 8px 16px; background-color: #f8fafc; font-weight: 700; text-align: left; color: #0f172a; border: 1px solid #e2e8f0; }
+.markdown-body td { padding: 8px 16px; border: 1px solid #e2e8f0; color: #334155; }
+.markdown-body tr:nth-child(even) { background-color: #f8fafc; }
+.markdown-body tr:hover { background-color: #f1f5f9; }
 
 /* Custom Scrollbar (tema claro) */
 .custom-scrollbar::-webkit-scrollbar {

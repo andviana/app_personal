@@ -132,9 +132,9 @@ class BookmarkService:
         return text
 
     @staticmethod
-    def get_all_bookmarks(current_user, is_active: bool = True):
+    def get_all_bookmarks(current_user):
         repo = BookmarkRepository()
-        return repo.list_user_bookmarks(current_user.id, is_active=is_active)
+        return repo.list_user_bookmarks(current_user.id)
 
     @staticmethod
     def get_all_categories():

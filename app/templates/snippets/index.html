@@ -72,7 +72,7 @@
                 {% for s in snippets %}
                 <div
                     class="mobile-snippet-item bg-surface border border-slate-200 rounded-[16px] overflow-hidden shadow-sm">
-                    <button data-id="{{ s.id }}" onclick="toggleAccordion('snippet-' + this.dataset.id)"
+                    <button data-id="{{ s.id }}" onclick="toggleAccordion('snippet-' + this.dataset.id, {{ s.id }})"
                         class="w-full flex justify-between items-center p-5 text-left hover:bg-background transition-standard">
                         <div>
                             <div class="flex flex-wrap gap-1 mb-2">
@@ -93,10 +93,12 @@
                                 class="ph-bold ph-caret-down text-text-muted transition-transform"></i>
                         </div>
                     </button>
-                    <div id="content-snippet-{{ s.id }}"
+                    <div id="content-snippet-{{ s.id }}" data-loaded="false"
                         class="hidden px-5 pb-6 border-t border-slate-200 bg-surface">
-                        <div class="markdown-body py-6 text-text-normal">
-                            {{ s.html | safe }}
+                        <div id="body-snippet-{{ s.id }}" class="markdown-body py-6 text-text-normal">
+                            <div class="py-4 text-center text-text-muted text-xs font-semibold flex items-center justify-center gap-2">
+                                <i class="ph-bold ph-spinner animate-spin text-base"></i> Carregando...
+                            </div>
                         </div>
                         <div
                             class="mt-4 pt-4 border-t border-slate-200 flex flex-wrap gap-2 justify-between items-center">
@@ -118,7 +120,7 @@
 
                             </div>
                             <div class="flex flex-wrap gap-2">
-                                <button data-id="{{ s.id }}" data-raw="{{ s.conteudo }}"
+                                <button id="copy-btn-snippet-{{ s.id }}" data-id="{{ s.id }}" data-raw=""
                                     onclick="copyRawContent(this.dataset.raw)" class="btn-secondary btn-sm">
                                     <i class="ph-bold ph-copy text-sm"></i> Código
                                 </button>
